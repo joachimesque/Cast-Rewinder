@@ -10,3 +10,9 @@ db = SQLAlchemy(app)
 
 from . import views
 from . import models
+
+from flask_wtf.csrf import CSRFProtect
+
+csrf = CSRFProtect(app)
+
+app.secret_key = app.config['APP_SECRET_KEY']

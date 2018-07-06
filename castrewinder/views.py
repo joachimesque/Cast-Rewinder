@@ -15,16 +15,35 @@ from .forms import UrlForm
 from . import db
 from .models import Feed, Episode
 
+@app.errorhandler(404)
+def page_not_found(e):
+    # note that we set the 404 status explicitly
+    return render_template('404.html'), 404
+
 @app.route('/', methods=["GET", "POST"])
 def index():
   form = UrlForm()
   if form.validate_on_submit():
-    feed_importer.import_feed(request.form['url'])
-    frequency = get_frequency(request_form = request.form)
+    u = urlparse(url = request.form['url'])
+    
+    if u.scheme + '://' + u.netloc + '/' != request.url:
+      # TODO : get a queue going for these kinds of works
+      feed_importer.import_feed(request.form['url'])
+      
+      frequency = get_frequency(request_form = request.form)
 
-    return generate_url(feed_url = request.form['url'], frequency = frequency)
 
-  return render_template('url_input.html', form = form)
+      feed_url = request.form['url']
+      if u.netloc == 'itunes.apple.com':
+        feed_url = feed_importer.get_feed_from_itunes_api(itunes_url = feed_url)
+
+      feed_object = db.session.query(Feed).filter(Feed.url == feed_url).one()
+
+      end_url = request.url + generate_url(feed_id = feed_object.id, frequency = frequency)
+
+      return render_template('index.html', form = form, end_url = end_url, feed_object = json.loads(feed_object.content))
+
+  return render_template('index.html', form = form)
 
 
 @app.route('/<feed_id>/<frequency>/<start_date>', defaults = {'options': ''})
@@ -47,12 +66,12 @@ def serve_feed(feed_id, frequency, start_date, options):
 
 def get_frequency(request_form):
 
-  if request_form['radios'] in ['daily', 'weekly', 'monthly']:
-    frequency = request_form['radios']
-  elif request_form['radios'] == 'weekdays':
+  if request_form['frequency'] in ['daily', 'weekly', 'monthly']:
+    frequency = request_form['frequency']
+  elif request_form['frequency'] == 'weekdays':
     weekdays_frequency = []
     for form_element in request_form:
-      if form_element[-4:-3] == '_':
+      if form_element[:-3] == 'weekday_':
         weekdays_frequency.append(form_element[-3:])
 
     frequency = '-'.join(weekdays_frequency)
@@ -109,15 +128,9 @@ def parse_frequency(frequency, start_date):
 
 
 
-def generate_url(feed_url, frequency):
-  u = urlparse(url = feed_url)
-
-  if u.netloc == 'itunes.apple.com':
-    feed_url = feed_importer.get_feed_from_itunes_api(itunes_url = feed_url)
-
-  feed_object = db.session.query(Feed).filter(Feed.url == feed_url).one()
+def generate_url(feed_id, frequency):
   start_date = datetime.datetime.now().strftime('%Y%m%d')
-  return "/%s/%s/%s" % (feed_object.id, frequency, start_date)
+  return "%s/%s/%s" % (feed_id, frequency, start_date)
 
 def build_feed(feed_object, feed_entries, publication_dates):
   feed = json.loads(feed_object.content)
@@ -179,10 +192,11 @@ def build_feed(feed_object, feed_entries, publication_dates):
     fe.description(summary)
     fe.podcast.itunes_summary(summary)
     
-    for content in episode['content']:
-      fe.content(content = content['value'] if 'value' in content else '',
-                    #src  = content['base']  if 'base'  in content else '',
-                    type = content['type']  if 'type'  in content else '')
+    if 'content' in episode:
+      for content in episode['content']:
+        fe.content(content = content['value'] if 'value' in content else '',
+                      #src  = content['base']  if 'base'  in content else '',
+                      type = content['type']  if 'type'  in content else '')
 
     if 'media_content' in episode:
       for media in episode['media_content']:

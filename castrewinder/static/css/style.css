@@ -1,0 +1,17 @@
+body {
+  background: whitesmoke;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+
+.invisible {
+    /* display: none; */
+    visibility: hidden;
+}
+
+body > section {
+  flex: 1 0 auto;
+}
+

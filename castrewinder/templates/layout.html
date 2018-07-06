@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/bulma.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+  <title>{% block title %}{% endblock %} - Cast Rewinder</title>
+
+</head>
+<body class="template-{{ request.url_rule.endpoint }}">
+  <!-- <nav class="navbar" id="top">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="{{ url_for('index') }}">
+        <p class="is-size-3"><strong><span role="img" aria-label="Rewind">⏮</span> Cast Rewinder</strong></p>
+      </a>
+      <div class="navbar-burger burger" data-target="menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+
+  </nav> -->
+
+
+
+  <header class="header section">
+    <div class="container">
+      <div class="columns is-centered">
+        <div class="column is-three-fifths">
+          {% block header %}{% endblock %}
+        </div>
+      </div>
+    </div>
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div class="container">
+      <div class="columns is-centered">
+        <div class="column is-three-fifths">
+          <ul class=flashes>
+          {% for message in messages %}
+            <li class="notification is-danger"><strong>{{ message }}</strong></li>
+          {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  {% endwith %}
+  </header>
+  <section class="section">
+    <div class="container">
+      <div class="columns is-centered">
+        <div class="column is-three-fifths">
+          {% block content %}{% endblock %}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="content">
+        <p>
+          <strong>Cast Rewinder</strong> by <a href="https://github.com/joachimesque">Joachim Robert</a>.<br>
+          The source code is licensed <a href="https://choosealicense.com/licenses/agpl-3.0/">AGPLv3</a>, unless otherwise mentioned.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  {% block js_code %}{% endblock %}
+
+</body>
+</html>
+
+
+

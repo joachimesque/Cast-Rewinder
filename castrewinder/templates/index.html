@@ -1,0 +1,153 @@
+{% extends 'layout.html' %}
+
+{% block title %}Welcome{% endblock %}
+
+{% block header %}
+  <h1 class="title is-size-2">⏮ Cast Rewinder</h1>
+{% endblock %}
+
+{% block content %}
+
+        {% if end_url is defined and feed_object is defined %}
+            <h2 class="is-size-4 title">You can now subscribe to this feed</h2>
+
+            <article class="media">
+              <figure class="media-left">
+                <p class="image is-128x128">
+                  <img src="{{ feed_object['image']['href'] }}">
+                </p>
+              </figure>
+              <div class="media-content">
+                <div class="content">
+                  <p>
+                    <strong class="is-size-5">{{ feed_object['title'] }}</strong> <small>{{ feed_object['copyright'] }}</small>
+                    <br>
+                    {{ feed_object['summary'] }}
+                  </p>
+                </div>
+              </div>
+            </article>
+
+            <hr>
+
+            <div class="field has-addons">
+              <div class="control is-expanded">
+                <input class="input is-large is-rounded is-primary" type="text" value="{{ end_url }}" readonly id="element_to_copy">
+              </div>
+              <div class="control">
+                <button id="copy_btn" class="button is-primary is-large is-rounded" data-clipboard-target="#element_to_copy">
+                    <span class="icon is-medium">
+                    <svg height="1em" width="1em" viewBox="0 0 1024 896" xmlns="http://www.w3.org/2000/svg">
+                      <path fill="#ffffff" d="M128 768h256v64H128v-64z m320-384H128v64h320v-64z m128 192V448L384 640l192 192V704h320V576H576z m-288-64H128v64h160v-64zM128 704h160v-64H128v64z m576 64h64v128c-1 18-7 33-19 45s-27 18-45 19H64c-35 0-64-29-64-64V192c0-35 29-64 64-64h192C256 57 313 0 384 0s128 57 128 128h192c35 0 64 29 64 64v320h-64V320H64v576h640V768zM128 256h512c0-35-29-64-64-64h-64c-35 0-64-29-64-64s-29-64-64-64-64 29-64 64-29 64-64 64h-64c-35 0-64 29-64 64z"/>
+                    </svg>
+                    </span>
+                  <span>Copy</span>
+                </button>
+              </div>
+            </div>
+
+            <p><small><a href="#">How to subscribe to this feed on your favourite podcast app?</a></small></p>
+            
+            <hr>
+
+            <h2 class="is-size-4 title">Get another podcast feed!</h2>
+        {% else %}
+            <h2 class="is-size-4 title">Get the URL of a podcast you want to start from the begining</h2>
+        {% endif %}
+
+
+
+        <form action="" method="post">
+
+            <div class="field is-horizontal">
+              <div class="field-label is-medium">
+                {{ form.url.label(class_='label') }}
+              </div>
+              <div class="field-body">
+                <div class="field">
+                  <div class="control">
+                    {{ form.url(class_='input is-medium is-rounded') }}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+            <div class="field is-horizontal" id="frequency">
+              <div class="field-label ">
+                {{ form.frequency.label(class_='label') }}
+              </div>
+              <div class="field-body">
+                <div class="field">
+                  <div class="control select is-rounded ">
+                    {{ form.frequency(class_='select') }}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+            <div class="field is-horizontal invisible" id="weekdays_form_section">
+              <div class="field-label is-medium">
+                
+              </div>
+              <div class="field-body">
+                <div class="field">
+                  <div class="control">
+                    <label class="checkbox">{{ form.weekday_mon(class_='checkbox') }} Monday</label>
+                    <label class="checkbox">{{ form.weekday_tue(class_='checkbox') }} Tuesday</label>
+                    <label class="checkbox">{{ form.weekday_wed(class_='checkbox') }} Wednesday</label>
+                    <label class="checkbox">{{ form.weekday_thu(class_='checkbox') }} Thursday</label>
+                    <label class="checkbox">{{ form.weekday_fri(class_='checkbox') }} Friday</label>
+                    <label class="checkbox">{{ form.weekday_sat(class_='checkbox') }} Saturday</label>
+                    <label class="checkbox">{{ form.weekday_sun(class_='checkbox') }} Sunday</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {{ form.csrf_token }}
+
+            <div class="field is-horizontal">
+              <div class="field-label">
+                <!-- Left empty for spacing -->
+              </div>
+              <div class="field-body">
+                <div class="field">
+                  <div class="control">
+                    <button class="button is-primary is-medium is-rounded" type="submit">Submit</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+        </form>
+{% endblock %}
+
+
+{% block js_code %}
+<script src="{{ url_for('static', filename='js/clipboard.min.js') }}" type="text/javascript" charset="utf-8" async defer></script>
+<script type="text/javascript" charset="utf-8">
+    (function(){
+        "use strict";
+
+        var select           = document.querySelector('#frequency select');
+        var weekdays_section = document.querySelector('#weekdays_form_section');
+
+        if (select.options[select.selectedIndex].value == "weekdays") {
+            weekdays_section.classList.remove('invisible')
+        }
+
+        select.addEventListener("input", function(e) {
+            if (select.options[select.selectedIndex].value == "weekdays") {
+                weekdays_section.classList.remove('invisible')
+            } else {
+                weekdays_section.classList.add('invisible')
+            }
+        });
+
+        var clipboard = new ClipboardJS('#copy_btn');
+
+    })();
+</script>
+{% endblock %}
