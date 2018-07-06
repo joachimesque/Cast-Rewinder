@@ -3,7 +3,7 @@ from . import db
 class Feed(db.Model):
     __tablename__ = 'feed'
     id = db.Column(db.Integer, primary_key=True)
-    url = db.Column(db.String)
+    url = db.Column(db.String, unique = True)
     last_published_element = db.Column(db.DateTime)
     content = db.Column(db.Text)
 

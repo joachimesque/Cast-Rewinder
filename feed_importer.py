@@ -104,12 +104,13 @@ def import_feed(url, ignore_date = False):
 
     add_entries_to_db(feed = feed, feed_url = feed_url, ignore_date = ignore_date)
 
-    if 'links' in feed.feed:
-      for link in feed.feed.links:
-        if link.rel == 'next':
-          print(str(link), file=sys.stderr)
+    # Not that useful.
+    # if 'links' in feed.feed:
+    #   for link in feed.feed.links:
+    #     if link.rel == 'next':
+    #       print(str(link), file=sys.stderr)
 
-          import_feed(url = link.href, ignore_date = True)
+    #       import_feed(url = link.href, ignore_date = True)
 
   else:
     print("The specified URL is not valid. Please verify you have the 'HTTP' part.")
