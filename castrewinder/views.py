@@ -7,7 +7,7 @@ import json
 from urllib.parse import urlparse
 
 import feed_worker
-from .utils import get_frequency, parse_frequency, generate_url, build_feed
+from .utils import get_frequency, parse_frequency, generate_url, build_feed, get_options, parse_options
 
 from .forms import UrlForm
 
@@ -35,6 +35,7 @@ def index():
       else:
 
         frequency = get_frequency(request_form = request.form)
+        options = get_options(request_form = request.form)
 
         feed_url = request.form['url']
         if u.netloc == 'itunes.apple.com':
@@ -42,7 +43,7 @@ def index():
 
         feed_object = db.session.query(Feed).filter(Feed.url == feed_url).one()
 
-        end_url = request.url + generate_url(feed_id = feed_object.id, frequency = frequency)
+        end_url = request.url + generate_url(feed_id = feed_object.id, frequency = frequency, options = options)
 
         return render_template('index.html', form = form, end_url = end_url, feed_object = json.loads(feed_object.content))
 
@@ -57,14 +58,32 @@ def index():
 def serve_feed(feed_id, frequency, start_date, options):
 
   publication_dates = parse_frequency(frequency = frequency, start_date = start_date)
-  #return "/%s/%s/%s/%s" % (feed_id, frequency, start_date, options)
-  feed_object = db.session.query(Feed).filter(Feed.id == feed_id).one()
-  feed_entries = db.session.query(Episode).\
-                     filter(Episode.feed_id == feed_id).\
-                     order_by(Episode.published).\
-                     limit(publication_dates['limit']).\
-                     all()
 
-  feed = build_feed(feed_object = feed_object, feed_entries = feed_entries, publication_dates = publication_dates)
+  feed_object = db.session.query(Feed).filter(Feed.id == feed_id).one()
+
+  options = parse_options(options = options)
+
+  feed_format = options['format'] if 'format' in options else 'feed_rss'
+
+  if 'start_at' in options:
+
+    start_at = int(options['start_at']) - 1
+
+    feed_entries = db.session.query(Episode).\
+                       filter(Episode.feed_id == feed_id).\
+                       order_by(Episode.published).\
+                       offset(start_at).\
+                       limit(publication_dates['limit']).\
+                       all()
+
+  else:
+    feed_entries = db.session.query(Episode).\
+                       filter(Episode.feed_id == feed_id).\
+                       order_by(Episode.published).\
+                       limit(publication_dates['limit']).\
+                       all()
+
+
+  feed = build_feed(feed_object = feed_object, feed_entries = feed_entries, publication_dates = publication_dates, feed_format = feed_format)
 
   return feed

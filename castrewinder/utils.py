@@ -29,6 +29,20 @@ def get_frequency(request_form):
 
 
 
+def get_options(request_form):
+  """ Analyzes the form submitted, and parses the options 
+  """
+  options = {}
+
+  if int(request_form['option_limit']) > 1:
+    options['start_at'] = request_form['option_limit'] 
+
+  if request_form['option_format'] != 'feed_rss':
+    options['format'] = request_form['option_format'] 
+
+  return options
+
+
 def parse_frequency(frequency, start_date):
   """ From the frequency and the start date, this function
       returns a dict with two keys
@@ -86,18 +100,35 @@ def parse_frequency(frequency, start_date):
 
 
 
-def generate_url(feed_id, frequency):
+
+def parse_options(options):
+  """ From the frequency and the start date, this function
+      returns a dict with as many keys as options
+  """
+
+  options_parsed = dict(o.split(':') for o in options.split(',')) if options != '' else {}
+
+  return options_parsed
+
+
+
+def generate_url(feed_id, frequency, options):
   """ Generates the feed URL
       with the feed ID and the frequency
       The start date is always today
   """
-
   start_date = datetime.datetime.now().strftime('%Y%m%d')
-  return "%s/%s/%s" % (feed_id, frequency, start_date)
+  
+  options_string = ','.join(['%s:%s' % (key, o) for key, o in options.items()])
+
+  if options:
+    return "%s/%s/%s/%s" % (feed_id, frequency, start_date, options_string)
+  
+  else:
+    return "%s/%s/%s" % (feed_id, frequency, start_date)
 
 
-
-def build_feed(feed_object, feed_entries, publication_dates):
+def build_feed(feed_object, feed_entries, publication_dates, feed_format='feed_rss'):
   """ From the Feed() and the Episodes(), with help from the publication dates dict
       gotten from parse_frequency(), this function makes the RSS feed.
   """
@@ -190,4 +221,7 @@ def build_feed(feed_object, feed_entries, publication_dates):
 
     fe.podcast.itunes_duration(episode['itunes_duration'] if 'itunes_duration' in episode else '')
 
-  return fg.rss_str(pretty=True)
+  if feed_format == 'feed_atom':
+    return fg.atom_str(pretty=True)
+  else:
+    return fg.rss_str(pretty=True)

@@ -6,11 +6,6 @@ body {
 }
 
 
-.invisible {
-    /* display: none; */
-    visibility: hidden;
-}
-
 body > section {
   flex: 1 0 auto;
 }
@@ -21,4 +16,15 @@ body > section {
 
 .toggle-content.is-visible {
   display: block;
+}
+
+input[type="number"] {
+  width: auto;
+}
+
+@media screen and (min-width: 769px), print {
+  .field-body {
+      flex-grow: 3;
+  }
+
 }
