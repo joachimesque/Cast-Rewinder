@@ -8,3 +8,5 @@ SQLALCHEMY_TRACK_MODIFICATIONS = True
 
 WTF_CSRF_ENABLED = True
 WTF_CSRF_SECRET_KEY = 'another random string'
+
+WEBSITE_NAME = '⏮ Cast Rewinder'

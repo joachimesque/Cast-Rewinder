@@ -87,3 +87,8 @@ def serve_feed(feed_id, frequency, start_date, options):
   feed = build_feed(feed_object = feed_object, feed_entries = feed_entries, publication_dates = publication_dates, feed_format = feed_format)
 
   return feed
+
+@app.route('/about')
+def about():
+  return render_template('about.html')
+
