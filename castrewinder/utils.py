@@ -59,6 +59,9 @@ def get_options(request_form):
   if request_form['option_format'] != 'feed_rss':
     options['format'] = request_form['option_format'] 
 
+  if request_form['option_order'] != 'asc':
+    options['order'] = request_form['option_order'] 
+
   return options
 
 

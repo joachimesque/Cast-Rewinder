@@ -161,6 +161,22 @@
         </div>
         <div class="field is-horizontal">
           <div class="field-label">
+            <p class="label">{{ form.option_order.label(class_='') }}</p>
+          </div>
+          <div class="field-body">
+            <div class="field">
+              <div class="control checkbox">
+                {% for subfield in form.option_order %}
+              <div class="control radio">
+                    {{ subfield }} {{ subfield.label }}
+              </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="field is-horizontal">
+          <div class="field-label">
             <p class="label">{{ form.option_format.label(class_='') }}</p>
           </div>
           <div class="field-body">

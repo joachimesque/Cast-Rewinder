@@ -67,13 +67,18 @@ def serve_feed(feed_id, frequency, start_date, options):
 
   feed_format = options['format'] if 'format' in options else 'feed_rss'
 
+  order = Episode.published.asc() 
+  if 'order' in options:
+    if options['order'] == 'desc':
+      order = Episode.published.desc()
+  
   if 'start_at' in options:
 
     start_at = int(options['start_at']) - 1
 
     feed_entries = db.session.query(Episode).\
                        filter(Episode.feed_id == feed_id).\
-                       order_by(Episode.published).\
+                       order_by(order).\
                        offset(start_at).\
                        limit(publication_dates['limit']).\
                        all()
@@ -81,7 +86,7 @@ def serve_feed(feed_id, frequency, start_date, options):
   else:
     feed_entries = db.session.query(Episode).\
                        filter(Episode.feed_id == feed_id).\
-                       order_by(Episode.published).\
+                       order_by(order).\
                        limit(publication_dates['limit']).\
                        all()
 

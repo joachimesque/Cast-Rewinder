@@ -29,3 +29,8 @@ class UrlForm(FlaskForm):
                               choices=[
                                   ('feed_rss','RSS'),
                                   ('feed_atom','Atom')])
+  option_order = RadioField('Order',
+                              default = 'asc',
+                              choices=[
+                                  ('asc','Oldest first'),
+                                  ('desc','Newest first')])
