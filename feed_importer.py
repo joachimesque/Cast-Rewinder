@@ -123,15 +123,30 @@ def import_feed(url, ignore_date = False):
     print("The specified URL is not valid. Please verify you have the 'HTTP' part.")
     ask_for_url()
 
+def update_feeds():
+
+  all_feeds = db.session.query(Feed).all()
+
+  for feed_object in all_feeds:
+    feed = get_feed(feed_url = feed_object.url)
+    add_entries_to_db(feed = feed, feed_url = feed_object.url)
+
+  return True
+
+
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(description='You can import feeds into Cast Rewinder.',
                                     prog='Cast Rewinder')
   parser.add_argument('-f','--feed_url',help='''Specify an URL to import''')
+  parser.add_argument('-u','--update_feeds',help='''Updates all feeds''', action='store_true')
 
   args = parser.parse_args()
 
   if args.feed_url:
     import_feed(url = args.feed_url)
+
+  if args.update_feeds:
+    update_feeds()
 
   if not any(vars(args).values()):
     ask_for_url()
