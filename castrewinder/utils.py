@@ -161,8 +161,10 @@ def build_feed(feed_object, feed_entries, publication_dates, feed_format='feed_r
   fg.title(feed['title'] if 'title' in feed else '')
   fg.subtitle(feed['subtitle'] if 'subtitle' in feed else '')
 
-  fg.link(href = feed['link'] if 'link' in feed else '', rel = 'self')
   fg.podcast.itunes_block(True)
+
+  fg.link(href = request.url, rel = 'self')
+  fg.link(href = feed['link'] if 'link' in feed else '', rel = 'alternate')
   for link in feed['links']:
     fg.link(rel  = link['rel']  if 'rel'  in link else '',
             type = link['type'] if 'type' in link else '',
@@ -180,7 +182,7 @@ def build_feed(feed_object, feed_entries, publication_dates, feed_format='feed_r
   fg.rights(feed['rights'] if 'rights' in feed else '')
   fg.generator('Cast Rewinder & python-feedgen on %s' % request.host_url)
 
-  if feed['itunes_explicit']:
+  if 'itunes_explicit' in feed and feed['itunes_explicit']:
     explicit = 'yes'
   else:
     explicit = 'no'
