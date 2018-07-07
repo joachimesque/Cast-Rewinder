@@ -15,3 +15,10 @@ body > section {
   flex: 1 0 auto;
 }
 
+.toggle-content {
+  display: none;
+}
+
+.toggle-content.is-visible {
+  display: block;
+}

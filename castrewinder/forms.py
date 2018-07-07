@@ -3,7 +3,7 @@ from wtforms import StringField, SelectField, BooleanField
 from wtforms.validators import DataRequired
 
 class UrlForm(FlaskForm):
-  url       = StringField('Url',
+  url       = StringField('Feed address',
                           validators=[DataRequired()])
   frequency = SelectField('Frequency',
                           choices=[('daily', 'Daily'),
