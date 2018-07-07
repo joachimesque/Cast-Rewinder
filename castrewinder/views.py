@@ -25,7 +25,12 @@ def index():
   if form.validate_on_submit():
     u = urlparse(url = request.form['url'])
     
-    if u.scheme + '://' + u.netloc + '/' != request.url:
+    if u.scheme + '://' + u.netloc + '/' == request.host_url:
+      # If the supplied URL is the same as the app’s URL
+      # Don’t throw bricks into the machine, kids.
+      # Perhaps there should be a protection against URL-shorteners, too.
+      flash("🤔 DUDE. NOT FUNNY.")
+    else:
       # TODO : get a queue going for these kinds of jobs
       valid_feed = feed_worker.import_feed(request.form['url'])
       
@@ -46,9 +51,6 @@ def index():
         end_url = request.url + generate_url(feed_id = feed_object.id, frequency = frequency, options = options)
 
         return render_template('index.html', form = form, end_url = end_url, feed_object = json.loads(feed_object.content))
-
-    else:
-      flash("🤔 DUDE. NOT FUNNY.")
 
   return render_template('index.html', form = form)
 
