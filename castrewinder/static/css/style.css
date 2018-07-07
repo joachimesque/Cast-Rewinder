@@ -18,6 +18,10 @@ body > section {
   display: block;
 }
 
+.button {
+  font-weight: 600;
+}
+
 input[type="number"] {
   width: auto;
 }
@@ -26,5 +30,4 @@ input[type="number"] {
   .field-body {
       flex-grow: 3;
   }
-
 }
