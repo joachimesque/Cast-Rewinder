@@ -99,6 +99,11 @@ def import_feed(url, ignore_date = False):
 
     feed = get_feed(feed_url = feed_url)
 
+    if feed['entries'] == []:
+      # Cancel operation if the feed doesn't have any entries
+      # Like if it's a normal webpage
+      return False
+
     if not url_exists_in_db:
       add_feed_to_db(feed = feed, feed_url = feed_url)
 
@@ -111,6 +116,8 @@ def import_feed(url, ignore_date = False):
     #       print(str(link), file=sys.stderr)
 
     #       import_feed(url = link.href, ignore_date = True)
+
+    return True
 
   else:
     print("The specified URL is not valid. Please verify you have the 'HTTP' part.")

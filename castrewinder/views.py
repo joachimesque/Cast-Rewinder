@@ -1,6 +1,8 @@
 from . import app
 from flask import render_template
 from flask import request
+from flask import abort
+from flask import flash
 import datetime
 import json
 from urllib.parse import urlparse
@@ -27,21 +29,28 @@ def index():
     u = urlparse(url = request.form['url'])
     
     if u.scheme + '://' + u.netloc + '/' != request.url:
-      # TODO : get a queue going for these kinds of works
-      feed_importer.import_feed(request.form['url'])
+      # TODO : get a queue going for these kinds of jobs
+      valid_feed = feed_importer.import_feed(request.form['url'])
       
-      frequency = get_frequency(request_form = request.form)
+      if not valid_feed:
+        flash("Invalid URL.")
 
+      else:
 
-      feed_url = request.form['url']
-      if u.netloc == 'itunes.apple.com':
-        feed_url = feed_importer.get_feed_from_itunes_api(itunes_url = feed_url)
+        frequency = get_frequency(request_form = request.form)
 
-      feed_object = db.session.query(Feed).filter(Feed.url == feed_url).one()
+        feed_url = request.form['url']
+        if u.netloc == 'itunes.apple.com':
+          feed_url = feed_importer.get_feed_from_itunes_api(itunes_url = feed_url)
 
-      end_url = request.url + generate_url(feed_id = feed_object.id, frequency = frequency)
+        feed_object = db.session.query(Feed).filter(Feed.url == feed_url).one()
 
-      return render_template('index.html', form = form, end_url = end_url, feed_object = json.loads(feed_object.content))
+        end_url = request.url + generate_url(feed_id = feed_object.id, frequency = frequency)
+
+        return render_template('index.html', form = form, end_url = end_url, feed_object = json.loads(feed_object.content))
+
+    else:
+      flash("🤔 DUDE. NOT FUNNY.")
 
   return render_template('index.html', form = form)
 
