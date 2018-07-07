@@ -4,18 +4,19 @@
 
 {% block header %}
   <h1 class="title is-size-2">{{ config['WEBSITE_NAME'] }}</h1>
-  <h2 class="subtitle is-size-4">
+  <p class="subtitle is-size-4">
     <a href="{{ url_for('index') }}">Home</a> ·
     About
-  </h2>
+  </p>
 {% endblock %}
 
 {% block content %}
 <div class="content">
-    <h2 class="is-size-4 title">Cast Rewinder allows you to start a podcast from the begining.</h2>
+    <h2 class="is-size-4 title">Cast Rewinder allows you to subscribe to a podcast from the beginning.</h2>
 
-    <p class="is-size-5">Every so often I discover a podcast that sounds really great, but it’s started publishing episodes for so long that it’s a chore to start it at the begining.</p>
-    <p class="is-size-5">Now with Cast Rewinder on <a href="{{ request.host_url }}">{{ request.host }}</a> you can subscribe to that podcast, and get updates from the begining. You can set the frequency (monthly, weekly, daily… and even on specified days of the week) and other options, like the feed format or at which episode in the feed to start your discovery.</p>
-    <p class="is-size-5"><a href="{{ url_for('index') }}">Go to the form</a>, enter the URL for a feed or an iTunes address, and start receiving that podcast from the begining!</p>
+    <p class="is-size-5">Every so often I discover a podcast that sounds really great, but it has been publishing episodes for so long that it’s a chore to go back at the beginning.</p>
+    <p class="">Now with Cast Rewinder on <a href="{{ request.host_url }}">{{ request.host }}</a> you can subscribe to that podcast and get updates, starting from the beginning. You can set the frequency (monthly, weekly, daily… and even on specified days of the week) and other options, like the feed format or at which episode in the feed to start your discovery.</p>
+    <p class=""><a href="{{ url_for('index') }}">Go to the form</a>, enter the URL for a feed or an iTunes address, and start receiving that podcast from the beginning!</p>
+    <p class="">This service is based on the python app Cast Rewinder, developed by Joachim Robert in his spare time.</p>
 </div>
 {% endblock %}

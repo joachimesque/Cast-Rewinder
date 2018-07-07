@@ -1,13 +1,13 @@
 {% extends 'layout.html' %}
 
-{% block title %}Start a podcast from the begining{% endblock %}
+{% block title %}Subscribe to a podcast from the beginning{% endblock %}
 
 {% block header %}
   <h1 class="title is-size-2">{{ config['WEBSITE_NAME'] }}</h1>
-  <h2 class="subtitle is-size-4">
+  <p class="subtitle is-size-4">
     Home ·
     <a href="{{ url_for('about') }}">About</a>
-  </h2>
+  </p>
 {% endblock %}
 
 {% block content %}
@@ -78,7 +78,10 @@
 
     <h2 class="is-size-4 title">Get another podcast feed!</h2>
 {% else %}
-    <h2 class="is-size-4 title">Get the URL of a podcast you want to start from the begining</h2>
+    <h2 class="is-size-4 title">Subscribe to a podcast from the beginning</h2>
+    <p class="is-size-6 subtitle">You will just need to provide us the address of an iTunes podcast or of a podcast feed</p>
+    <p class="">This service is in beta. Please proceed accordingly (if the data is not exactly how you expect it to be, it might be because of a bug, tell me all about bugs on <a href="https://github.com/joachimesque/Cast-Rewinder">Github: Cast Rewinder</a>).</p>
+    <hr>
 {% endif %}
 
 
