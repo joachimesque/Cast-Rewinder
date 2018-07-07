@@ -11,7 +11,8 @@ class UrlForm(FlaskForm):
                           choices=[('daily', 'Daily'),
                                    ('weekly', 'Weekly'),
                                    ('monthly', 'Monthly'),
-                                   ('weekdays', 'Weekdays')])
+                                   ('weekdays', 'Weekdays')],
+                          default = 'weekly')
   weekday_mon = BooleanField('Monday')
   weekday_tue = BooleanField('Tuesday')
   weekday_wed = BooleanField('Wednesday')
