@@ -22,7 +22,13 @@
                   <p>
                     <strong class="is-size-5">{{ feed_object['title'] }}</strong> <small><a href="{{ feed_object['link'] }}">Podcast webpage</a></small> <small>{{ feed_object['copyright'] }}</small>
                     <br>
-                    {{ feed_object['summary'] }}
+                    {% if feed_object['description'] is defined %}
+                        {{ feed_object['description'] }}
+                    {% elif feed_object['summary'] is defined %}
+                        {{ feed_object['summary'] }}
+                    {% elif feed_object['subtitle'] is defined %}
+                        {{ feed_object['subtitle'] }}
+                    {% endif %}
                   </p>
                 </div>
               </div>
