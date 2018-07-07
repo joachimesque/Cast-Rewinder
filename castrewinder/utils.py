@@ -162,6 +162,7 @@ def build_feed(feed_object, feed_entries, publication_dates, feed_format='feed_r
   fg.subtitle(feed['subtitle'] if 'subtitle' in feed else '')
 
   fg.link(href = feed['link'] if 'link' in feed else '', rel = 'self')
+  fg.podcast.itunes_block(True)
   for link in feed['links']:
     fg.link(rel  = link['rel']  if 'rel'  in link else '',
             type = link['type'] if 'type' in link else '',
