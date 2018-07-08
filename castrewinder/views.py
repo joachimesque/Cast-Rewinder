@@ -19,6 +19,11 @@ def page_not_found(e):
     # note that we set the 404 status explicitly
     return render_template('404.html'), 404
 
+@app.errorhandler(500)
+def error(e):
+    # note that we set the 404 status explicitly
+    return render_template('404.html'), 500
+
 @app.route('/', methods=["GET", "POST"])
 def index():
   form = UrlForm()
@@ -54,7 +59,8 @@ def index():
           feed_object = db.session.query(Feed).filter(Feed.url == feed_url).one()
 
           end_url = request.host_url + generate_url(feed_id = feed_object.id,
-                                                              frequency = frequency, options = options)
+                                                    frequency = frequency,
+                                                    options = options)
 
           return render_template('index.html', form = form, end_url = end_url, feed_object = json.loads(feed_object.content))
 
@@ -66,6 +72,10 @@ def index():
 def serve_feed(feed_id, frequency, start_date, options):
 
   publication_dates = parse_frequency(frequency = frequency, start_date = start_date)
+
+  if not publication_dates:
+    abort(500)
+
 
   feed_object = db.session.query(Feed).filter(Feed.id == feed_id).one()
 

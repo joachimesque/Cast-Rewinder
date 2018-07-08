@@ -147,7 +147,32 @@
     </div>
 
 
+
+
     <div id="show-options" class="toggle-content">
+
+
+      <div class="field is-horizontal" id="frequency">
+        <div class="field-label ">
+          {{ form.start_date.label(class_='label') }}
+        </div>
+        <div class="field-body">
+          <div class="field has-addons">
+            <div class="control ">
+              {{ form.start_date(class_='input date is-rounded') }}
+            </div>
+            <div class="control is-expanded">
+              <div class="select is-rounded is-fullwidth">
+                <select name="start_date_timezone" aria-label="Timezone">
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
         <div class="field is-horizontal">
           <div class="field-label">
             <p class="label">{{ form.option_limit.label(class_='') }}</p>
@@ -211,12 +236,16 @@
 
 
 {% block js_code %}
-<script src="{{ url_for('static', filename='js/clipboard.min.js') }}" type="text/javascript" charset="utf-8" async defer></script>
+<script src="{{ url_for('static', filename='js/underscore-min.js') }}" type="text/javascript" charset="utf-8"></script>
+<script src="{{ url_for('static', filename='js/clipboard.min.js') }}" type="text/javascript" charset="utf-8"></script>
+<script src="{{ url_for('static', filename='js/jstz.min.js') }}" type="text/javascript" charset="utf-8"></script>
+<script src="{{ url_for('static', filename='js/moment.min.js') }}" type="text/javascript" charset="utf-8"></script>
+<script src="{{ url_for('static', filename='js/moment-timezone.min.js') }}" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript" charset="utf-8">
     (function(){
         "use strict";
 
-        var select           = document.querySelector('#frequency select');
+        var select = document.querySelector('#frequency select');
         var custom_days_section = document.querySelector('#custom_days_form_section');
 
         if (select.options[select.selectedIndex].value == "custom_days") {
@@ -236,12 +265,58 @@
         document.querySelector('a[href="#show-options"]').addEventListener("click", function(e) {
             e.preventDefault();
             document.querySelector('#show-options').classList.toggle('is-visible');
-        })
+        });
 
+        {% if end_url is defined and feed_object is defined %}
         document.querySelector('a[href="#how-to-subscribe"]').addEventListener("click", function(e) {
             e.preventDefault();
             document.querySelector('#how-to-subscribe').classList.toggle('is-visible');
-        })
+        });
+        {% endif %}
+
+        var TimezonePicker = {
+          detectedZone: function() {
+            var tz = jstz.determine();
+            return tz.name();
+          },
+          mapping: function() {
+            return _.map(moment.tz.names(), function(name) {
+              var prettyName = name.replace("_", " ");
+              var offset = moment.tz(name)._offset / 60;
+
+              var sign = offset < 0 ? "-" : "+";
+              var hours = Math.floor(Math.abs(offset));
+              var minutes = Math.floor((Math.abs(offset) * 60) % 60);
+              var gmtOffset = sign + (hours < 10 ? "0" : "") + hours + ':' + (minutes < 10 ? "0" : "") + minutes;
+
+              return {name: prettyName, timezone: name, gmtOffset: gmtOffset};
+            });
+          },
+          from: function(value) {
+            return this.mapping[value];
+          },
+          to: function(value) {
+            for (var key in this.mapping) {
+              if (this.mapping[key] === value) return key;
+            }
+          }
+        };
+
+
+        var list = _(TimezonePicker.mapping()).chain().sortBy('name').sortBy(function(zone) {
+          return parseInt(zone.gmtOffset);
+        }).value();
+
+        var timezoneSelect = document.querySelector('select[name="start_date_timezone"]')
+        list.forEach(function(el) {
+          var option_element = document.createElement('option');
+          option_element.text = 'UTC' + el.gmtOffset + ' - ' + el.name;
+          option_element.value = el.gmtOffset;
+          if (TimezonePicker.detectedZone() === el.name) {
+            option_element.selected = 'selected';
+          }
+          timezoneSelect.appendChild(option_element);
+        });
 
     })();
 </script>

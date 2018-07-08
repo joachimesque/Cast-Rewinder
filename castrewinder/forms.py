@@ -1,8 +1,10 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField, BooleanField, RadioField
-from wtforms.fields.html5 import IntegerField
-from wtforms.widgets.html5 import NumberInput
+from wtforms.fields.html5 import IntegerField, DateField
+from wtforms.widgets.html5 import NumberInput, DateInput
 from wtforms.validators import DataRequired
+
+import datetime
 
 class UrlForm(FlaskForm):
   url       = StringField('Feed address',
@@ -20,6 +22,10 @@ class UrlForm(FlaskForm):
   custom_day_fri = BooleanField('Friday')
   custom_day_sat = BooleanField('Saturday')
   custom_day_sun = BooleanField('Sunday')
+
+  start_date = DateField('Start date',
+                         widget = DateInput(),
+                         default = datetime.date.today)
 
   option_limit = IntegerField('Start from episode #',
                               validators = [DataRequired()],

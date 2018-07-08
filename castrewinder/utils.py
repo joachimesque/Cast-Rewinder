@@ -1,3 +1,4 @@
+import sys
 from . import app
 from flask import request
 
@@ -28,7 +29,7 @@ def strip_tags(html):
 
 
 
-# UTILS
+# WHEN PODCAST IS SUBMITTED
 
 def get_frequency(request_form):
   """ Analyzes the form submitted, and parses the frequency
@@ -53,6 +54,25 @@ def get_options(request_form):
   """
   options = {}
 
+  if 'start_date' in request_form \
+    and len(request_form['start_date']) == 10 \
+    and int(request_form['start_date'][0:4]) > 2016 \
+    and int(request_form['start_date'][5:7]) < 13 \
+    and int(request_form['start_date'][8:]) < 32:
+    options['start_date'] = ''.join(request_form['start_date'].split('-'))
+  else:
+    options['start_date'] = datetime.datetime.now().strftime('%Y%m%d')
+
+
+  if 'start_date_timezone' in request_form \
+    and len(request_form['start_date_timezone']) == 5 \
+    and request_form['start_date_timezone'][0] in ('+','-') \
+    and int(request_form['start_date_timezone'][1:]) < 1500:
+    options['start_date_timezone'] = ''.join(request_form['start_date_timezone'].split(':'))
+  else:
+    options['start_date_timezone'] = '+0000'
+
+
   if ('option_limit', 'option_format', 'option_order') in request_form:
 
     if int(request_form['option_limit']) > 1:
@@ -66,6 +86,30 @@ def get_options(request_form):
 
   return options
 
+
+
+def generate_url(feed_id, frequency, options):
+  """ Generates the feed URL
+      with the feed ID and the frequency
+      The start date is always today
+  """
+  start_date = options.pop('start_date')
+
+  start_date += options.pop('start_date_timezone')
+  
+  options_string = ','.join(['%s:%s' % (key, o) for key, o in options.items()])
+
+  if options:
+    return "%s/%s/%s/%s" % (feed_id, frequency, start_date, options_string)
+  
+  else:
+    return "%s/%s/%s" % (feed_id, frequency, start_date)
+
+
+
+
+
+# WHEN FEED IS CALLED
 
 def parse_frequency(frequency, start_date):
   """ From the frequency and the start date, this function
@@ -82,9 +126,13 @@ def parse_frequency(frequency, start_date):
     start_date = str(start_date) + tz
   else:
     tz = start_date[9:]
-  start_datetime = datetime.datetime.strptime(str(start_date), '%Y%m%d%z')
 
-  now = datetime.datetime.now().replace(tzinfo=datetime.timezone.utc)
+  try:
+    start_datetime = datetime.datetime.strptime(str(start_date), '%Y%m%d%z')
+  except ValueError:
+    return False
+
+  now = datetime.datetime.now().replace(tzinfo=start_datetime.tzinfo)
 
   delta = now - start_datetime
   monthdelta = relativedelta.relativedelta(now, start_datetime)
@@ -134,22 +182,6 @@ def parse_options(options):
 
   return options_parsed
 
-
-
-def generate_url(feed_id, frequency, options):
-  """ Generates the feed URL
-      with the feed ID and the frequency
-      The start date is always today
-  """
-  start_date = datetime.datetime.now().strftime('%Y%m%d')
-  
-  options_string = ','.join(['%s:%s' % (key, o) for key, o in options.items()])
-
-  if options:
-    return "%s/%s/%s/%s" % (feed_id, frequency, start_date, options_string)
-  
-  else:
-    return "%s/%s/%s" % (feed_id, frequency, start_date)
 
 
 def build_feed(feed_object, feed_entries, publication_dates, feed_format='feed_rss'):
