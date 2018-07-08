@@ -25,9 +25,9 @@ It’s one of my first real *coding* projects. I’m a webdesigner who dabbles i
 
 ## Installing
 
-Install Python 3.7, pipy (the Python Package Manager) and PostgreSQL (the database) on your server.
+Install Python 3.7, pypi (the Python Package Manager) and PostgreSQL (the database) on your server.
 
-    $ sudo apt-get install python3 pipy postgresql-10
+    $ sudo apt-get install python3 pypi postgresql
 
 Create a virtual environment like this:
 
@@ -45,7 +45,7 @@ Create the user (if needed) and database:
 
     (.venv) $ createdb castrewinder   
 
-Copy `config.py` to `./instances/config.py`, and edit your preferences (using Nano, Ctrl-X saves, and Ctrl-C exits the editor). `APP_SECRET_KEY` and `WTF_CSRF_SECRET_KEY` must be randomly generated strings.
+Copy `config.py` to `./instances/config.py`, and edit your preferences (using Nano, Ctrl-O saves, and Ctrl-X exits the editor). `APP_SECRET_KEY` and `WTF_CSRF_SECRET_KEY` must be randomly generated strings.
 
     (.venv) $ cp config.py ./instances/config.py
     (.venv) $ nano ./instances/config.py
@@ -75,3 +75,6 @@ This work uses code from:
 
 - [Bulma](https://bulma.io), which is copyright 2018 Jeremy Thomas and whose code is released under [the MIT license](https://github.com/jgthms/bulma/blob/master/LICENSE).
 - [clipboard.js](https://clipboardjs.com), which is copyright Zeno Rocha, and whose code is released under [the MIT License](http://zenorocha.mit-license.org/)
+- [moment.js](https://momentjs.com) and [moment-timezone.js](https://momentjs.com/timezone/), which are both freely distributable under the terms of the [MIT license](https://github.com/moment/moment/blob/develop/LICENSE).
+- [underscore.js](https://underscorejs.org/) which is freely distributable under the terms of the [MIT license](https://github.com/jashkenas/underscore/blob/master/LICENSE).
+- Josh Owens is the author of a [javascript timezone picker](http://joshowens.me/dealing-with-timezones-in-javascript/) which provided much of the inspiration for mine.
