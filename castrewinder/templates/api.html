@@ -1,0 +1,92 @@
+{% extends 'layout.html' %}
+
+{% block title %}About{% endblock %}
+
+{% block header %}
+  <h1 class="title is-size-2">{{ config['WEBSITE_NAME'] }}</h1>
+  <p class="subtitle is-size-4">
+    <a href="{{ url_for('index') }}">Home</a> ·
+    <a href="{{ url_for('about') }}">About</a> ·
+    API
+  </p>
+{% endblock %}
+
+{% block content %}
+<div class="content">
+    <h2 class="is-size-4 title">Cast Rewinder has a small API.</h2>
+    
+    <p class="is-size-5">For all of you developers out there, there's a small RESTful API you can access via GET and POST methods.</p>
+
+    <h3>GET</h3>
+    <p>The API endpoint is <a href="{{ request.host_url }}api/get">{{ request.host }}/api/get</a>, here’s all the arguments you can pass:</p>
+    <ul>
+        <li><code>url</code> <strong>required</strong>, the URL for a feed, or the URL for an iTunes podcast page</li>
+        <li><code>frequency</code> accepts values:
+            <ul>
+                <li><code>monthly</code></li>
+                <li><code>weekly</code> default value</li>
+                <li><code>daily</code></li>
+                <li><code>custom_days</code></li>
+            </ul>
+        </li>
+        <li><code>option_limit</code> accepts positive integers, defaults to 1</li>
+        <li><code>option_order</code> accepts values:
+            <ul>
+                <li><code>asc</code> default value</li>
+                <li><code>desc</code></li>
+            </ul>
+        </li>
+        <li><code>option_format</code> accepts values:
+            <ul>
+                <li><code>feed_rss</code> default value</li>
+                <li><code>feed_atom</code></li>
+            </ul>
+        </li>
+    </ul>
+
+    <p>If <code>frequency</code> has the value <code>custom_days</code>, you have to provide an argument for each selected day, a failure to do so results in a stern warning and defaults the frequency to weekly.</p>
+    <ul>
+        <li><code>custom_day_mon=y</code> for publication on mondays</li>
+        <li><code>custom_day_tue=y</code> for publication on tuesdays</li>
+        <li><code>custom_day_wed=y</code> for publication on wednesdays</li>
+        <li><code>custom_day_thu=y</code> for publication on thursdays</li>
+        <li><code>custom_day_fri=y</code> for publication on fridays</li>
+        <li><code>custom_day_sat=y</code> for publication on saturdays</li>
+        <li><code>custom_day_sun=y</code> for publication on sundays</li>
+    </ul>
+
+    <p>Want an example? Play with it now: <a href="{{ request.host_url }}api/get?url=https%3A%2F%2Fitunes.apple.com%2Fus%2Fpodcast%2F99-invisible%2Fid394775318&frequency=custom_days&custom_day_mon=y&custom_day_tue=y&custom_day_sun=y&option_limit=1&option_order=desc&option_format=feed_atom">{{ request.host }}/api/get?url=https%3A%2F%2Fitunes.apple.com%2Fus%2Fpodcast%2F99-invisible%2Fid394775318&frequency=custom_days&custom_day_mon=y&custom_day_tue=y&custom_day_sun=y&option_limit=1&option_order=desc&option_format=feed_atom</a></p>
+
+    <h3>POST</h3>
+    <p>The API endpoint is <a href="{{ request.host_url }}api/post">{{ request.host }}/api/post</a>. You have to transmit the request in JSON format, as <code>application/json</code>. The arguments are pretty much the same as in the GET method.</p>
+
+    <p>Here is a sample JSON for a POST request, all these values are defaults:</p>
+
+    <pre><code>{
+  "url": &lt;your url&gt;,
+  "frequency": "custom_days",
+  "custom_day_mon": false,
+  "custom_day_tue": false,
+  "custom_day_wed": false,
+  "custom_day_thu": false,
+  "custom_day_fri": false,
+  "custom_day_sat": false,
+  "custom_day_sun": false,
+  "option_limit": 1,
+  "option_order": "asc",
+  "option_format": "feed_rss"
+}
+</code></pre>
+
+    <h3>Response</h3>
+
+    <p>The API response to a well-formed request will be a JSON object containing the feed ID and the URL.</p>
+
+    <pre><code>{
+  "feed_id": 16,
+  "url": "{{ request.host_url }}16/mon-tue-sun/20180708"
+}</code></pre>
+
+    <p>With the feed ID you can build your own feed URLs, if you follow the right frequency, start date and options arguments.</p>
+</div>
+{% endblock %}

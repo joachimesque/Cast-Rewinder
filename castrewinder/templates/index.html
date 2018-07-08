@@ -6,7 +6,8 @@
   <h1 class="title is-size-2">{{ config['WEBSITE_NAME'] }}</h1>
   <p class="subtitle is-size-4">
     Home ·
-    <a href="{{ url_for('about') }}">About</a>
+    <a href="{{ url_for('about') }}">About</a> ·
+    <a href="{{ url_for('about_api') }}">API</a>
   </p>
 {% endblock %}
 
@@ -116,20 +117,20 @@
     </div>
 
 
-    <div class="toggle-content" id="weekdays_form_section">
+    <div class="toggle-content" id="custom_days_form_section">
         <div class="field is-horizontal">
           <div class="field-label is-medium">
             
           </div>
           <div class="field-body">
             <div class="field">
-                <div class="contol checkbox">{{ form.weekday_mon(class_='checkbox') }} {{ form.weekday_mon.label(class_='checkbox') }}</div>
-                <div class="contol checkbox">{{ form.weekday_tue(class_='checkbox') }} {{ form.weekday_tue.label(class_='checkbox') }}</div>
-                <div class="contol checkbox">{{ form.weekday_wed(class_='checkbox') }} {{ form.weekday_wed.label(class_='checkbox') }}</div>
-                <div class="contol checkbox">{{ form.weekday_thu(class_='checkbox') }} {{ form.weekday_thu.label(class_='checkbox') }}</div>
-                <div class="contol checkbox">{{ form.weekday_fri(class_='checkbox') }} {{ form.weekday_fri.label(class_='checkbox') }}</div>
-                <div class="contol checkbox">{{ form.weekday_sat(class_='checkbox') }} {{ form.weekday_sat.label(class_='checkbox') }}</div>
-                <div class="contol checkbox">{{ form.weekday_sun(class_='checkbox') }} {{ form.weekday_sun.label(class_='checkbox') }}</div>
+                <div class="contol checkbox">{{ form.custom_day_mon(class_='checkbox') }} {{ form.custom_day_mon.label(class_='checkbox') }}</div>
+                <div class="contol checkbox">{{ form.custom_day_tue(class_='checkbox') }} {{ form.custom_day_tue.label(class_='checkbox') }}</div>
+                <div class="contol checkbox">{{ form.custom_day_wed(class_='checkbox') }} {{ form.custom_day_wed.label(class_='checkbox') }}</div>
+                <div class="contol checkbox">{{ form.custom_day_thu(class_='checkbox') }} {{ form.custom_day_thu.label(class_='checkbox') }}</div>
+                <div class="contol checkbox">{{ form.custom_day_fri(class_='checkbox') }} {{ form.custom_day_fri.label(class_='checkbox') }}</div>
+                <div class="contol checkbox">{{ form.custom_day_sat(class_='checkbox') }} {{ form.custom_day_sat.label(class_='checkbox') }}</div>
+                <div class="contol checkbox">{{ form.custom_day_sun(class_='checkbox') }} {{ form.custom_day_sun.label(class_='checkbox') }}</div>
             </div>
           </div>
       </div>
@@ -216,17 +217,17 @@
         "use strict";
 
         var select           = document.querySelector('#frequency select');
-        var weekdays_section = document.querySelector('#weekdays_form_section');
+        var custom_days_section = document.querySelector('#custom_days_form_section');
 
-        if (select.options[select.selectedIndex].value == "weekdays") {
-            weekdays_section.classList.add('is-visible')
+        if (select.options[select.selectedIndex].value == "custom_days") {
+            custom_days_section.classList.add('is-visible')
         }
 
         select.addEventListener("input", function(e) {
-            if (select.options[select.selectedIndex].value == "weekdays") {
-                weekdays_section.classList.add('is-visible')
+            if (select.options[select.selectedIndex].value == "custom_days") {
+                custom_days_section.classList.add('is-visible')
             } else {
-                weekdays_section.classList.remove('is-visible')
+                custom_days_section.classList.remove('is-visible')
             }
         });
 

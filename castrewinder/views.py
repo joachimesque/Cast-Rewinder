@@ -105,6 +105,11 @@ def serve_feed(feed_id, frequency, start_date, options):
 def about():
   return render_template('about.html')
 
+
+@app.route('/api/')
+def about_api():
+  return render_template('api.html')
+
 @app.route('/api/get', methods=["GET"])
 @app.route('/api/post', methods=["POST"])
 def api():
