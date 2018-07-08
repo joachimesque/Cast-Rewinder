@@ -13,6 +13,8 @@ from . import models
 
 from flask_wtf.csrf import CSRFProtect
 
-csrf = CSRFProtect(app)
+# For use with the POST API, we disable the global CSRF protection
+# It is still enabled on Forms
+# csrf = CSRFProtect(app)
 
 app.secret_key = app.config['APP_SECRET_KEY']
