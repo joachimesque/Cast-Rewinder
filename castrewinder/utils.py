@@ -213,8 +213,12 @@ def build_feed(feed_object, feed_entries, publication_dates, feed_format='feed_r
     # fe.published(episode['published'] if 'published' in episode else '')
     fe.published(publication_dates['dates'][index])
 
+    episode_pubished = '-'.join((str(episode['published_parsed'][0]),  # year
+                                 str(episode['published_parsed'][1]).zfill(2),  # month
+                                 str(episode['published_parsed'][2]).zfill(2))) # day
+
     summary = strip_tags(html = episode['summary']) if 'summary' in episode else ''
-    summary = "Originally published on %s\n%s" % (episode['published'][:-14], summary)
+    summary = "Originally published on %s\n%s" % (episode_pubished, summary)
     fe.description(summary)
     fe.summary(summary)
     fe.podcast.itunes_summary(summary)
