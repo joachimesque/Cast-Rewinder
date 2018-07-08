@@ -71,4 +71,7 @@ I don’t know how that works yet.
 
 Unless otherwise specified, this code is copyright 2018 Joachim Robert and released under the GNU Affero General Public License v3.0. Learn more about this license : https://choosealicense.com/licenses/agpl-3.0/
 
-This work uses code from [Bulma](https://github.com/jgthms/bulma), which is copyright 2018 Jeremy Thomas and whose code is released under [the MIT license](https://github.com/jgthms/bulma/blob/master/LICENSE).
+This work uses code from:
+
+- [Bulma](https://bulma.io), which is copyright 2018 Jeremy Thomas and whose code is released under [the MIT license](https://github.com/jgthms/bulma/blob/master/LICENSE).
+- [clipboard.js](https://clipboardjs.com), which is copyright Zeno Rocha, and whose code is released under [the MIT License](http://zenorocha.mit-license.org/)
