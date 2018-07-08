@@ -36,13 +36,13 @@ def get_frequency(request_form):
 
   if request_form['frequency'] in ['daily', 'weekly', 'monthly']:
     frequency = request_form['frequency']
-  elif request_form['frequency'] == 'weekdays':
-    weekdays_frequency = []
-    for form_element in request_form:
-      if form_element[:-3] == 'weekday_':
-        weekdays_frequency.append(form_element[-3:])
+  elif request_form['frequency'] == 'custom_days':
+    custom_days_frequency = []
+    for key, value in request_form.items():
+      if key[:-3] == 'custom_day_' and value is not False:
+        custom_days_frequency.append(key[-3:])
 
-    frequency = '-'.join(weekdays_frequency)
+    frequency = '-'.join(custom_days_frequency)
 
   return frequency
 
@@ -53,14 +53,16 @@ def get_options(request_form):
   """
   options = {}
 
-  if int(request_form['option_limit']) > 1:
-    options['start_at'] = request_form['option_limit'] 
+  if ('option_limit', 'option_format', 'option_order') in request_form:
 
-  if request_form['option_format'] != 'feed_rss':
-    options['format'] = request_form['option_format'] 
+    if int(request_form['option_limit']) > 1:
+      options['start_at'] = request_form['option_limit'] 
 
-  if request_form['option_order'] != 'asc':
-    options['order'] = request_form['option_order'] 
+    if request_form['option_format'] != 'feed_rss':
+      options['format'] = request_form['option_format'] 
+
+    if request_form['option_order'] != 'asc':
+      options['order'] = request_form['option_order'] 
 
   return options
 
@@ -106,14 +108,14 @@ def parse_frequency(frequency, start_date):
       dates.append(day_date)
   else:
     # if we get something like 'mon-wed-fri'
-    # we start by checking if weekdays exist
-    possible_weekdays = ['mon','tue','wed','thu','fri','sat','sun']
-    weekdays_list = [possible_weekdays.index(x) + 1 for x in frequency.split('-') if x in possible_weekdays]
+    # we start by checking if custom_days exist
+    possible_custom_days = ['mon','tue','wed','thu','fri','sat','sun']
+    custom_days_list = [possible_custom_days.index(x) + 1 for x in frequency.split('-') if x in possible_custom_days]
 
     for day in range(delta.days + 1):
       # I add 1 to delta.days so it'll take today into account
       day_date = start_datetime + relativedelta.relativedelta(days=+day)
-      if day_date.isoweekday() in weekdays_list:
+      if day_date.isoweekday() in custom_days_list:
         dates.append(day_date)
 
     limit = len(dates)

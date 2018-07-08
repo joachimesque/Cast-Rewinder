@@ -11,15 +11,15 @@ class UrlForm(FlaskForm):
                           choices=[('daily', 'Daily'),
                                    ('weekly', 'Weekly'),
                                    ('monthly', 'Monthly'),
-                                   ('weekdays', 'Weekdays')],
+                                   ('custom_days', 'Select week days:')],
                           default = 'weekly')
-  weekday_mon = BooleanField('Monday')
-  weekday_tue = BooleanField('Tuesday')
-  weekday_wed = BooleanField('Wednesday')
-  weekday_thu = BooleanField('Thursday')
-  weekday_fri = BooleanField('Friday')
-  weekday_sat = BooleanField('Saturday')
-  weekday_sun = BooleanField('Sunday')
+  custom_day_mon = BooleanField('Monday')
+  custom_day_tue = BooleanField('Tuesday')
+  custom_day_wed = BooleanField('Wednesday')
+  custom_day_thu = BooleanField('Thursday')
+  custom_day_fri = BooleanField('Friday')
+  custom_day_sat = BooleanField('Saturday')
+  custom_day_sun = BooleanField('Sunday')
 
   option_limit = IntegerField('Start from episode #',
                               validators = [DataRequired()],
