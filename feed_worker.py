@@ -4,7 +4,6 @@ import datetime
 import calendar
 import time
 import json
-import sys
 from requests import get
 from urllib.parse import urlparse
 
@@ -130,14 +129,6 @@ def import_feed(url, ignore_date = False):
 
     # Populate the Episode Table
     add_entries_to_db(feed = feed, feed_url = feed_url, ignore_date = ignore_date)
-
-    # Not that useful.
-    # if 'links' in feed.feed:
-    #   for link in feed.feed.links:
-    #     if link.rel == 'next':
-    #       print(str(link), file=sys.stderr)
-
-    #       import_feed(url = link.href, ignore_date = True)
 
     return True
 

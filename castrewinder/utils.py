@@ -1,4 +1,3 @@
-import sys
 from . import app
 from flask import request
 
