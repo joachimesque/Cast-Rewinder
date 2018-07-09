@@ -66,7 +66,9 @@ When developing, run it via the run script:
 
 ### Production
 
-I don’t know how that works yet.
+What you really want is to read this doc : <http://flask.pocoo.org/docs/1.0/deploying/>
+
+On [rewind.website](https://rewind.website/) I used [uWSGI](http://flask.pocoo.org/docs/1.0/deploying/uwsgi/) and nginx, on an Ubuntu machine, and it seems to be working.
 
 
 ## Copyrights and License
