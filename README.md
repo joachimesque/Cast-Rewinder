@@ -17,6 +17,8 @@ Now with Cast Rewinder you can subscribe to that podcast and get updates, starti
 
 Cast Rewinder runs [rewind.website](https://rewind.website).
 
+The idea originates from Brendan Hutchins in the podcast [Bitrate](http://bitratepod.com/), in [June 29th, 2018 episode](http://bitratepod.com/e/365db62d09d690/). Thanks for the inspiration!
+
 It’s one of my first real *coding* projects. I’m a webdesigner who dabbles in Python, and I wanted to scratch an itch. I don’t know anything about software architecture and very little about databases. If you have suggestions for better, nicer, cleaner ways of doing things, please open an issue!
 
 ## Demo
