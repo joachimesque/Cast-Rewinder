@@ -27,11 +27,11 @@
           <p>
             <strong class="is-size-5">{{ feed_object['title'] }}</strong> <small><a href="{{ feed_object['link'] }}">Podcast webpage</a></small> <small>{{ feed_object['copyright'] }}</small>
             <br>
-            {% if feed_object['description'] is defined %}
+            {% if feed_object['description'] is defined and feed_object['description'] != '' %}
                 {{ feed_object['description'] }}
-            {% elif feed_object['summary'] is defined %}
+            {% elif feed_object['summary'] is defined and feed_object['summary'] != '' %}
                 {{ feed_object['summary'] }}
-            {% elif feed_object['subtitle'] is defined %}
+            {% elif feed_object['subtitle'] is defined and feed_object['subtitle'] != '' %}
                 {{ feed_object['subtitle'] }}
             {% endif %}
           </p>
@@ -62,18 +62,18 @@
     <hr>
 
     <article id="how-to-subscribe" class="message toggle-content">
-        <div class="message-body content">
-            <h3 class="title is-4">How to subscribe to this feed?</h3>
-            <h4 class="title is-5">on iTunes for desktop</h4>
-            <p>In the “<em>File</em>” menu, click on “<em>Subscribe to Podcast…</em>”.
-            You will be asked for an address, paste the feed address that’s in the section above.</p>
-            <p>There are more answers on their <a href="https://www.apple.com/itunes/podcasts/fanfaq.html">FAQ For Podcast Fans</a></p>
-            <h4 class="title is-5">on Apple’s Podcast app for iPhone</h4>
-            <p>Tap the “<em>Library</em>” icon at the bottom of the screen. Then tap “<em>Edit…</em>” on the top right corner, then “<em>Add a Podcast by URL…</em>”. Paste the feed URL and hit “<em>Subscribe</em>”.</p>
+      <div class="message-body content">
+        <h3 class="title is-4">How to subscribe to this feed?</h3>
+        <h4 class="title is-5">on iTunes for desktop</h4>
+        <p>In the “<em>File</em>” menu, click on “<em>Subscribe to Podcast…</em>”.
+        You will be asked for an address, paste the feed address that’s in the section above.</p>
+        <p>There are more answers on their <a href="https://www.apple.com/itunes/podcasts/fanfaq.html">FAQ For Podcast Fans</a></p>
+        <h4 class="title is-5">on Apple’s Podcast app for iPhone</h4>
+        <p>Tap the “<em>Library</em>” icon at the bottom of the screen. Then tap “<em>Edit…</em>” on the top right corner, then “<em>Add a Podcast by URL…</em>”. Paste the feed URL and hit “<em>Subscribe</em>”.</p>
 
-            <p class="is-6"><strong>You can check Josh Muccio’s Medium post <a href="https://medium.com/@joshmuccio/how-to-manually-add-a-rss-feed-to-your-podcast-app-on-desktop-ios-android-478d197a3770">How to manually add a RSS feed to your podcast app on desktop, iOS & Android</a> for more apps and platforms.</strong></p>
-        </div>
-        <hr>
+        <p class="is-6"><strong>You can check Josh Muccio’s Medium post <a href="https://medium.com/@joshmuccio/how-to-manually-add-a-rss-feed-to-your-podcast-app-on-desktop-ios-android-478d197a3770">How to manually add a RSS feed to your podcast app on desktop, iOS & Android</a> for more apps and platforms.</strong></p>
+      </div>
+      <hr>
     </article>
 
 
