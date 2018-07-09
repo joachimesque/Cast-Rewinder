@@ -36,11 +36,17 @@ def index():
       # Perhaps there should be a protection against URL-shorteners, too.
       flash("🤔 DUDE. NOT FUNNY.")
     else:
+
+      feed_url = feed_worker.check_url(url = request.form['url'])
+
       # TODO : get a queue going for these kinds of jobs
-      valid_feed = feed_worker.import_feed(request.form['url'])
+      valid_feed = feed_worker.import_feed(feed_url)
       
       if not valid_feed:
-        flash("The supplied URL is not a podcast feed.")
+        if u.netloc.endswith('soundcloud.com'):
+          flash("This SoundCloud user does not have a podcast feed. Ask them to set one up!")
+        else:
+          flash("The supplied URL is not a podcast feed.")
 
       else:
 
@@ -51,10 +57,6 @@ def index():
           flash('You did not select week days, please do now or select another frequency.')
 
         else:
-
-          feed_url = request.form['url']
-          if u.netloc == 'itunes.apple.com':
-            feed_url = feed_worker.get_feed_from_itunes_api(itunes_url = feed_url)
 
           feed_object = db.session.query(Feed).filter(Feed.url == feed_url).one()
 
@@ -144,11 +146,19 @@ def api():
       response['error'] = 'u kno what u did'
 
     else:
+
+      feed_url = feed_worker.check_url(url = url)
+
       # TODO : get a queue going for these kinds of jobs
-      valid_feed = feed_worker.import_feed(url)
+      valid_feed = feed_worker.import_feed(feed_url)
       
       if not valid_feed:
-        response['error'] = 'The supplied URL is not a podcast feed.'
+        if u.netloc.endswith('soundcloud.com'):
+          response['error'] = 'This SoundCloud user does not have a podcast feed. Ask them to set one up!'
+        else:
+          response['error'] = 'The supplied URL is not a podcast feed.'
+
+        
         
       else:
 
@@ -158,7 +168,6 @@ def api():
             'type': 'light warning',
             'content': 'No frequency was supplied, going with the default (weekly)'}
 
-
         frequency = get_frequency(request_form = the_request)
         options = get_options(request_form = the_request)
 
@@ -167,10 +176,6 @@ def api():
           response['warning'] = {
             'type': 'stern warning',
             'content': 'No custom day was supplied despite `custom days` frequency, going with the default frequency (weekly)'}
-
-        feed_url = url
-        if u.netloc == 'itunes.apple.com':
-          feed_url = feed_worker.get_feed_from_itunes_api(itunes_url = feed_url)
 
         feed_object = db.session.query(Feed).filter(Feed.url == feed_url).one()
 

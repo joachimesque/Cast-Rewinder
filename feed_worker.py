@@ -73,6 +73,23 @@ def ask_for_url():
   url = input(">>> ")
   import_feed(url)
 
+
+
+    
+def check_url(url):
+  u = urlparse(url = url)
+
+  feed_url = url
+
+  if u.netloc == 'itunes.apple.com':
+    feed_url = get_feed_from_itunes_api(itunes_url = url)
+
+  if u.netloc.endswith('soundcloud.com'):
+    feed_url = get_feed_from_soundcloud_url(soundcloud_url = url)
+
+  return feed_url
+
+
 def get_feed_from_itunes_api(itunes_url):
   """ Helper that will get the right URL from iTunes Podcast URL
       thanks to the iTunes lookup public API
@@ -95,6 +112,27 @@ def get_feed_from_itunes_api(itunes_url):
     return None
 
 
+def get_feed_from_soundcloud_url(soundcloud_url):
+  """ Helper that will get the right URL from a soundcloud page
+      For that we’ll parse the user page
+  """
+  soundcloud_profile = urlparse(soundcloud_url).path.split('/')[1]
+  soundcloud_query = "https://soundcloud.com/%s/" % soundcloud_profile
+  try:
+      response = get(soundcloud_query)
+  except Exception:
+      print("Error: Something happened with the connection that prevented us to get %s’s info" % soundcloud_profile)
+      return None
+
+  index_beg = response.text.find('soundcloud://users')
+  index_end = response.text.find('"', index_beg)
+
+  soundcloud_id = response.text[index_beg + 13:index_end]
+  soundcloud_feed_url = 'http://feeds.soundcloud.com/users/soundcloud:%s/sounds.rss' % soundcloud_id
+
+  return soundcloud_feed_url
+
+
 def import_feed(url, ignore_date = False):
   """ Feed importer, called from the web app.
       It will verify that the URL is ok,
@@ -112,6 +150,10 @@ def import_feed(url, ignore_date = False):
     # More checks might come
     if u.netloc == 'itunes.apple.com':
       feed_url = get_feed_from_itunes_api(itunes_url = feed_url)
+    if u.netloc.endswith('soundcloud.com') and u.netloc != 'feeds.soundcloud.com':
+      soundcloud_url = get_feed_from_soundcloud_url(soundcloud_url = feed_url)
+      if soundcloud_url:
+        feed_url = soundcloud_url
 
     # Check if the URL is already present in the Feed Table
     url_exists_in_db = bool(db.session.query(Feed).filter(Feed.url == feed_url).count())
