@@ -70,6 +70,13 @@ What you really want is to read this doc : <http://flask.pocoo.org/docs/1.0/depl
 
 On [rewind.website](https://rewind.website/) I used [uWSGI](http://flask.pocoo.org/docs/1.0/deploying/uwsgi/) and nginx, on an Ubuntu machine, and it seems to be working.
 
+#### Cron job
+
+Here is the line for the Cron job that’ll update the feeds every day at 3 in the morning (server time).
+
+    0 3 * * * cd ~/Cast-Rewinder/ ; . ~/Cast-Rewinder/.venv/bin/activate ; ~/Cast-Rewinder/.venv/bin/python ~/Cast-Rewinder/feed_worker.py -u
+
+You could use a different update frequency setting. As this app is geared mostly towards old / defunct podcasts with big back catalogs, I don’t know if there’s a need for hourly updates. Anyways, if you need other options, check [crontab.guru](https://crontab.guru/#0/15_*_*_*_*)
 
 ## Copyrights and License
 
