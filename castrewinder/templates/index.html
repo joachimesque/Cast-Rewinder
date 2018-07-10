@@ -236,7 +236,6 @@
 
 
 {% block js_code %}
-<script src="{{ url_for('static', filename='js/underscore-min.js') }}" type="text/javascript" charset="utf-8"></script>
 <script src="{{ url_for('static', filename='js/clipboard.min.js') }}" type="text/javascript" charset="utf-8"></script>
 <script src="{{ url_for('static', filename='js/jstz.min.js') }}" type="text/javascript" charset="utf-8"></script>
 <script src="{{ url_for('static', filename='js/moment.min.js') }}" type="text/javascript" charset="utf-8"></script>
@@ -274,45 +273,34 @@
         });
         {% endif %}
 
-        var TimezonePicker = {
-          detectedZone: function() {
-            var tz = jstz.determine();
-            return tz.name();
-          },
-          mapping: function() {
-            return _.map(moment.tz.names(), function(name) {
-              var prettyName = name.replace("_", " ");
-              var offset = moment.tz(name)._offset / 60;
+        var detectedZone = jstz.determine().name();
+        var names = moment.tz.names();
+        
+        var mapping = names.map(function(name) {
+            var prettyName = name.replace("_", " ");
+            var offset = moment.tz(name)._offset / 60;
 
-              var sign = offset < 0 ? "-" : "+";
-              var hours = Math.floor(Math.abs(offset));
-              var minutes = Math.floor((Math.abs(offset) * 60) % 60);
-              var gmtOffset = sign + (hours < 10 ? "0" : "") + hours + ':' + (minutes < 10 ? "0" : "") + minutes;
+            var sign = offset < 0 ? "-" : "+";
+            var hours = Math.floor(Math.abs(offset));
+            var minutes = Math.floor((Math.abs(offset) * 60) % 60);
+            var gmtOffset = sign + (hours < 10 ? "0" : "") + hours + ':' + (minutes < 10 ? "0" : "") + minutes;
 
-              return {name: prettyName, timezone: name, gmtOffset: gmtOffset};
-            });
-          },
-          from: function(value) {
-            return this.mapping[value];
-          },
-          to: function(value) {
-            for (var key in this.mapping) {
-              if (this.mapping[key] === value) return key;
-            }
-          }
-        };
+            return {name: prettyName, timezone: name, gmtOffset: gmtOffset};
+        });
 
-
-        var list = _(TimezonePicker.mapping()).chain().sortBy('name').sortBy(function(zone) {
-          return parseInt(zone.gmtOffset);
-        }).value();
+        var list = mapping.slice(0);
+        list.sort(function(a,b) {
+            return a.name - b.name;
+        }).sort(function(a,b) {
+            return -parseInt(a.gmtOffset) - -parseInt(b.gmtOffset);
+        });
 
         var timezoneSelect = document.querySelector('select[name="start_date_timezone"]')
         list.forEach(function(el) {
           var option_element = document.createElement('option');
           option_element.text = 'UTC' + el.gmtOffset + ' - ' + el.name;
           option_element.value = el.gmtOffset;
-          if (TimezonePicker.detectedZone() === el.name) {
+          if (detectedZone === el.name) {
             option_element.selected = 'selected';
           }
           timezoneSelect.appendChild(option_element);
