@@ -64,9 +64,9 @@ def get_options(request_form):
 
 
   if 'start_date_timezone' in request_form \
-    and len(request_form['start_date_timezone']) == 5 \
+    and len(request_form['start_date_timezone']) == 6 \
     and request_form['start_date_timezone'][0] in ('+','-') \
-    and int(request_form['start_date_timezone'][1:]) < 1500:
+    and int(request_form['start_date_timezone'][1:3] + request_form['start_date_timezone'][4:6]) < 1500:
     options['start_date_timezone'] = ''.join(request_form['start_date_timezone'].split(':'))
   else:
     options['start_date_timezone'] = '+0000'
