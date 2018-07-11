@@ -163,8 +163,7 @@
             </div>
             <div class="control is-expanded">
               <div class="select is-rounded is-fullwidth">
-                <select name="start_date_timezone" aria-label="Timezone">
-                </select>
+                {{ form.start_date_timezone(class_='') }}
               </div>
             </div>
           </div>
@@ -238,8 +237,6 @@
 {% block js_code %}
 <script src="{{ url_for('static', filename='js/clipboard.min.js') }}" type="text/javascript" charset="utf-8"></script>
 <script src="{{ url_for('static', filename='js/jstz.min.js') }}" type="text/javascript" charset="utf-8"></script>
-<script src="{{ url_for('static', filename='js/moment.min.js') }}" type="text/javascript" charset="utf-8"></script>
-<script src="{{ url_for('static', filename='js/moment-timezone.min.js') }}" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript" charset="utf-8">
     (function(){
         "use strict";
@@ -274,37 +271,16 @@
         {% endif %}
 
         var detectedZone = jstz.determine().name();
-        var names = moment.tz.names();
-        
-        var mapping = names.map(function(name) {
-            var prettyName = name.replace("_", " ");
-            var offset = moment.tz(name)._offset / 60;
 
-            var sign = offset < 0 ? "-" : "+";
-            var hours = Math.floor(Math.abs(offset));
-            var minutes = Math.floor((Math.abs(offset) * 60) % 60);
-            var gmtOffset = sign + (hours < 10 ? "0" : "") + hours + ':' + (minutes < 10 ? "0" : "") + minutes;
-
-            return {name: prettyName, timezone: name, gmtOffset: gmtOffset};
-        });
-
-        var list = mapping.slice(0);
-        list.sort(function(a,b) {
-            return a.name - b.name;
-        }).sort(function(a,b) {
-            return -parseInt(a.gmtOffset) - -parseInt(b.gmtOffset);
-        });
-
-        var timezoneSelect = document.querySelector('select[name="start_date_timezone"]')
-        list.forEach(function(el) {
-          var option_element = document.createElement('option');
-          option_element.text = 'UTC' + el.gmtOffset + ' - ' + el.name;
-          option_element.value = el.gmtOffset;
-          if (detectedZone === el.name) {
-            option_element.selected = 'selected';
-          }
-          timezoneSelect.appendChild(option_element);
-        });
+        var timezoneSelect = document.querySelectorAll('select[name="start_date_timezone"] option')
+        if (!document.querySelector('select[name="start_date_timezone"] option[selected]')) {
+          timezoneSelect.forEach(function(el) {
+            var optionName = el.value;
+            if (detectedZone === optionName) {
+              el.selected = 'selected';
+            }
+          });
+        }
 
     })();
 </script>

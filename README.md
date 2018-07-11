@@ -86,6 +86,4 @@ This work uses code from:
 
 - [Bulma](https://bulma.io), which is copyright 2018 Jeremy Thomas and whose code is released under [the MIT license](https://github.com/jgthms/bulma/blob/master/LICENSE).
 - [clipboard.js](https://clipboardjs.com), which is copyright Zeno Rocha, and whose code is released under [the MIT License](http://zenorocha.mit-license.org/)
-- [moment.js](https://momentjs.com) and [moment-timezone.js](https://momentjs.com/timezone/), which are both freely distributable under the terms of the [MIT license](https://github.com/moment/moment/blob/develop/LICENSE).
-- [underscore.js](https://underscorejs.org/) which is freely distributable under the terms of the [MIT license](https://github.com/jashkenas/underscore/blob/master/LICENSE).
-- Josh Owens is the author of a [javascript timezone picker](http://joshowens.me/dealing-with-timezones-in-javascript/) which provided much of the inspiration for mine.
+- [jsTimezoneDetect](https://bitbucket.org/pellepim/jstimezonedetect) is freely distributable under the terms of the [MIT license](https://github.com/moment/moment/blob/develop/LICENSE).
