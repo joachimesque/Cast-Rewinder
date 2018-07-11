@@ -41,4 +41,4 @@ def before_request():
 
   # Get request time
   g.request_start_time = time.time()
-  g.request_time = lambda: "%.5fs" % (time.time() - g.request_start_time)
+  g.request_time = lambda: "%.3fs" % (time.time() - g.request_start_time)

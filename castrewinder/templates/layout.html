@@ -69,9 +69,9 @@
               This website runs the free web application <strong><a href="https://github.com/joachimesque/Cast-Rewinder">Cast Rewinder</a></strong> by <a href="https://github.com/joachimesque/">Joachim Robert</a>.<br>
               <small>The source code is licensed <a href="https://choosealicense.com/licenses/agpl-3.0/">AGPLv3</a>, unless otherwise mentioned.<br>
               The data (as in podcast feeds) that is collected, mirrored and transmitted by this website belong to its original owners. No RSS feed nor any feed content are claimed by the creators and maintainers of this website.<br>
-              This website doesn’t collect personal data on you or your loved ones. You should be wary of those who do.<br>
-              Rendered in {{ g.request_time() }} from <a href="https://github.com/joachimesque/Cast-Rewinder/commit/{{ g.git_id }}">{{ g.git_id|truncate(8) }}</a></small>
+              This website doesn’t collect personal data on you or your loved ones. You should be wary of those who do.</small>
             </p>
+            <p class="is-size-7">Rendered in {{ g.request_time() }} from commit:<a href="https://github.com/joachimesque/Cast-Rewinder/commit/{{ g.git_id }}">{{ g.git_id|truncate(7,True,'',0) }}</a></p>
           </div>
         </div>
       </div>
