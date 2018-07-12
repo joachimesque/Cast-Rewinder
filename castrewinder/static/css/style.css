@@ -18,6 +18,16 @@ body > section {
   display: block;
 }
 
+.toggle-form {
+  height: 0;
+  overflow: hidden;
+}
+
+.toggle-form.is-visible {
+  height: auto;
+  overflow: auto;
+}
+
 .button {
   font-weight: 600;
 }
