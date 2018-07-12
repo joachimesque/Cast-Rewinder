@@ -1,8 +1,5 @@
 from . import app
-from flask import render_template
-from flask import request
-from flask import abort
-from flask import flash
+from flask import render_template, request, abort, flash, Response
 import json
 from urllib.parse import urlparse
 
@@ -111,7 +108,10 @@ def serve_feed(feed_id, frequency, start_date, options):
 
   feed = build_feed(feed_object = feed_object, feed_entries = feed_entries, publication_dates = publication_dates, feed_format = feed_format)
 
-  return feed
+  r = Response(response=feed, status=200, mimetype="text/xml")
+  r.headers["Content-Type"] = "text/xml; charset=utf-8"
+
+  return r
 
 @app.route('/about')
 def about():
@@ -188,5 +188,4 @@ def api():
   else:
     response['error'] = 'No URL provided'
         
-
   return json.dumps(response)
