@@ -204,19 +204,22 @@ def build_feed(feed_object, feed_entries, publication_dates, feed_format='feed_r
 
   fg.link(href = request.url, rel = 'self')
   fg.link(href = feed['link'] if 'link' in feed else '', rel = 'alternate')
-  for link in feed['links']:
-    fg.link(rel  = link['rel']  if 'rel'  in link else '',
-            type = link['type'] if 'type' in link else '',
-            href = link['href'] if 'href' in link else '')
+  if 'links' in feed:
+    for link in feed['links']:
+      fg.link(rel  = link['rel']  if 'rel'  in link else '',
+              type = link['type'] if 'type' in link else '',
+              href = link['href'] if 'href' in link else '')
 
   if 'author_detail' in feed:
     fg.author(name  = feed['author_detail']['name']  if 'name'  in feed['author_detail'] else '',
               email = feed['author_detail']['email'] if 'email' in feed['author_detail'] else '')
-  for author in feed['authors']:
-    fg.author(name  = author['name']  if 'name'  in author else '',
-              email = author['email'] if 'email' in author else '')
+  if 'authors' in feed:
+    for author in feed['authors']:
+      fg.author(name  = author['name']  if 'name'  in author else '',
+                email = author['email'] if 'email' in author else '')
 
-  fg.logo(feed['image']['href'])
+  if 'image' in feed and 'href' in feed['image']:
+    fg.logo(feed['image']['href'])
   fg.language(feed['language'] if 'language' in feed else '')
   fg.rights(feed['rights'] if 'rights' in feed else '')
   fg.generator('Cast Rewinder & python-feedgen on %s' % request.host_url)
@@ -276,11 +279,12 @@ def build_feed(feed_object, feed_entries, publication_dates, feed_format='feed_r
                     type   = media['type'] if 'type' in media else '')
 
     fe.link(href = episode['link'] if 'link' in episode else '', rel = 'alternate')
-    for link in episode['links']:
-      fe.link(rel = link['rel']  if 'rel'  in link else '',
-              href = link['href'] if 'href' in link else '',
-              type = link['type'] if 'type' in link else '',
-              length = link['length'] if 'length' in link else '')
+    if 'links' in episode:
+      for link in episode['links']:
+        fe.link(rel = link['rel']  if 'rel'  in link else '',
+                href = link['href'] if 'href' in link else '',
+                type = link['type'] if 'type' in link else '',
+                length = link['length'] if 'length' in link else '')
 
     if 'image' in episode:
       fe.podcast.itunes_image(episode['image']['href'])
