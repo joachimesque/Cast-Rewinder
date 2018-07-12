@@ -3,6 +3,7 @@ from flask import request
 
 import datetime
 import json
+import pytz
 
 from feedgen.feed import FeedGenerator
 from dateutil import relativedelta
@@ -63,11 +64,13 @@ def get_options(request_form):
     options['start_date'] = datetime.datetime.now().strftime('%Y%m%d')
 
 
-  if 'start_date_timezone' in request_form \
-    and len(request_form['start_date_timezone']) == 6 \
-    and request_form['start_date_timezone'][0] in ('+','-') \
-    and int(request_form['start_date_timezone'][1:3] + request_form['start_date_timezone'][4:6]) < 1500:
-    options['start_date_timezone'] = ''.join(request_form['start_date_timezone'].split(':'))
+  if 'start_date_timezone' in request_form:
+    tz = pytz.timezone(request_form['start_date_timezone'])
+    tz_diff_from_UTC = datetime.datetime.now(tz).utcoffset().total_seconds()
+    tz_sign = '+' if tz_diff_from_UTC > 0 else '-'
+    tz_h, tz_m = divmod(abs(tz_diff_from_UTC) / 60, 60)
+
+    options['start_date_timezone'] = "%s%02d%02d" % (tz_sign, tz_h, tz_m)
   else:
     options['start_date_timezone'] = '+0000'
 
