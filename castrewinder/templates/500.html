@@ -1,0 +1,18 @@
+{% extends 'layout.html' %}
+
+{% block title %}🚧 Server error!{% endblock %}
+
+{% block header %}
+  <h1 class="title">🚧 500, Server error!</h1>
+  <p class="subtitle is-size-4">
+    <a href="{{ url_for('index') }}">Home</a> ·
+    <a href="{{ url_for('about') }}">About</a> ·
+    <a href="{{ url_for('about_api') }}">API</a>
+  </p>
+{% endblock %}
+
+{% block content %}
+
+  <p>There’s been an error, we’re sorry about that. You can go back to the <a href="{{ url_for('index') }}">homepage</a>, or you can tell us about how the errors happened, by <a href="https://github.com/joachimesque/Cast-Rewinder/issues">opening an issue on the GitHub page for Cast Rewinder</a>.</p>
+
+{% endblock %}
