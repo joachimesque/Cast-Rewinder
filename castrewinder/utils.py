@@ -65,7 +65,10 @@ def get_options(request_form):
 
 
   if 'start_date_timezone' in request_form:
-    tz = pytz.timezone(request_form['start_date_timezone'])
+    try:
+      tz = pytz.timezone(request_form['start_date_timezone'])
+    except:
+      tz = pytz.timezone('Etc/UTC')
     tz_diff_from_UTC = datetime.datetime.now(tz).utcoffset().total_seconds()
     tz_sign = '+' if tz_diff_from_UTC > 0 else '-'
     tz_h, tz_m = divmod(abs(tz_diff_from_UTC) / 60, 60)
