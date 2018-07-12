@@ -220,6 +220,7 @@ def build_feed(feed_object, feed_entries, publication_dates, feed_format='feed_r
 
   if 'image' in feed and 'href' in feed['image']:
     fg.logo(feed['image']['href'])
+
   fg.language(feed['language'] if 'language' in feed else '')
   fg.rights(feed['rights'] if 'rights' in feed else '')
   fg.generator('Cast Rewinder & python-feedgen on %s' % request.host_url)
@@ -286,8 +287,14 @@ def build_feed(feed_object, feed_entries, publication_dates, feed_format='feed_r
                 type = link['type'] if 'type' in link else '',
                 length = link['length'] if 'length' in link else '')
 
-    if 'image' in episode:
-      fe.podcast.itunes_image(episode['image']['href'])
+    if 'image' in episode and 'href' in episode['image']:
+      image_url = episode['image']['href']
+      if image_url.rfind('?') > 0:
+        image_url = image_url[:image_url.rfind('?')]
+      if image_url[-4:] in ('.jpg', '.png'):
+        fe.podcast.itunes_image(image_url)
+
+
 
     fe.podcast.itunes_duration(episode['itunes_duration'] if 'itunes_duration' in episode else '')
 
