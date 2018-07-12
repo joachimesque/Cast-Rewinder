@@ -43,7 +43,7 @@
 
     <div class="field has-addons">
       <div class="control is-expanded">
-        <input class="input is-large is-rounded is-primary" type="text" value="{{ end_url }}" readonly id="element_to_copy">
+        <input class="input is-large is-rounded is-primary" type="text" value="{{ end_url|replace('+', '%2B') }}" readonly id="element_to_copy">
       </div>
       <div class="control">
         <button id="copy_btn" class="button is-primary is-large is-rounded" data-clipboard-target="#element_to_copy">
