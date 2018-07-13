@@ -69,12 +69,22 @@ def index():
 @app.route('/<feed_id>/<frequency>/<start_date>', defaults = {'options': ''})
 @app.route('/<feed_id>/<frequency>/<start_date>/<options>')
 def serve_feed(feed_id, frequency, start_date, options):
+  # check if feed_id is an int, if not abort with 404
+  try:
+    feed_id = int(feed_id)
+  except ValueError:
+    abort(404)
+
+  # get the list of all feeds IDs
+  feeds_ids = [f[0] for f in db.session.query(Feed.id).all()]
+  # check if feed_id is valid, if not abort with 404
+  if feed_id not in feeds_ids:
+    abort(404)
 
   publication_dates = parse_frequency(frequency = frequency, start_date = start_date)
 
   if not publication_dates:
     abort(500)
-
 
   feed_object = db.session.query(Feed).filter(Feed.id == feed_id).one()
 
