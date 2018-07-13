@@ -78,15 +78,17 @@ def get_options(request_form):
     options['start_date_timezone'] = '+0000'
 
 
-  if ('option_limit', 'option_format', 'option_order') in request_form:
+  if 'option_format' in request_form or \
+     'option_limit' in request_form or \
+     'option_order' in request_form:
 
     if int(request_form['option_limit']) > 1:
       options['start_at'] = request_form['option_limit'] 
 
-    if request_form['option_format'] != 'feed_rss':
+    if request_form['option_format'] in ('feed_atom', 'feed_json'):
       options['format'] = request_form['option_format'] 
 
-    if request_form['option_order'] != 'asc':
+    if request_form['option_order'] in ('desc'):
       options['order'] = request_form['option_order'] 
 
   return options
