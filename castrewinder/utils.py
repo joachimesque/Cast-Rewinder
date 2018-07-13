@@ -165,6 +165,15 @@ def parse_frequency(frequency, start_date):
     possible_custom_days = ['mon','tue','wed','thu','fri','sat','sun']
     custom_days_list = [possible_custom_days.index(x) + 1 for x in frequency.split('-') if x in possible_custom_days]
 
+    # if today is not in the list of days, go back to the previous valid weekday
+    # and add it to the list.
+    if datetime.date.today().isoweekday() not in custom_days_list:
+      for day in range(7):
+        day_date = start_datetime + relativedelta.relativedelta(days=-day)
+        if day_date.isoweekday() in custom_days_list:
+          dates.append(day_date)
+          break
+
     for day in range(delta.days + 1):
       # I add 1 to delta.days so it'll take today into account
       day_date = start_datetime + relativedelta.relativedelta(days=+day)
