@@ -25,6 +25,15 @@ def error(e):
 def index():
   form = UrlForm()
   if form.validate_on_submit():
+
+    frequency = get_frequency(request_form = request.form)
+    options = get_options(request_form = request.form)
+
+    if frequency == '':
+      flash('You did not select week days, please do now or select another frequency.')
+      return render_template('index.html', form = form)
+
+
     u = urlparse(url = request.form['url'])
     
     if u.scheme + '://' + u.netloc + '/' == request.host_url:
@@ -32,38 +41,46 @@ def index():
       # Don’t throw bricks into the machine, kids.
       # Perhaps there should be a protection against URL-shorteners, too.
       flash("🤔 DUDE. NOT FUNNY.")
+      return render_template('index.html', form = form)
     else:
-
-      feed_url = feed_worker.check_url(url = request.form['url'])
-
-      # TODO : get a queue going for these kinds of jobs
-      valid_feed = feed_worker.import_feed(feed_url)
-      
-      if not valid_feed:
-        if u.netloc.endswith('soundcloud.com'):
-          flash("This SoundCloud user does not have a podcast feed. Ask them to set one up!")
-        else:
-          flash("The supplied URL is not a podcast feed. Unsure why you got this answer, thinking it might be a bug? Send me an email.")
-
-      else:
-
-        frequency = get_frequency(request_form = request.form)
-        options = get_options(request_form = request.form)
-
-        if frequency == '':
-          flash('You did not select week days, please do now or select another frequency.')
-
-        else:
-
-          feed_object = db.session.query(Feed).filter(Feed.url == feed_url).one()
-
-          end_url = request.host_url + generate_url(feed_id = feed_object.id,
-                                                    frequency = frequency,
-                                                    options = options)
-
-          return render_template('index.html', form = form, end_url = end_url, feed_object = json.loads(feed_object.content))
+      end_url = generate_url(feed_id = 0,
+                              frequency = frequency,
+                              options = options)
+      request_object = {'url': request.form['url'], 'end_url': end_url[1:]}
+      return render_template('index.html', form = form, request_json = request_object)
 
   return render_template('index.html', form = form)
+
+
+
+@app.route('/ajax/geturl', methods=["PUT"])
+def ajax_geturl():
+
+  request_data = json.loads(request.get_data())
+
+  u = urlparse(url = request_data['url'])
+  
+  feed_url = feed_worker.check_url(url = request_data['url'])
+
+  # TODO : get a queue going for these kinds of jobs
+  valid_feed = feed_worker.import_feed(feed_url)
+  
+  if not valid_feed:
+    if u.netloc.endswith('soundcloud.com'):
+      error = "This SoundCloud user does not have a podcast feed. Ask them to set one up!"
+    else:
+      error = "The supplied URL is not a podcast feed. Unsure why you got this answer, thinking it might be a bug? Send me an email."
+
+    return {'error': error}
+  else:
+
+    feed_object = db.session.query(Feed).filter(Feed.url == feed_url).one()
+
+    return_object = {'feed_id': feed_object.id, 'content': json.loads(feed_object.content)} 
+
+    return str(json.dumps(return_object))
+
+
 
 
 @app.route('/<feed_id>/<frequency>/<start_date>', defaults = {'options': ''})
