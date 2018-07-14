@@ -43,7 +43,7 @@ def index():
         if u.netloc.endswith('soundcloud.com'):
           flash("This SoundCloud user does not have a podcast feed. Ask them to set one up!")
         else:
-          flash("The supplied URL is not a podcast feed.")
+          flash("The supplied URL is not a podcast feed. Unsure why you got this answer, thinking it might be a bug? Send me an email.")
 
       else:
 
@@ -168,8 +168,7 @@ def api():
         else:
           response['error'] = 'The supplied URL is not a podcast feed.'
 
-        
-        
+
       else:
 
         if 'frequency' not in the_request:
