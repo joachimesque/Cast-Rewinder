@@ -78,15 +78,22 @@
       document.querySelector('#loading_content').classList.toggle('is-visible');
       document.querySelector('#loaded_content').classList.toggle('is-visible');
 
+      if (typeof response['content']['image']['href'] !== 'undefined' && response['content']['image']['href'].length > 0) {
+        document.querySelector('#loaded_content #feed_image').src = response['content']['image']['href'];
+      } else {
+        document.querySelector('figure.media-left').style.display = 'none';
+      }
 
-      document.querySelector('#loaded_content #feed_image').src = response['content']['image']['href'];
+
       document.querySelector('#loaded_content #feed_title').innerHTML = response['content']['title'];
       document.querySelector('#loaded_content #feed_url').href = response['content']['link'];
 
       if (typeof response['content']['copyright'] !== 'undefined') {
         document.querySelector('#loaded_content #feed_copyright').innerHTML = '© ' + response['content']['copyright'];
+      } else if  (typeof response['content']['author'] !== 'undefined') {
+        document.querySelector('#loaded_content #feed_copyright').innerHTML = '© ' + response['content']['author']['name'];
       } else {
-        document.querySelector('#loaded_content #feed_copyright').innerHTML = '© ' + response['content']['author'];
+        document.querySelector('#loaded_content #feed_copyright').style.display = 'none';
       }
 
       if (typeof response['content']['description'] !== 'undefined') {
