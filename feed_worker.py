@@ -5,6 +5,7 @@ import calendar
 import time
 import json
 from requests import get
+from dateutil import parser
 from urllib.parse import urlparse
 
 import feedparser
@@ -15,7 +16,7 @@ from castrewinder.models import Feed, Episode
 
 def to_datetime_from_structtime(time_tuple):
   """ Converts structtime elements to good old datetime """
-  return datetime.datetime.fromtimestamp(time.mktime(time_tuple))
+  return datetime.datetime.fromtimestamp(time.mktime(tuple(time_tuple)))
 
 def json_serial(obj):
   """ JSON serializer for objects not serializable by default json code """
@@ -35,7 +36,7 @@ def add_feed_to_db(feed, feed_url):
   last_published_element = datetime.datetime.fromtimestamp(0)
   new_feed = Feed(url = feed_url,
                   last_published_element = last_published_element,
-                  content = json.dumps(feed.feed, default=json_serial))
+                  content = json.dumps(feed['feed'], default=json_serial))
   db.session.add(new_feed)
   db.session.commit()
   return True
@@ -50,8 +51,8 @@ def add_entries_to_db(feed, feed_url, ignore_date = False):
   """
   feed_object = db.session.query(Feed).filter(Feed.url == feed_url).one()
 
-  for entry in feed.entries:
-    published = to_datetime_from_structtime(time_tuple = entry.published_parsed)
+  for entry in feed['entries']:
+    published = to_datetime_from_structtime(time_tuple = entry['published_parsed'])
     
     if feed_object.last_published_element < published or ignore_date == True:
       new_entry = Episode(published = published,
@@ -61,7 +62,7 @@ def add_entries_to_db(feed, feed_url, ignore_date = False):
 
   if not ignore_date:
     # updates the last updated value in the parent Feed in DB
-    last_published_element = to_datetime_from_structtime(time_tuple = feed.entries[0].published_parsed)
+    last_published_element = to_datetime_from_structtime(time_tuple = feed['entries'][0]['published_parsed'])
     feed_object.last_published_element = last_published_element
 
   db.session.commit()
@@ -158,9 +159,32 @@ def import_feed(url, ignore_date = False):
     # Check if the URL is already present in the Feed Table
     url_exists_in_db = bool(db.session.query(Feed).filter(Feed.url == feed_url).count())
 
-    feed = feedparser.parse(feed_url)
+    headers = {
+      'Accept': 'text/xml,application/rss+xml,application/atom+xml,application/json;q=0.9,*/*;q=0.8',
+      'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:62.0) Gecko/20100101 Firefox/62.0'
+      }
 
-    if feed['entries'] == []:
+    try:
+        response = get(feed_url, headers=headers)
+    except Exception:
+        print("Error: Something happened with the connection that prevented us to get the feed")
+        return None
+
+    response_content_type = response.headers['content-type'].split(';')[0]
+
+    import sys
+    print(len(response.text), file=sys.stderr)
+
+    feed = []
+    if response_content_type == 'application/json':
+      # transform json feed object to feedparser object
+      feed = get_parsed_json_feed(json_feed = response.text)
+    elif response_content_type in ('text/xml','application/rss+xml','application/atom+xml','application/xml'):
+      feed = feedparser.parse(response.text)
+
+    print(feed, file=sys.stderr)
+
+    if feed == [] or feed['entries'] == []:
       # Cancel operation if the feed doesn't have any entries
       # Like if it's a normal webpage
       return False
@@ -177,6 +201,92 @@ def import_feed(url, ignore_date = False):
   else:
     print("The specified URL is not valid. Please verify you have the 'HTTP' part.")
     ask_for_url()
+
+def get_parsed_json_feed(json_feed):
+
+  if json_feed == None or json_feed =='':
+    return []
+
+  json_feed_as_json = json.loads(json_feed)
+
+
+  feed = {
+    "title": json_feed_as_json.get('title', ''),
+    "links": [
+      {
+        "rel": "alternate",
+        "type": "text/html",
+        "href": json_feed_as_json.get('home_page_url', '')
+      },
+      {
+        "rel": "self",
+        "type": "application/rss+xml",
+        "href": json_feed_as_json.get('feed_url', '')
+      },
+    ],
+    "link": json_feed_as_json.get('home_page_url', ''),
+    "language": "en",
+    "rights": "",
+    "subtitle": "",
+    "image": {
+      "href": json_feed_as_json.get('icon', '')
+    },
+    "summary": json_feed_as_json.get('description', '')
+  }
+
+  if "author" in json_feed_as_json:
+    feed["author"] = json_feed_as_json['author'].get('name', ''),
+    feed["author_detail"] = {
+      "name": json_feed_as_json['author'].get('name', ''),
+      "url": json_feed_as_json['author'].get('url', '')
+    },
+
+
+  episodes = []
+
+  for item in json_feed_as_json.get('items', []):
+    episode = {
+      "id": item.get('id', ''),
+      "title": item.get('title', ''),
+      "link": item.get('link', ''),
+      "summary": item.get('summary', ''),
+      "content": [
+        {
+          "type": "text/plain",
+          "value": item.get('content_text', '')
+        },
+        {
+          "type": "text/html",
+          "value": item.get('content_html', '')
+        }
+      ],
+      "image": {
+        "href": item.get('image', '')
+      },
+      "media_content": []
+    }
+
+    for attachment in item.get('attachments', []):
+      enclosure = {
+          "url": attachment.get('url', ''),
+          "type": attachment.get('mime_type', ''),
+          "filesize": attachment.get('size_in_bytes', '')
+        }
+      episode['media_content'].append(enclosure)
+
+    date_published = parser.parse(item.get('date_published', ''))
+
+    episode["published"] = str(date_published)
+    episode["published_parsed"] = list(date_published.timetuple())
+
+    episodes.append(episode)
+
+  return {
+    'feed': feed,
+    'entries': episodes
+    }
+
+
 
 def update_feeds():
   """ Feed updater, meant to be used in a cron """
