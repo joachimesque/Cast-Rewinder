@@ -146,7 +146,7 @@ def about():
   return render_template('about.'+ g.locale +'.html')
 
 
-@app.route('/api/')
+@app.route('/api')
 def about_api():
   return render_template('api.'+ g.locale +'.html')
 
