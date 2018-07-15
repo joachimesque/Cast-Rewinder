@@ -5,7 +5,7 @@ import json
 from urllib.parse import urlparse
 
 import feed_worker
-from .utils import get_frequency, parse_frequency, generate_url, build_feed, get_options, parse_options
+from .utils import get_frequency, parse_frequency, generate_url, build_xml_feed, build_json_feed, get_options, parse_options
 
 from .forms import UrlForm
 
@@ -134,10 +134,16 @@ def serve_feed(feed_id, frequency, start_date, options):
                        all()
 
 
-  feed = build_feed(feed_object = feed_object, feed_entries = feed_entries, publication_dates = publication_dates, feed_format = feed_format)
 
-  r = Response(response=feed, status=200, mimetype="text/xml")
-  r.headers["Content-Type"] = "text/xml; charset=utf-8"
+  if feed_format == 'feed_json':
+    feed = build_json_feed(feed_object = feed_object, feed_entries = feed_entries, publication_dates = publication_dates)
+    r = Response(response=feed, status=200, mimetype="application/json")
+    r.headers["Content-Type"] = "application/json; charset=utf-8"
+    
+  else:
+    feed = build_xml_feed(feed_object = feed_object, feed_entries = feed_entries, publication_dates = publication_dates, feed_format = feed_format)
+    r = Response(response=feed, status=200, mimetype="text/xml")
+    r.headers["Content-Type"] = "text/xml; charset=utf-8"
 
   return r
 

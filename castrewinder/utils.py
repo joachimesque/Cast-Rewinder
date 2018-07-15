@@ -199,7 +199,7 @@ def parse_options(options):
 
 
 
-def build_feed(feed_object, feed_entries, publication_dates, feed_format='feed_rss'):
+def build_xml_feed(feed_object, feed_entries, publication_dates, feed_format='feed_rss'):
   """ From the Feed() and the Episodes(), with help from the publication dates dict
       gotten from parse_frequency(), this function makes the RSS feed.
   """
@@ -210,38 +210,36 @@ def build_feed(feed_object, feed_entries, publication_dates, feed_format='feed_r
   fg.load_extension('podcast')
 
   fg.id(request.url)
-  fg.title(feed['title'] if 'title' in feed else '')
-  fg.subtitle(feed['subtitle'] if 'subtitle' in feed else '')
+  fg.title(feed.get('title', ''))
+  fg.subtitle(feed.get('subtitle', ''))
 
   fg.podcast.itunes_block(True)
 
   fg.link(href = request.url, rel = 'self')
-  fg.link(href = feed['link'] if 'link' in feed else '', rel = 'alternate')
-  if 'links' in feed:
-    for link in feed['links']:
-      fg.link(rel  = link['rel']  if 'rel'  in link else '',
-              type = link['type'] if 'type' in link else '',
-              href = link['href'] if 'href' in link else '')
+  fg.link(href = feed.get('link', ''), rel = 'alternate')
+  for link in feed.get('links', []):
+    fg.link(rel  = link.get('rel', ''),
+            type = link.get('type', ''),
+            href = link.get('href', ''))
 
   if 'author_detail' in feed:
-    fg.author(name  = feed['author_detail']['name']  if 'name'  in feed['author_detail'] else '',
-              email = feed['author_detail']['email'] if 'email' in feed['author_detail'] else '')
-  if 'authors' in feed:
-    for author in feed['authors']:
-      fg.author(name  = author['name']  if 'name'  in author else '',
-                email = author['email'] if 'email' in author else '')
+    fg.author(name  = feed['author_detail'].get('name', ''),
+              email = feed['author_detail'].get('email', ''))
+  for author in feed.get('authors', []):
+    fg.author(name  = author.get('name', '') ,
+              email = author.get('email', ''))
 
-  fg.language(feed['language'] if 'language' in feed else '')
-  fg.rights(feed['rights'] if 'rights' in feed else '')
+  fg.language(feed.get('language', ''))
+  fg.rights(feed.get('rights', ''))
   fg.generator('Cast Rewinder & python-feedgen on %s' % request.host_url)
 
-  if 'itunes_explicit' in feed and feed['itunes_explicit']:
+  if feed.get('itunes_explicit'):
     explicit = 'yes'
   else:
     explicit = 'no'
   fg.podcast.itunes_explicit(explicit)
-  fg.podcast.itunes_new_feed_url(feed['itunes_new-feed-url'] if 'itunes_new-feed-url' in feed else '')
-  fg.podcast.itunes_summary(feed['summary'] if 'summary' in feed else '')
+  fg.podcast.itunes_new_feed_url(feed.get('itunes_new-feed-url', ''))
+  fg.podcast.itunes_summary(feed.get('summary', ''))
   
   fg.description(strip_tags(feed['summary']) if 'summary' in feed and feed['summary'] != ''
             else strip_tags(feed['description']) if 'description' in feed and feed['description'] != ''
@@ -265,49 +263,45 @@ def build_feed(feed_object, feed_entries, publication_dates, feed_format='feed_r
     episode = json.loads(entry.content)
 
     fe = fg.add_entry()
-    fe.id(episode['id'] if 'id' in episode else '')
-    fe.title(episode['title'] if 'title' in episode else '')
-    fe.podcast.itunes_subtitle(episode['subtitle'] if 'subtitle' in episode else '')
+    fe.id(episode.get('id', ''))
+    fe.title(episode.get('title', ''))
+    fe.podcast.itunes_subtitle(episode.get('subtitle', ''))
     
     # original publication date:
-    # fe.published(episode['published'] if 'published' in episode else '')
+    # fe.published(episode.get('published', ''))
     fe.published(publication_dates['dates'][index])
 
     episode_pubished = '-'.join((str(episode['published_parsed'][0]),  # year
                                  str(episode['published_parsed'][1]).zfill(2),  # month
                                  str(episode['published_parsed'][2]).zfill(2))) # day
 
-    summary = strip_tags(html = episode['summary']) if 'summary' in episode else ''
+    summary = strip_tags(html = episode.get('summary', ''))
     summary = "Originally published on %s\n%s" % (episode_pubished, summary)
     fe.description(summary)
     fe.summary(summary)
     fe.podcast.itunes_summary(summary)
     
-    if 'content' in episode:
-      for content in episode['content']:
-        fe.content(content = strip_tags(content['value']) if 'value' in content else '',
-                      #src  = content['base']  if 'base'  in content else '',
-                      type = content['type']  if 'type'  in content else '')
+    for content in episode.get('content', []):
+      fe.content(content = strip_tags(content['value']) if 'value' in content else '',
+                    #src  = content['base']  if 'base'  in content else '',
+                    type = content['type']  if 'type'  in content else '')
 
-    if 'media_content' in episode:
-      for media in episode['media_content']:
-        fe.enclosure(url   = media['url'] if 'url' in media else '',
-                    length = media['filesize'] if 'filesize' in media else '',
-                    type   = media['type'] if 'type' in media else '')
+    for media in episode.get('media_content', []):
+      fe.enclosure(url   = media.get('url'),
+                  length = media.get('filesize'),
+                  type   = media.get('type'))
 
-    if 'enclosure' in episode:
-      for media in episode['enclosure']:
-        fe.enclosure(url   = media['url'] if 'url' in media else '',
-                    length = media['filesize'] if 'filesize' in media else '',
-                    type   = media['type'] if 'type' in media else '')
+    for media in episode.get('enclosure', []):
+      fe.enclosure(url   = media.get('url'),
+                  length = media.get('filesize'),
+                  type   = media.get('type'))
 
-    fe.link(href = episode['link'] if 'link' in episode else '', rel = 'alternate')
-    if 'links' in episode:
-      for link in episode['links']:
-        fe.link(rel = link['rel']  if 'rel'  in link else '',
-                href = link['href'] if 'href' in link else '',
-                type = link['type'] if 'type' in link else '',
-                length = link['length'] if 'length' in link else '')
+    fe.link(href = episode.get('link', ''), rel = 'alternate')
+    for link in episode.get('links', []):
+      fe.link(rel = link.get('rel', ''),
+              href = link.get('href', ''),
+              type = link.get('type', ''),
+              length = link.get('length', ''))
 
     if 'image' in episode and 'href' in episode['image']:
       image_url = episode['image']['href']
@@ -316,11 +310,128 @@ def build_feed(feed_object, feed_entries, publication_dates, feed_format='feed_r
       if image_url[-4:] in ('.jpg', '.png'):
         fe.podcast.itunes_image(image_url)
 
-
-
-    fe.podcast.itunes_duration(episode['itunes_duration'] if 'itunes_duration' in episode else '')
+    fe.podcast.itunes_duration(episode.get('itunes_duration', ''))
 
   if feed_format == 'feed_atom':
     return fg.atom_str(pretty=True)
-  else:
+  elif feed_format == 'feed_rss':
     return fg.rss_str(pretty=True)
+
+
+def build_json_feed(feed_object, feed_entries, publication_dates):
+  """ From the Feed() and the Episodes(), with help from the publication dates dict
+      gotten from parse_frequency(), this function makes the RSS feed.
+  """
+
+  """
+      "version": <>,
+      "title": <>,
+      "description": <>,
+      "home_page_url": <>,
+      "feed_url": <>,
+      "date_published": <>,
+      "date_modified": <>,
+      "author": {
+          "name": <>,
+          "url": <>"
+      },
+      "icon": <>,
+      "_castrewinder": {
+          "generator": <>,
+          "language": <>,
+          "copyright": <>,
+          "original_url": <>,
+          "explicit": true,
+          "pubdate": <>,
+          "owner": <>,
+          "image": <>"
+      },
+  """
+  feed = json.loads(feed_object.content)
+
+  json_feed = {
+    "version": "https://jsonfeed.org/version/1",
+    "title": feed.get('title', ''),
+    "description": strip_tags(feed['summary']) if 'summary' in feed and feed['summary'] != ''
+              else strip_tags(feed['description']) if 'description' in feed and feed['description'] != ''
+              else strip_tags(feed['subtitle']) if 'subtitle' in feed and feed['subtitle'] != ''
+              else 'This feed was generated by Cast Rewinder on %s' % request.host_url,
+    "home_page_url": feed.get('link', ''),
+    "feed_url": request.url,
+    "_castrewinder": {
+      "generator": "Cast Rewinder & python-feedgen on %s" % request.host_url,
+      "language": feed.get('language', ''),
+      "copyright": feed.get('rights', ''),
+      "original_url": feed_object.url,
+      "pubdate": publication_dates['dates'][-1].isoformat()
+    },
+    "items": []
+  }
+
+  if 'image' in feed and 'href' in feed['image']:
+    json_feed['icon'] = feed['image']['href']
+
+  if 'author_detail' in feed:
+    json_feed['author'] = {
+      'name': feed['author_detail'].get('name', ''),
+      'url': 'mailto:%s' % feed['author_detail'].get('email', '')}
+  elif 'authors' in feed:
+    json_feed['author'] = {
+      'name': feed['authors'][0].get('name', ''),
+      'url': 'mailto:%s' % feed['authors'][0].get('email', '')}
+
+  for index, entry in enumerate(feed_entries):
+
+    episode = json.loads(entry.content)
+
+    episode_pubished = '-'.join((str(episode['published_parsed'][0]),  # year
+                                 str(episode['published_parsed'][1]).zfill(2),  # month
+                                 str(episode['published_parsed'][2]).zfill(2))) # day
+
+    summary = strip_tags(html = episode.get('summary', ''))
+    summary = "Originally published on %s.\n%s" % (episode_pubished, summary)
+
+    item = {
+      "title": episode.get('title', ''),
+      "id": episode.get('id', ''),
+      "url": episode.get('link', ''),
+      "summary": summary,
+      "content_text": summary,
+      "date_published": publication_dates['dates'][index].isoformat(),
+      "attachments": []
+    }
+
+    for content in episode.get('content', []):
+      if content.get('type') == 'text/plain':
+        item['content_text'] = "Originally published on %s.\n%s" % (episode_pubished, strip_tags(content.get('value')))
+      elif content.get('type') == 'text/html':
+        item['content_html'] = "<p>Originally published on %s.</p>%s" % (episode_pubished, content.get('value'))
+
+    for media in episode.get('media_content', []):
+      item['attachments'].append({
+              'url': media.get('url', ''),
+              'mime_type': media.get('type', ''),
+              'size_in_bytes': media.get('filesize', '')
+          })
+
+    for media in episode.get('enclosure', []):
+      item['attachments'].append({
+              'url': media.get('url', ''),
+              'mime_type': media.get('type', ''),
+              'size_in_bytes': media.get('filesize', '')
+          })
+
+    for link in episode.get('links', []):
+      if link.get('rel') == 'enclosure':
+        item['attachments'].append({
+              'url': link.get('href', ''),
+              'mime_type': link.get('type', ''),
+              'size_in_bytes': link.get('length', '')
+          })
+
+    if 'image' in episode and episode['image'].get('href'):
+      item['image'] = episode['image']['href']
+
+    json_feed['items'].append(item)
+
+  return json.dumps(json_feed)

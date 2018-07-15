@@ -55,7 +55,8 @@ class UrlForm(FlaskForm):
                               default = 'feed_rss',
                               choices=[
                                   ('feed_rss',lazy_gettext('RSS')),
-                                  ('feed_atom',lazy_gettext('Atom'))])
+                                  ('feed_atom',lazy_gettext('Atom')),
+                                  ('feed_json',lazy_gettext('JSON Feed'))])
   option_order = RadioField(lazy_gettext('Order'),
                               default = 'asc',
                               choices=[
