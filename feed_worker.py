@@ -248,7 +248,7 @@ def get_parsed_json_feed(json_feed):
     episode = {
       "id": item.get('id', ''),
       "title": item.get('title', ''),
-      "link": item.get('link', ''),
+      "link": item.get('url', ''),
       "summary": item.get('summary', ''),
       "content": [
         {
