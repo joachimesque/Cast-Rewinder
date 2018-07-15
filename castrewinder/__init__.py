@@ -44,7 +44,7 @@ def before_first_request():
 @app.before_request
 def before_request():
   # set Locale
-  g.locale = get_locale()
+  g.locale = get_locale() if get_locale() in app.config['LANGUAGES'].keys() else 'en'
 
   # Unpickle git ID from pickle.
   with open('pickle.pk', 'rb') as fi:
