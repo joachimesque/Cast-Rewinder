@@ -1,0 +1,12 @@
+{% extends 'layout.html' %}
+
+{% block title %}🚧 Page non trouvée !{% endblock %}
+
+{% block header %}🚧 404, Page non trouvée !{% endblock %}
+
+{% block content %}
+
+  <p>La page que tu souhaitais atteindre n’existe pas. Si tu as cliqué sur un lien qui t’a mené ici, on est désolés ! Malgré tout on a entendu qu’il y avait des trucs super intéressants à <a href="{{ url_for('index') }}">l’accueil</a>.</p>
+  <p>Sinon, si t’atais en train de farfouiller, bah y a rien à voir.</p>
+
+{% endblock %}

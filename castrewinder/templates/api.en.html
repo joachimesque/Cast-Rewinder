@@ -1,15 +1,6 @@
 {% extends 'layout.html' %}
 
-{% block title %}About{% endblock %}
-
-{% block header %}
-  <h1 class="title is-size-2">{{ config['WEBSITE_NAME'] }}</h1>
-  <p class="subtitle is-size-4">
-    <a href="{{ url_for('index') }}">Home</a> ·
-    <a href="{{ url_for('about') }}">About</a> ·
-    API
-  </p>
-{% endblock %}
+{% block title %}The API{% endblock %}
 
 {% block content %}
 <div class="content">

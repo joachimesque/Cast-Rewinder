@@ -10,6 +10,20 @@ body > section {
   flex: 1 0 auto;
 }
 
+p.menu a.active {
+  color: black;
+  pointer-events: none;
+  cursor: default;
+}
+
+p.menu a + a::before {
+  content: "·";
+  pointer-events: none;
+  cursor: default;
+  color: black;
+  margin: 0 .5em;
+}
+
 .toggle-content {
   display: none;
 }
@@ -76,6 +90,6 @@ input[type="number"] {
 
 @media screen and (min-width: 769px), print {
   .field-body {
-      flex-grow: 3;
+      flex-grow: 2;
   }
 }

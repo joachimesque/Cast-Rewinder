@@ -52,6 +52,10 @@ Copy `config.py` to `./instances/config.py`, and edit your preferences (using Na
     (.venv) $ cp config.py ./instances/config.py
     (.venv) $ nano ./instances/config.py
 
+Generate the compiled \*.mo translation files (for more info on translations, check out [Flask-Babel documentation](https://pythonhosted.org/Flask-Babel/#translating-applications)):
+
+    (.venv) $ pybabel compile -d translations
+
 Then run the install script:
 
     (.venv) $ python setup.py

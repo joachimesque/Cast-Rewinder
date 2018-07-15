@@ -1,5 +1,6 @@
 from . import app
-from flask import render_template, request, abort, flash, Response
+from flask import render_template, request, abort, flash, Response, g
+from flask_babel import Babel, gettext
 import json
 from urllib.parse import urlparse
 
@@ -14,12 +15,12 @@ from .models import Feed, Episode
 @app.errorhandler(404)
 def page_not_found(e):
     # note that we set the 404 status explicitly
-    return render_template('404.html'), 404
+    return render_template('404.'+ g.locale +'.html'), 404
 
 @app.errorhandler(500)
 def error(e):
     # note that we set the 500 status explicitly
-    return render_template('500.html'), 500
+    return render_template('500.'+ g.locale +'.html'), 500
 
 @app.route('/', methods=["GET", "POST"])
 def index():
@@ -30,7 +31,7 @@ def index():
     options = get_options(request_form = request.form)
 
     if frequency == '':
-      flash('You did not select week days, please do now or select another frequency.')
+      flash(gettext('You did not select week days, please do now or select another frequency.'))
       return render_template('index.html', form = form)
 
 
@@ -40,7 +41,7 @@ def index():
       # If the supplied URL is the same as the app’s URL
       # Don’t throw bricks into the machine, kids.
       # Perhaps there should be a protection against URL-shorteners, too.
-      flash("🤔 DUDE. NOT FUNNY.")
+      flash(gettext("🤔 DUDE. NOT FUNNY."))
       return render_template('index.html', form = form)
     else:
       end_url = generate_url(feed_id = 0,
@@ -67,11 +68,11 @@ def ajax_geturl():
   
   if not valid_feed:
     if u.netloc.endswith('soundcloud.com'):
-      error = "This SoundCloud user does not have a podcast feed. Ask them to set one up!"
+      error = gettext("This SoundCloud user does not have a podcast feed. Ask them to set one up!")
     else:
-      error = "The supplied URL is not a podcast feed. Unsure why you got this answer, thinking it might be a bug? Send me an email."
+      error = gettext("The supplied URL is not a podcast feed. Unsure why you got this answer, thinking it might be a bug? Send me an email.")
 
-    return {'error': error}
+    return str(json.dumps({'error': error}))
   else:
 
     feed_object = db.session.query(Feed).filter(Feed.url == feed_url).one()
@@ -142,12 +143,12 @@ def serve_feed(feed_id, frequency, start_date, options):
 
 @app.route('/about')
 def about():
-  return render_template('about.html')
+  return render_template('about.'+ g.locale +'.html')
 
 
 @app.route('/api/')
 def about_api():
-  return render_template('api.html')
+  return render_template('api.'+ g.locale +'.html')
 
 @app.route('/api/get', methods=["GET"])
 @app.route('/api/post', methods=["POST"])

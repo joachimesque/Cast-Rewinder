@@ -1,0 +1,11 @@
+{% extends 'layout.html' %}
+
+{% block title %}🚧 Erreur du serveur !{% endblock %}
+
+{% block header %}🚧 500, Erreur du serveur !{% endblock %}
+
+{% block content %}
+
+  <p>Il y a eu une erreur, on en est désolés. Tu peux revenir à <a href="{{ url_for('index') }}">l’accueil</a>, ou tu peux nous dire comment l’erreur s’est produite, en <a href="https://github.com/joachimesque/Cast-Rewinder/issues">ouvrant une <em>issue</em> sur le GitHub de CastRewinder</a>, ou en nous envoyant un email à <a href="mailto:hello@rewind.website">hello@rewind.website</a>.</p>
+
+{% endblock %}

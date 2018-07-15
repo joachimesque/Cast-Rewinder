@@ -1,0 +1,160 @@
+# French translations for PROJECT.
+# Copyright (C) 2018 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2018.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2018-07-15 15:09+0200\n"
+"PO-Revision-Date: 2018-07-14 18:59+0200\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.6.0\n"
+
+#: castrewinder/forms.py:27
+msgid "Feed address"
+msgstr "Adresse du flux"
+
+#: castrewinder/forms.py:29
+msgid "Frequency"
+msgstr "Fréquence"
+
+#: castrewinder/forms.py:30
+msgid "Daily"
+msgstr "Quotidien"
+
+#: castrewinder/forms.py:31
+msgid "Weekly"
+msgstr "Hebdo"
+
+#: castrewinder/forms.py:32
+msgid "Monthly"
+msgstr "Mensuel"
+
+#: castrewinder/forms.py:33
+msgid "Select week days:"
+msgstr "Par jour de la semaine :"
+
+#: castrewinder/forms.py:35
+msgid "Monday"
+msgstr "lundi"
+
+#: castrewinder/forms.py:36
+msgid "Tuesday"
+msgstr "mardi"
+
+#: castrewinder/forms.py:37
+msgid "Wednesday"
+msgstr "mercredi"
+
+#: castrewinder/forms.py:38
+msgid "Thursday"
+msgstr "jeudi"
+
+#: castrewinder/forms.py:39
+msgid "Friday"
+msgstr "vendredi"
+
+#: castrewinder/forms.py:40
+msgid "Saturday"
+msgstr "samedi"
+
+#: castrewinder/forms.py:41
+msgid "Sunday"
+msgstr "dimanche"
+
+#: castrewinder/forms.py:43
+msgid "Start date"
+msgstr "Date de début"
+
+#: castrewinder/forms.py:47
+msgid "Timezone"
+msgstr "Fuseau horaire"
+
+#: castrewinder/forms.py:50
+msgid "Start from episode #"
+msgstr "Démarrer à l’épisode n<sup>o</sup>"
+
+#: castrewinder/forms.py:54
+msgid "Feed Format"
+msgstr "Format du flux"
+
+#: castrewinder/forms.py:57
+msgid "RSS"
+msgstr "RSS"
+
+#: castrewinder/forms.py:58
+msgid "Atom"
+msgstr "Atom"
+
+#: castrewinder/forms.py:59
+msgid "Order"
+msgstr "Ordre"
+
+#: castrewinder/forms.py:62
+msgid "Oldest first"
+msgstr "À partir du plus ancien"
+
+#: castrewinder/forms.py:63
+msgid "Newest first"
+msgstr "À partir du plus récent"
+
+#: castrewinder/views.py:34
+msgid "You did not select week days, please do now or select another frequency."
+msgstr ""
+"Tu n’as pas sélectionné de jour de la semaine. C’est utile si tu veux "
+"recevoir des nouveaux épisodes certains jours précis."
+
+#: castrewinder/views.py:44
+msgid "🤔 DUDE. NOT FUNNY."
+msgstr "🤔 HAHA. TRÈS MALIN"
+
+#: castrewinder/views.py:71
+msgid "This SoundCloud user does not have a podcast feed. Ask them to set one up!"
+msgstr "Cet utilisateur SoundCloud n‘a pas de flux de podcast."
+
+#: castrewinder/views.py:73
+msgid ""
+"The supplied URL is not a podcast feed. Unsure why you got this answer, "
+"thinking it might be a bug? Send me an email."
+msgstr ""
+"L’adresse fournie n’est pas un flux de podcast. Si tu ne sais pas "
+"pourquoi tu as eu ce message, c’est peut-être un bug. Envoie-moi un email"
+" si tu veux en savoir plus."
+
+#: castrewinder/templates/index.html:3
+msgid "Subscribe to a podcast from the beginning"
+msgstr "Abonne-toi à un podcast depuis le début !"
+
+#: castrewinder/templates/index_form.html:57
+msgid "Toggle options"
+msgstr "Montrer/cacher les options"
+
+#: castrewinder/templates/index_form.html:135
+msgid "Get that feed!"
+msgstr "Recevoir le flux !"
+
+#: castrewinder/templates/layout.html:5
+msgid ""
+"runs Cast Rewinder, which allows you to subscribe to a podcast from the "
+"beginning."
+msgstr ""
+"tourne avec Cast Rewinder, qui te permet de t’abonner à un podcast depuis"
+" le début"
+
+#~ msgid "Home"
+#~ msgstr "Accueil"
+
+#~ msgid "About"
+#~ msgstr "À propos"
+
+#~ msgid "API"
+#~ msgstr "l’API"
+

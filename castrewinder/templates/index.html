@@ -1,235 +1,12 @@
 {% extends 'layout.html' %}
 
-{% block title %}Subscribe to a podcast from the beginning{% endblock %}
-
-{% block header %}
-  <h1 class="title is-size-2">{{ config['WEBSITE_NAME'] }}</h1>
-  <p class="subtitle is-size-4">
-    Home ·
-    <a href="{{ url_for('about') }}">About</a> ·
-    <a href="{{ url_for('about_api') }}">API</a>
-  </p>
-{% endblock %}
+{% block title %}{{ _('Subscribe to a podcast from the beginning') }}{% endblock %}
 
 {% block content %}
 
-{% if request_json is defined %}
-  <div id="loading_content" class="toggle-content is-visible">
-    <h2 class="is-size-4 title">Your feed is being prepared…</h2>
-    <div class="has-text-centered"><span class="spinner"></span></div>
-    <hr>
-  </div>
+  {% include 'index_content.' + g.locale + '.html' %}
+  {% include 'index_form.html' %}
 
-  <div id="loaded_content" class="toggle-content">
-    <h2 class="is-size-4 title">You can now subscribe to this feed</h2>
-
-    <article class="media is-block-mobile">
-      <figure class="media-left">
-        <p class="image is-128x128">
-          <img id="feed_image">
-        </p>
-      </figure>
-      <div class="media-content">
-        <div class="content">
-          <p>
-            <strong class="is-size-5" id="feed_title"></strong> <small><a id="feed_url">Podcast webpage</a></small> <small id="feed_copyright"></small>
-            <br>
-            <span id="feed_content"></span>
-          </p>
-        </div>
-      </div>
-    </article>
-
-    <hr>
-
-    <div class="field has-addons">
-      <div class="control is-expanded">
-        <input class="input is-large is-rounded is-primary" type="text" value="" readonly id="element_to_copy">
-      </div>
-      <div class="control">
-        <button id="copy_btn" class="button is-primary is-large is-rounded" data-clipboard-target="#element_to_copy">
-          <span class="icon is-medium">
-            <svg height="1em" width="1em" viewBox="0 0 1024 896" xmlns="http://www.w3.org/2000/svg">
-              <path fill="#ffffff" d="M128 768h256v64H128v-64z m320-384H128v64h320v-64z m128 192V448L384 640l192 192V704h320V576H576z m-288-64H128v64h160v-64zM128 704h160v-64H128v64z m576 64h64v128c-1 18-7 33-19 45s-27 18-45 19H64c-35 0-64-29-64-64V192c0-35 29-64 64-64h192C256 57 313 0 384 0s128 57 128 128h192c35 0 64 29 64 64v320h-64V320H64v576h640V768zM128 256h512c0-35-29-64-64-64h-64c-35 0-64-29-64-64s-29-64-64-64-64 29-64 64-29 64-64 64h-64c-35 0-64 29-64 64z"/>
-            </svg>
-          </span>
-          <span>Copy</span>
-        </button>
-      </div>
-    </div>
-    <p>Did you know? You can change the options, like the frequency or the start date, directly by changing the URL, instead of having another go with the form.</p>
-    <p><a href="#how-to-subscribe" class="is-primary">How to subscribe to this feed on your favourite podcast app?</a></p>
-
-    <hr>
-
-    <article id="how-to-subscribe" class="message toggle-content">
-      <div class="message-body content">
-        <h3 class="title is-4">How to subscribe to this feed?</h3>
-        <h4 class="title is-5">on iTunes for desktop</h4>
-        <p>In the “<em>File</em>” menu, click on “<em>Subscribe to Podcast…</em>”.
-        You will be asked for an address, paste the feed address that’s in the section above.</p>
-        <p>There are more answers on their <a href="https://www.apple.com/itunes/podcasts/fanfaq.html">FAQ For Podcast Fans</a></p>
-        <h4 class="title is-5">on Apple’s Podcast app for iPhone</h4>
-        <p>Tap the “<em>Library</em>” icon at the bottom of the screen. Then tap “<em>Edit…</em>” on the top right corner, then “<em>Add a Podcast by URL…</em>”. Paste the feed URL and hit “<em>Subscribe</em>”.</p>
-
-        <p class="is-6"><strong>You can check Josh Muccio’s Medium post <a href="https://medium.com/@joshmuccio/how-to-manually-add-a-rss-feed-to-your-podcast-app-on-desktop-ios-android-478d197a3770">How to manually add a RSS feed to your podcast app on desktop, iOS & Android</a> for more apps and platforms.</strong></p>
-      </div>
-      <hr>
-    </article>
-
-  </div>
-
-
-  <h2 class="is-size-4 title">Get another podcast feed!</h2>
-{% else %}
-  <h2 class="is-size-4 title">Subscribe to a podcast from the beginning</h2>
-  <p class="is-size-6 subtitle">You will just need to provide us the address of an iTunes podcast or of a podcast feed, some SoundCloud addresses also work</p>
-  <p class="">This service is in beta. Please proceed accordingly <small>(if the data is not exactly how you expect it to be, it might be because of a bug, tell me all about bugs on <a href="https://github.com/joachimesque/Cast-Rewinder">Github: Cast Rewinder</a> by opening an issue, or send me an email at <a href="mailto:hello@rewind.website">hello@rewind.website</a>)</small>.</p>
-  <hr>
-{% endif %}
-
-
-
-<form action="" method="post">
-
-  <div class="field is-horizontal">
-    <div class="field-label is-medium">
-      {{ form.url.label(class_='label') }}
-    </div>
-    <div class="field-body">
-      <div class="field">
-        <div class="control">
-          {{ form.url(class_='input is-medium is-rounded') }}
-        </div>
-      </div>
-    </div>
-  </div>
-
-
-  <div class="field is-horizontal" id="frequency">
-    <div class="field-label ">
-      {{ form.frequency.label(class_='label') }}
-    </div>
-    <div class="field-body">
-      <div class="field">
-        <div class="control select is-rounded ">
-          {{ form.frequency(class_='select') }}
-        </div>
-      </div>
-    </div>
-  </div>
-
-
-  <div class="toggle-content" id="custom_days_form_section">
-    <div class="field is-horizontal">
-      <div class="field-label is-medium">
-        
-      </div>
-      <div class="field-body">
-        <div class="field">
-          <div class="contol checkbox">{{ form.custom_day_mon(class_='checkbox') }} {{ form.custom_day_mon.label(class_='checkbox') }}</div>
-          <div class="contol checkbox">{{ form.custom_day_tue(class_='checkbox') }} {{ form.custom_day_tue.label(class_='checkbox') }}</div>
-          <div class="contol checkbox">{{ form.custom_day_wed(class_='checkbox') }} {{ form.custom_day_wed.label(class_='checkbox') }}</div>
-          <div class="contol checkbox">{{ form.custom_day_thu(class_='checkbox') }} {{ form.custom_day_thu.label(class_='checkbox') }}</div>
-          <div class="contol checkbox">{{ form.custom_day_fri(class_='checkbox') }} {{ form.custom_day_fri.label(class_='checkbox') }}</div>
-          <div class="contol checkbox">{{ form.custom_day_sat(class_='checkbox') }} {{ form.custom_day_sat.label(class_='checkbox') }}</div>
-          <div class="contol checkbox">{{ form.custom_day_sun(class_='checkbox') }} {{ form.custom_day_sun.label(class_='checkbox') }}</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <hr>            
-
-  <div class="field is-horizontal">
-    <div class="field-label">
-    </div>
-    <div class="field-body">
-      <a href="#show-options">Toggle options</a>
-    </div>
-  </div>
-
-  <div id="show-options" class="toggle-form">
-    <div class="field is-horizontal" id="frequency">
-      <div class="field-label ">
-        {{ form.start_date.label(class_='label') }}
-      </div>
-      <div class="field-body">
-        <div class="field has-addons">
-          <div class="control ">
-            {{ form.start_date(class_='input date is-rounded') }}
-          </div>
-          <div class="control is-expanded">
-            <div class="select is-rounded is-fullwidth">
-              {{ form.start_date_timezone(class_='') }}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="field is-horizontal">
-      <div class="field-label">
-        <p class="label">{{ form.option_limit.label(class_='') }}</p>
-      </div>
-      <div class="field-body">
-        <div class="field">
-          <div class="control">
-             {{ form.option_limit(class_='input is-rounded') }}
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="field is-horizontal">
-      <div class="field-label">
-        <p class="label">{{ form.option_order.label(class_='') }}</p>
-      </div>
-      <div class="field-body">
-        <div class="field">
-          <div class="control checkbox">
-            {% for subfield in form.option_order %}
-          <div class="control radio">
-                {{ subfield }} {{ subfield.label }}
-          </div>
-            {% endfor %}
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="field is-horizontal">
-      <div class="field-label">
-        <p class="label">{{ form.option_format.label(class_='') }}</p>
-      </div>
-      <div class="field-body">
-        <div class="field">
-            {% for subfield in form.option_format %}
-          <div class="control radio">
-                {{ subfield }} {{ subfield.label }}
-          </div>
-            {% endfor %}
-        </div>
-      </div>
-    </div>
-  </div>
-
-  {{ form.csrf_token }}
-  <hr>
-
-  <div class="field is-horizontal">
-    <div class="field-label">
-      <!-- Left empty for spacing -->
-    </div>
-    <div class="field-body">
-      <div class="field">
-        <div class="control">
-          <button class="button is-primary is-medium is-rounded" type="submit">Get that feed!</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-</form>
 {% endblock %}
 
 
@@ -287,40 +64,50 @@
   // event handler
   function reqListener () {
     var response = JSON.parse(this.response);
+    if (typeof response['error'] !== 'undefined') {
+      document.querySelector('#loading_content').classList.toggle('is-visible');
 
-    document.querySelector('#loading_content').classList.toggle('is-visible');
-    document.querySelector('#loaded_content').classList.toggle('is-visible');
+      var header = document.querySelector('header.header');
+      var error_content = '<div class="container"><div class="columns is-centered"><div class="column is-three-fifths"><ul class=flashes><li class="notification is-danger"><strong>' + response['error'] + '</strong></li></ul></div></div></div>';
 
-
-    document.querySelector('#loaded_content #feed_image').src = response['content']['image']['href'];
-    document.querySelector('#loaded_content #feed_title').innerHTML = response['content']['title'];
-    document.querySelector('#loaded_content #feed_url').href = response['content']['link'];
-
-    if (typeof response['content']['copyright'] !== 'undefined') {
-      document.querySelector('#loaded_content #feed_copyright').innerHTML = '© ' + response['content']['copyright'];
-    } else {
-      document.querySelector('#loaded_content #feed_copyright').innerHTML = '© ' + response['content']['author'];
+      header.insertAdjacentHTML('beforeend',error_content);
+      
+      console.log(response['error']);
     }
+    else if (typeof response['feed_id'] !== 'undefined') {
+      document.querySelector('#loading_content').classList.toggle('is-visible');
+      document.querySelector('#loaded_content').classList.toggle('is-visible');
 
-    if (typeof response['content']['description'] !== 'undefined') {
-      document.querySelector('#loaded_content #feed_content').innerHTML = response['content']['description'];
-    } else if (typeof response['content']['summary'] !== 'undefined') {
-      document.querySelector('#loaded_content #feed_content').innerHTML = response['content']['summary'];
-    } else if (typeof response['content']['subtitle'] !== 'undefined') {
-      document.querySelector('#loaded_content #feed_content').innerHTML = response['content']['subtitle'];
-    }
 
-    var value = "{{ request.host_url }}" + response['feed_id'] + "{{ request_json['end_url'] }}";
+      document.querySelector('#loaded_content #feed_image').src = response['content']['image']['href'];
+      document.querySelector('#loaded_content #feed_title').innerHTML = response['content']['title'];
+      document.querySelector('#loaded_content #feed_url').href = response['content']['link'];
 
-    document.querySelector('#loaded_content #element_to_copy').value = value;
+      if (typeof response['content']['copyright'] !== 'undefined') {
+        document.querySelector('#loaded_content #feed_copyright').innerHTML = '© ' + response['content']['copyright'];
+      } else {
+        document.querySelector('#loaded_content #feed_copyright').innerHTML = '© ' + response['content']['author'];
+      }
 
-    var clipboard = new ClipboardJS('#copy_btn');
+      if (typeof response['content']['description'] !== 'undefined') {
+        document.querySelector('#loaded_content #feed_content').innerHTML = response['content']['description'];
+      } else if (typeof response['content']['summary'] !== 'undefined') {
+        document.querySelector('#loaded_content #feed_content').innerHTML = response['content']['summary'];
+      } else if (typeof response['content']['subtitle'] !== 'undefined') {
+        document.querySelector('#loaded_content #feed_content').innerHTML = response['content']['subtitle'];
+      }
 
-    document.querySelector('a[href="#how-to-subscribe"]').addEventListener("click", function(e) {
-      e.preventDefault();
-      document.querySelector('#how-to-subscribe').classList.toggle('is-visible');
-    });
+      var value = "{{ request.host_url }}" + response['feed_id'] + "{{ request_json['end_url'] }}";
 
+      document.querySelector('#loaded_content #element_to_copy').value = value;
+
+      var clipboard = new ClipboardJS('#copy_btn');
+
+      document.querySelector('a[href="#how-to-subscribe"]').addEventListener("click", function(e) {
+        e.preventDefault();
+        document.querySelector('#how-to-subscribe').classList.toggle('is-visible');
+      });
+    } //endif
 
   }
   

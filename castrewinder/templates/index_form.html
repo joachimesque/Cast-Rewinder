@@ -1,0 +1,141 @@
+
+<form action="" method="post">
+
+  <div class="field is-horizontal">
+    <div class="field-label is-medium">
+      {{ form.url.label(class_='label') }}
+    </div>
+    <div class="field-body">
+      <div class="field">
+        <div class="control">
+          {{ form.url(class_='input is-medium is-rounded') }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="field is-horizontal" id="frequency">
+    <div class="field-label ">
+      {{ form.frequency.label(class_='label') }}
+    </div>
+    <div class="field-body">
+      <div class="field">
+        <div class="control select is-rounded ">
+          {{ form.frequency(class_='select') }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="toggle-content" id="custom_days_form_section">
+    <div class="field is-horizontal">
+      <div class="field-label is-medium">
+        
+      </div>
+      <div class="field-body">
+        <div class="field">
+          <div class="contol checkbox">{{ form.custom_day_mon(class_='checkbox') }} {{ form.custom_day_mon.label(class_='checkbox') }}</div>
+          <div class="contol checkbox">{{ form.custom_day_tue(class_='checkbox') }} {{ form.custom_day_tue.label(class_='checkbox') }}</div>
+          <div class="contol checkbox">{{ form.custom_day_wed(class_='checkbox') }} {{ form.custom_day_wed.label(class_='checkbox') }}</div>
+          <div class="contol checkbox">{{ form.custom_day_thu(class_='checkbox') }} {{ form.custom_day_thu.label(class_='checkbox') }}</div>
+          <div class="contol checkbox">{{ form.custom_day_fri(class_='checkbox') }} {{ form.custom_day_fri.label(class_='checkbox') }}</div>
+          <div class="contol checkbox">{{ form.custom_day_sat(class_='checkbox') }} {{ form.custom_day_sat.label(class_='checkbox') }}</div>
+          <div class="contol checkbox">{{ form.custom_day_sun(class_='checkbox') }} {{ form.custom_day_sun.label(class_='checkbox') }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr>            
+
+  <div class="field is-horizontal">
+    <div class="field-label">
+    </div>
+    <div class="field-body">
+      <a href="#show-options">{{ _('Toggle options') }}</a>
+    </div>
+  </div>
+
+  <div id="show-options" class="toggle-form">
+    <div class="field is-horizontal" id="frequency">
+      <div class="field-label ">
+        {{ form.start_date.label(class_='label') }}
+      </div>
+      <div class="field-body">
+        <div class="field has-addons">
+          <div class="control ">
+            {{ form.start_date(class_='input date is-rounded') }}
+          </div>
+          <div class="control is-expanded">
+            <div class="select is-rounded is-fullwidth">
+              {{ form.start_date_timezone(class_='') }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="field is-horizontal">
+      <div class="field-label">
+        <p class="label">{{ form.option_limit.label(class_='') }}</p>
+      </div>
+      <div class="field-body">
+        <div class="field">
+          <div class="control">
+             {{ form.option_limit(class_='input is-rounded') }}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="field is-horizontal">
+      <div class="field-label">
+        <p class="label">{{ form.option_order.label(class_='') }}</p>
+      </div>
+      <div class="field-body">
+        <div class="field">
+          <div class="control checkbox">
+            {% for subfield in form.option_order %}
+          <div class="control radio">
+                {{ subfield }} {{ subfield.label }}
+          </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="field is-horizontal">
+      <div class="field-label">
+        <p class="label">{{ form.option_format.label(class_='') }}</p>
+      </div>
+      <div class="field-body">
+        <div class="field">
+            {% for subfield in form.option_format %}
+          <div class="control radio">
+                {{ subfield }} {{ subfield.label }}
+          </div>
+            {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {{ form.csrf_token }}
+  <hr>
+
+  <div class="field is-horizontal">
+    <div class="field-label">
+      <!-- Left empty for spacing -->
+    </div>
+    <div class="field-body">
+      <div class="field">
+        <div class="control">
+          <button class="button is-primary is-medium is-rounded" type="submit">{{ _('Get that feed!') }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</form>

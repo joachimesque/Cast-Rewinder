@@ -9,4 +9,10 @@ SQLALCHEMY_TRACK_MODIFICATIONS = True # Set to False for production
 WTF_CSRF_ENABLED = True
 WTF_CSRF_SECRET_KEY = 'another random string'
 
+BABEL_TRANSLATION_DIRECTORIES = '../translations'
+LANGUAGES = {
+    'en': 'English',
+    'fr': 'Français'
+}
+
 WEBSITE_NAME = '⏮ Cast Rewinder'

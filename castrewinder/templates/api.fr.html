@@ -1,0 +1,91 @@
+{% extends 'layout.html' %}
+
+{% block title %}L’API{% endblock %}
+
+{% block content %}
+<div class="content">
+    <h2 class="is-size-4 title">Cast Rewinder a une petite API.</h2>
+    
+    <p class="is-size-5">Pour tous les développeurs il y a une petite API RESTful accessible via des méthodes GET ou POST.</p>
+
+    <h3>GET</h3>
+    <p>Le point d’arrivée de l’API est <a href="{{ request.host_url }}api/get">{{ request.host }}/api/get</a>, voici tous les arguments qu’on peut y passer :</p>
+    <ul>
+        <li><code>url</code> <small><strong>requis</strong>, l’URL du flux, ou l’URL d’un podcast iTunes ou d’une page SoundCloud</small></li>
+        <li><code>frequency</code> la fréquence <small>accepte les valeurs :</small>
+            <ul>
+                <li><code>monthly</code> Mensuel</li>
+                <li><code>weekly</code> Hebdo <small>valeur par défaut</small></li>
+                <li><code>daily</code> Quotidien</li>
+                <li><code>custom_days</code> Par jour de la semaine</li>
+            </ul>
+        </li>
+        <li><code>start_date</code> Date de début <small>accepte des valeurs de dates, utilise aujourd’hui par défaut, format `AAAA-MM-JJ`</small></li>
+        <li><code>start_date_timezone</code> Fuseau horaire de la date de début <small>accepte des valeurs de fuseaux horaires sous la forme d’un <em>TZ name</em>, comme définit sur <a href="https://en.wikipedia.org/wiki/List_of_tz_database_time_zones">la liste officielle des fuseaux horaires</a>. Ex. : <code>America/Los_Angeles</code> ou <code>Europe/Isle_of_Man</code> (les espaces dans les noms sont remplacées par des “_”) valeur par défaut “Etc/UTC”, soit UTC+00:00</small></li>
+        <li><code>option_limit</code> Option d’épisode de départ <small>accepte des nombres entiers positif, utilise 1 par défaut</small></li>
+        <li><code>option_order</code> Option d’ordre de diffusion <small>accepte les valeurs :</small>
+            <ul>
+                <li><code>asc</code> ordre ascendant <small>valeur par défaut</small></li>
+                <li><code>desc</code> ordre descendant</li>
+            </ul>
+        </li>
+        <li><code>option_format</code> Option de format du flux <small>accepte les valeurs :</small>
+            <ul>
+                <li><code>feed_rss</code> <small>valeur par défaut</small></li>
+                <li><code>feed_atom</code></li>
+            </ul>
+        </li>
+    </ul>
+
+    <p>Si la valeur de <code>frequency</code> est réglée sur <code>custom_days</code>, il faut fournir un argument pour chacun des jours sélectionnés, sans quoi la fréquence est réglée à Hebdo par défaut.</p>
+    <ul>
+        <li><code>custom_day_mon=y</code> pour publier les lundi</li>
+        <li><code>custom_day_tue=y</code> pour publier les mardi</li>
+        <li><code>custom_day_wed=y</code> pour publier les mercredi</li>
+        <li><code>custom_day_thu=y</code> pour publier les jeudi</li>
+        <li><code>custom_day_fri=y</code> pour publier les vendredi</li>
+        <li><code>custom_day_sat=y</code> pour publier les samedi</li>
+        <li><code>custom_day_sun=y</code> pour publier les dimanche</li>
+    </ul>
+
+    <p>Voici deux exemples :</p>
+    <ul>
+        <li>Requête basique : <a href="{{ request.host_url }}api/get?url=https://itunes.apple.com/us/podcast/99-invisible/id394775318">{{ request.host }}/api/get?url=https://itunes.apple.com/us/podcast/99-invisible/id394775318</a></li>
+        <li>Requête complexe : <a href="{{ request.host_url }}api/get?url=https://itunes.apple.com/us/podcast/99-invisible/id394775318&frequency=custom_days&custom_day_mon=y&custom_day_tue=y&custom_day_sun=y&start_date=2018-07-01&start_date_timezone=Europe/Paris&option_limit=1&option_order=desc&option_format=feed_atom">{{ request.host }}/api/get?url=https://itunes.apple.com/us/podcast/99-invisible/id394775318&frequency=custom_days&custom_day_mon=y&custom_day_tue=y&custom_day_sun=y&start_date=2018-07-01&start_date_timezone=Europe/Paris&option_limit=1&option_order=desc&option_format=feed_atom</a></li>
+    </ul>
+
+    <h3>POST</h3>
+    <p>Le point d’arrivée de l’API est <a href="{{ request.host_url }}api/post">{{ request.host }}/api/post</a>. La requête doit être envoyée au format JSON, avec le type de contenu <code>application/json</code>. Les arguments sont les mêmes que pour les requêtes en GET.</p>
+
+    <p>Voici un exemple de JSON pour une requête en POST, toutes les valeurs passées sont les valeurs par défaut :</p>
+
+    <pre><code>{
+  "url": &lt;ton url&gt;,
+  "frequency": "custom_days",
+  "custom_day_mon": false,
+  "custom_day_tue": false,
+  "custom_day_wed": false,
+  "custom_day_thu": false,
+  "custom_day_fri": false,
+  "custom_day_sat": false,
+  "custom_day_sun": false,
+  "start_date" : &lt;aujourd’hui&gt;,
+  "start_date_timezone" : "Etc/UTC",
+  "option_limit": 1,
+  "option_order": "asc",
+  "option_format": "feed_rss"
+}
+</code></pre>
+
+    <h3>Réponse</h3>
+
+    <p>L’API répond à toute requête bien formée par un objet JSON contenant l’ID du feed et son URL complète.</p>
+
+    <pre><code>{
+  "feed_id": 16,
+  "url": "{{ request.host_url }}16/mon-tue-sun/20180708+0000"
+}</code></pre>
+
+    <p>Avec l’ID du flux il est possible de construire ses propres URLs, en suivant les bonnes fréquence, date de début et options.</p>
+</div>
+{% endblock %}

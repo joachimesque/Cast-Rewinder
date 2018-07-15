@@ -2,15 +2,6 @@
 
 {% block title %}About{% endblock %}
 
-{% block header %}
-  <h1 class="title is-size-2">{{ config['WEBSITE_NAME'] }}</h1>
-  <p class="subtitle is-size-4">
-    <a href="{{ url_for('index') }}">Home</a> ·
-    About ·
-    <a href="{{ url_for('about_api') }}">API</a>
-  </p>
-{% endblock %}
-
 {% block content %}
 <div class="content">
     <h2 class="is-size-4 title"><a href="{{ request.host_url }}">{{ request.host }}</a> runs Cast Rewinder, which allows you to subscribe to a podcast from the beginning.</h2>
