@@ -283,17 +283,16 @@ def build_xml_feed(feed_object, feed_entries, publication_dates, feed_format='fe
     
     for content in episode.get('content', []):
       fe.content(content = strip_tags(content['value']) if 'value' in content else '',
-                    #src  = content['base']  if 'base'  in content else '',
                     type = content['type']  if 'type'  in content else '')
 
     for media in episode.get('media_content', []):
       fe.enclosure(url   = media.get('url'),
-                  length = media.get('filesize'),
+                  length = str(media.get('filesize')),
                   type   = media.get('type'))
 
     for media in episode.get('enclosure', []):
       fe.enclosure(url   = media.get('url'),
-                  length = media.get('filesize'),
+                  length = str(media.get('filesize')),
                   type   = media.get('type'))
 
     fe.link(href = episode.get('link', ''), rel = 'alternate')
@@ -321,31 +320,6 @@ def build_xml_feed(feed_object, feed_entries, publication_dates, feed_format='fe
 def build_json_feed(feed_object, feed_entries, publication_dates):
   """ From the Feed() and the Episodes(), with help from the publication dates dict
       gotten from parse_frequency(), this function makes the RSS feed.
-  """
-
-  """
-      "version": <>,
-      "title": <>,
-      "description": <>,
-      "home_page_url": <>,
-      "feed_url": <>,
-      "date_published": <>,
-      "date_modified": <>,
-      "author": {
-          "name": <>,
-          "url": <>"
-      },
-      "icon": <>,
-      "_castrewinder": {
-          "generator": <>,
-          "language": <>,
-          "copyright": <>,
-          "original_url": <>,
-          "explicit": true,
-          "pubdate": <>,
-          "owner": <>,
-          "image": <>"
-      },
   """
   feed = json.loads(feed_object.content)
 
