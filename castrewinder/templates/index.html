@@ -90,8 +90,10 @@
 
       if (typeof response['content']['copyright'] !== 'undefined') {
         document.querySelector('#loaded_content #feed_copyright').innerHTML = '© ' + response['content']['copyright'];
-      } else if  (typeof response['content']['author'] !== 'undefined') {
+      } else if  (typeof response['content']['author']['name'] !== 'undefined') {
         document.querySelector('#loaded_content #feed_copyright').innerHTML = '© ' + response['content']['author']['name'];
+      } else if  (typeof response['content']['author'] !== 'undefined') {
+        document.querySelector('#loaded_content #feed_copyright').innerHTML = '© ' + response['content']['author'];
       } else {
         document.querySelector('#loaded_content #feed_copyright').style.display = 'none';
       }
