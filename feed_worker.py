@@ -161,7 +161,7 @@ def import_feed(url, ignore_date = False):
 
     headers = {
       'Accept': 'text/xml,application/rss+xml,application/atom+xml,application/json;q=0.9,*/*;q=0.8',
-      'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:62.0) Gecko/20100101 Firefox/62.0'
+      'User-Agent': 'Cast Rewinder on rewind.website'
       }
 
     try:
