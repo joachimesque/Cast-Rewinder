@@ -187,9 +187,7 @@ def import_feed(url, ignore_date = False):
       # Empty response raises all hell
       return False
 
-    response_content_type = ''
-    if 'content-type' in response:
-      response_content_type = response.headers['content-type'].split(';')[0]
+    response_content_type = response.headers['content-type'].split(';')[0]
 
     feed = []
     if response_content_type == 'application/json':
@@ -209,14 +207,14 @@ def import_feed(url, ignore_date = False):
     if url_exists_in_db:
       # Just update the Feed with new ETag and Content Type
       if 'ETag' in response.headers:
-        feed_object.etag = response.headers['ETag']
-      if 'Content-Type' in response.headers:
-        feed_object.last_modified = response.headers['Content-Type']
+        feed_object.etag = response.headers.get('ETag', None)
+      if 'Last-Modified' in response.headers:
+        feed_object.last_modified = response.headers.get('Last-Modified', None)
       db.session.commit()
 
     else:
       # Don't populate the Feed Table if it already contains the feed
-      response_headers = (response.headers['ETag'], response.headers['Content-Type'])
+      response_headers = (response.headers.get('ETag', None), response.headers.get('Content-Type', None))
       add_feed_to_db(feed = feed, feed_url = feed_url, response_headers = response_headers)
 
     # Populate the Episode Table
@@ -343,9 +341,7 @@ def update_feeds():
       # 304 Not Modified or empty responses get a pass
       continue
 
-    response_content_type = ''
-    if 'content-type' in response:
-      response_content_type = response.headers['content-type'].split(';')[0]
+    response_content_type = response.headers['content-type'].split(';')[0]
 
     feed = []
     if response_content_type == 'application/json':
@@ -362,9 +358,9 @@ def update_feeds():
       continue
 
     if 'ETag' in response.headers:
-      feed_object.etag = response.headers['ETag']
+      feed_object.etag = response.headers.get('ETag', None)
     if 'Last-Modified' in response.headers:
-      feed_object.last_modified = response.headers['Last-Modified']
+      feed_object.last_modified = response.headers.get('Last-Modified', None)
 
     db.session.commit()
 
