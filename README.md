@@ -74,6 +74,14 @@ What you really want is to read this doc : <http://flask.pocoo.org/docs/1.0/depl
 
 On [rewind.website](https://rewind.website/) I used [uWSGI](http://flask.pocoo.org/docs/1.0/deploying/uwsgi/) and nginx, on an Ubuntu machine, and it seems to be working.
 
+### Migrations
+
+If you read this, let’s hope you know what you do. Anyways, migrations are taken care of by Alembic.
+
+First, configure your Alembic `alembic.ini` by changing the value of `sqlalchemy.url`. Then you can:
+
+    (.venv) $ alembic upgrade head
+
 #### Cron job
 
 Here is the line for the Cron job that’ll update the feeds every day at 3 in the morning (server time).
