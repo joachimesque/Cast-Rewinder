@@ -13,6 +13,7 @@ import feedparser
 from castrewinder import db
 from castrewinder.models import Feed, Episode
 
+running_from_command_line = False
 
 def to_datetime_from_structtime(time_tuple):
   """ Converts structtime elements to good old datetime """
@@ -174,10 +175,10 @@ def import_feed(url, ignore_date = False):
         headers['If-Modified-Since'] = feed_object.last_modified
 
     try:
-        response = get(feed_url, headers=headers)
+      response = get(feed_url, headers=headers)
     except Exception:
-        print("Error: Something happened with the connection that prevented us to get the feed")
-        return None
+      print("Error: Something happened with the connection that prevented us to get the feed")
+      return False
 
     if response.status_code == 304:
       # 304 Not Modified gets a pass
@@ -193,7 +194,7 @@ def import_feed(url, ignore_date = False):
     if response_content_type == 'application/json':
       # transform json feed object to feedparser object
       feed = get_parsed_json_feed(json_feed = response.text)
-    elif response_content_type in ('text/xml','application/rss+xml','application/atom+xml','application/xml'):
+    elif response_content_type in ('text/xml','application/rss+xml','application/atom+xml','application/xml','application/xhtml+xml'):
       feed = feedparser.parse(response.text)
     else:
       # bad headers raise all hell
@@ -223,8 +224,11 @@ def import_feed(url, ignore_date = False):
     return True
 
   else:
-    print("The specified URL is not valid. Please verify you have the 'HTTP' part.")
-    ask_for_url()
+    if running_from_command_line:
+      print("The specified URL is not valid. Please verify you have the 'HTTP' part.")
+      ask_for_url()
+    else:
+      return False
 
 def get_parsed_json_feed(json_feed):
 
@@ -332,10 +336,10 @@ def update_feeds():
       headers['If-Modified-Since'] = feed_object.last_modified
 
     try:
-        response = get(feed_object.url, headers=headers)
+      response = get(feed_object.url, headers=headers)
     except Exception:
-        print("Error: Something happened with the connection that prevented us to get the feed")
-        return None
+      print("Error: Something happened with the connection that prevented us to get the feed")
+      continue
 
     if response.status_code == 304 or response.text == '':
       # 304 Not Modified or empty responses get a pass
@@ -347,7 +351,7 @@ def update_feeds():
     if response_content_type == 'application/json':
       # transform json feed object to feedparser object
       feed = get_parsed_json_feed(json_feed = response.text)
-    elif response_content_type in ('text/xml','application/rss+xml','application/atom+xml','application/xml'):
+    elif response_content_type in ('text/xml','application/rss+xml','application/atom+xml','application/xml','application/xhtml+xml'):
       feed = feedparser.parse(response.text)
     else:
       # bad headers get a pass
@@ -376,6 +380,8 @@ if __name__ == '__main__':
   parser.add_argument('-u','--update_feeds',help='''Updates all feeds''', action='store_true')
 
   args = parser.parse_args()
+
+  running_from_command_line = True
 
   if args.feed_url:
     import_feed(url = args.feed_url)
