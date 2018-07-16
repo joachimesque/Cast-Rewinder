@@ -172,17 +172,12 @@ def import_feed(url, ignore_date = False):
 
     response_content_type = response.headers['content-type'].split(';')[0]
 
-    import sys
-    print(len(response.text), file=sys.stderr)
-
     feed = []
     if response_content_type == 'application/json':
       # transform json feed object to feedparser object
       feed = get_parsed_json_feed(json_feed = response.text)
     elif response_content_type in ('text/xml','application/rss+xml','application/atom+xml','application/xml'):
       feed = feedparser.parse(response.text)
-
-    print(feed, file=sys.stderr)
 
     if feed == [] or feed['entries'] == []:
       # Cancel operation if the feed doesn't have any entries
