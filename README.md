@@ -76,7 +76,7 @@ On [rewind.website](https://rewind.website/) I used [uWSGI](http://flask.pocoo.o
 
 ### Migrations
 
-If you read this, let’s hope you know what you do. Anyways, migrations are taken care of by Alembic.
+If you read this, let’s hope you know what you do. Anyways, migrations are taken care of by [Alembic](http://alembic.zzzcomputing.com/en/latest/tutorial.html).
 
 First, configure your Alembic `alembic.ini` by changing the value of `sqlalchemy.url`. Then you can:
 
