@@ -72,15 +72,19 @@ def ajax_geturl():
     else:
       error = gettext("The supplied URL is not a podcast feed. Unsure why you got this answer, thinking it might be a bug? Send me an email.")
 
-    return str(json.dumps({'error': error}))
+    response = str(json.dumps({'error': error}))
   else:
 
     feed_object = db.session.query(Feed).filter(Feed.url == feed_url).one()
 
     return_object = {'feed_id': feed_object.id, 'content': json.loads(feed_object.content)} 
 
-    return str(json.dumps(return_object))
+    response = str(json.dumps(return_object))
 
+  r = Response(response=response, status=200, mimetype="application/json")
+  r.headers["Content-Type"] = "application/json; charset=utf-8"
+
+  return r
 
 
 
@@ -220,5 +224,8 @@ def api():
 
   else:
     response['error'] = 'No URL provided'
-        
-  return json.dumps(response)
+
+  r = Response(response=json.dumps(response), status=200, mimetype="application/json")
+  r.headers["Content-Type"] = "application/json; charset=utf-8"
+
+  return r
