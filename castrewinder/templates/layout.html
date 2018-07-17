@@ -11,30 +11,22 @@
 
 </head>
 <body class="template-{{ request.url_rule.endpoint }}">
-  <!-- <nav class="navbar" id="top">
-    <div class="navbar-brand">
-      <a class="navbar-item" href="{{ url_for('index') }}">
-        <p class="is-size-3"><strong><span role="img" aria-label="Rewind">⏮</span> Cast Rewinder</strong></p>
-      </a>
-      <div class="navbar-burger burger" data-target="menu">
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
-    </div>
-
-  </nav> -->
-
   <header class="header section">
     <div class="container">
       <div class="columns is-centered">
         <div class="column is-three-fifths">
           <h1 class="title is-size-2">{% block header %}{{ config['WEBSITE_NAME'] }}{% endblock %}</h1>
-          <p class="subtitle is-size-4 menu">
-            {% for page in [('index','Home'),('about','About'),('about_api','API')] %}
-            <a href="{{ url_for(page[0]) }}" {%- if request.path == url_for(page[0]) %} class="active"{% endif %}>{{ _(page[1]) }}</a>
-            {% endfor %}
-          </p>
+          <div class="level subtitle">
+            <p class="level-left is-size-4 menu">
+              {% for page in [('index',_('Home')),('about',_('About')),('about_api',_('API'))] %}
+              <a href="{{ url_for(page[0]) }}" {%- if request.path == url_for(page[0]) %} class="active"{% endif %}>{{ page[1] }}</a>
+              {% endfor %}
+            </p>
+            <p class="level-right is-size-7 menu">
+              {% for lang in config['LANGUAGES'] %}
+              <a href="?lang={{ lang }}" {%- if g.locale == lang %} class="active"{% endif %}>{{ config['LANGUAGES'][lang] }}</a>
+              {% endfor %}
+            </p></div>
         </div>
       </div>
     </div>

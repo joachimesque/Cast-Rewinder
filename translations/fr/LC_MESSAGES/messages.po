@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2018-07-15 15:09+0200\n"
+"POT-Creation-Date: 2018-07-17 17:35+0200\n"
 "PO-Revision-Date: 2018-07-14 18:59+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -95,32 +95,36 @@ msgid "Atom"
 msgstr "Atom"
 
 #: castrewinder/forms.py:59
+msgid "JSON Feed"
+msgstr "JSON Feed"
+
+#: castrewinder/forms.py:60
 msgid "Order"
 msgstr "Ordre"
 
-#: castrewinder/forms.py:62
+#: castrewinder/forms.py:63
 msgid "Oldest first"
 msgstr "À partir du plus ancien"
 
-#: castrewinder/forms.py:63
+#: castrewinder/forms.py:64
 msgid "Newest first"
 msgstr "À partir du plus récent"
 
-#: castrewinder/views.py:34
+#: castrewinder/views.py:45
 msgid "You did not select week days, please do now or select another frequency."
 msgstr ""
 "Tu n’as pas sélectionné de jour de la semaine. C’est utile si tu veux "
 "recevoir des nouveaux épisodes certains jours précis."
 
-#: castrewinder/views.py:44
+#: castrewinder/views.py:55
 msgid "🤔 DUDE. NOT FUNNY."
 msgstr "🤔 HAHA. TRÈS MALIN"
 
-#: castrewinder/views.py:71
+#: castrewinder/views.py:82
 msgid "This SoundCloud user does not have a podcast feed. Ask them to set one up!"
 msgstr "Cet utilisateur SoundCloud n‘a pas de flux de podcast."
 
-#: castrewinder/views.py:73
+#: castrewinder/views.py:84
 msgid ""
 "The supplied URL is not a podcast feed. Unsure why you got this answer, "
 "thinking it might be a bug? Send me an email."
@@ -149,12 +153,12 @@ msgstr ""
 "tourne avec Cast Rewinder, qui te permet de t’abonner à un podcast depuis"
 " le début"
 
-#~ msgid "Home"
-#~ msgstr "Accueil"
+msgid "Home"
+msgstr "Accueil"
 
-#~ msgid "About"
-#~ msgstr "À propos"
+msgid "About"
+msgstr "À propos"
 
-#~ msgid "API"
-#~ msgstr "l’API"
+msgid "API"
+msgstr "l’API"
 

@@ -1,4 +1,4 @@
-from flask import Flask, g, request
+from flask import Flask, g, request, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_babel import Babel, gettext
 
@@ -22,10 +22,11 @@ from flask_wtf.csrf import CSRFProtect
 app.secret_key = app.config['APP_SECRET_KEY']
 
 # Babel & localization stuff
-app.config['BABEL_DEFAULT_LOCALE'] = 'fr'
 @babel.localeselector
 def get_locale():
-  return request.accept_languages.best_match(app.config['LANGUAGES'].keys())
+  browser = request.accept_languages.best_match(app.config['LANGUAGES'].keys())
+  locale = session.get('lang', browser)
+  return locale if locale in app.config['LANGUAGES'].keys() else 'en'
 
 
 # Website footer info
@@ -44,7 +45,10 @@ def before_first_request():
 @app.before_request
 def before_request():
   # set Locale
-  g.locale = get_locale() if get_locale() in app.config['LANGUAGES'].keys() else 'en'
+  if 'lang' in request.args:
+    session['lang'] = request.args.get('lang', 'en')
+
+  g.locale = get_locale()
 
   # Unpickle git ID from pickle.
   with open('pickle.pk', 'rb') as fi:
