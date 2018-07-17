@@ -76,11 +76,15 @@ On [rewind.website](https://rewind.website/) I used [uWSGI](http://flask.pocoo.o
 
 ### Migrations
 
-If you read this, let’s hope you know what you do. Anyways, migrations are taken care of by [Alembic](http://alembic.zzzcomputing.com/en/latest/tutorial.html).
+If you read this, let’s hope you know what you do. Anyways, migrations are taken care of by [Flask-Migrate](https://github.com/miguelgrinberg/flask-migrate/).
 
-First, configure your Alembic `alembic.ini` by changing the value of `sqlalchemy.url`. Then you can:
+First, init the DB:
 
-    (.venv) $ PYTHONPATH=$PWD alembic upgrade head
+    (.venv) $ FLASK_APP=castrewinder flask db init
+
+Then you can upgrade whenever necessary:
+
+    (.venv) $ FLASK_APP=castrewinder flask db upgrade head
 
 #### Cron job
 
