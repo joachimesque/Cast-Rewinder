@@ -24,6 +24,10 @@ p.menu a + a::before {
   margin: 0 .5em;
 }
 
+#feed_copyright {
+  display: inline-block;
+}
+
 .toggle-content {
   display: none;
 }
@@ -44,6 +48,24 @@ p.menu a + a::before {
 
 .button {
   font-weight: 600;
+}
+
+.control.has-gradient {
+  position: relative;
+}
+.control.has-gradient::after {
+    content: "";
+    width: 2em;
+    top: 1px;
+    bottom: 1px;
+    right: 1.5rem;
+    position: absolute;
+    background: linear-gradient(to right, rgba(255,255,255,0) 0%,rgba(255,255,255,.5) 33%,rgba(255,255,255,1) 100%);
+    z-index: 100;
+    pointer-events: none;
+}
+.control.has-gradient #element_to_copy {
+    z-index: 1;
 }
 
 input[type="number"] {
