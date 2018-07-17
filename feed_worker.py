@@ -62,8 +62,7 @@ def add_entries_to_db(feed, feed_url, ignore_date = False):
 
   if not ignore_date:
     # updates the last updated value in the parent Feed in DB
-    last_published_element = to_datetime_from_structtime(time_tuple = feed['entries'][0]['published_parsed'])
-    feed_object.last_published_element = last_published_element
+    feed_object.last_published_element = datetime.datetime.today()
 
   db.session.commit()
 
