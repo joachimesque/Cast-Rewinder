@@ -1,7 +1,10 @@
 from . import app
 from flask import render_template, request, abort, flash, Response, g
+import werkzeug
 from flask_babel import Babel, gettext
 import json
+import hashlib
+import datetime
 from urllib.parse import urlparse
 
 import feed_worker
@@ -12,11 +15,19 @@ from .forms import UrlForm
 from . import db
 from .models import Feed, Episode
 
+# HTTP Exception : 304 Not Modified (empty response)
+class NotModified(werkzeug.exceptions.HTTPException):
+    code = 304
+    def get_response(self, environment):
+        return Response(status=304)
+
+# HTTP Error : 404 Not Found
 @app.errorhandler(404)
 def page_not_found(e):
     # note that we set the 404 status explicitly
     return render_template('404.'+ g.locale +'.html'), 404
 
+# HTTP Error : 500 Internal Server Error
 @app.errorhandler(500)
 def error(e):
     # note that we set the 500 status explicitly
@@ -97,13 +108,24 @@ def serve_feed(feed_id, frequency, start_date, options):
   except ValueError:
     abort(404)
 
+  publication_dates = parse_frequency(frequency = frequency, start_date = start_date)
+
+  # generation of Last Modified and ETag
+  last_modified = datetime.datetime.strftime(publication_dates['dates'][0], '%a, %d %b %Y %H:%M:%S GMT')
+  etag = '"%s"' % hashlib.sha1(str(publication_dates['dates'][0]).encode('utf-8')).hexdigest()
+
+  # if Request headers match Last Modified and Etag, raise a 304 response
+  if request.headers.get('If-Modified-Since') == last_modified \
+    or request.headers.get('If-None-Match') == etag:
+    raise NotModified
+
   # get the list of all feeds IDs
   feeds_ids = [f[0] for f in db.session.query(Feed.id).all()]
   # check if feed_id is valid, if not abort with 404
   if feed_id not in feeds_ids:
     abort(404)
 
-  publication_dates = parse_frequency(frequency = frequency, start_date = start_date)
+
 
   if not publication_dates:
     abort(500)
@@ -148,6 +170,10 @@ def serve_feed(feed_id, frequency, start_date, options):
     feed = build_xml_feed(feed_object = feed_object, feed_entries = feed_entries, publication_dates = publication_dates, feed_format = feed_format)
     r = Response(response=feed, status=200, mimetype="text/xml")
     r.headers["Content-Type"] = "text/xml; charset=utf-8"
+
+  # Add Last-Modified and ETag headers
+  r.headers["Last-Modified"] = last_modified
+  r.headers["ETag"] = etag
 
   return r
 
