@@ -80,7 +80,7 @@ If you read this, let’s hope you know what you do. Anyways, migrations are tak
 
 First, configure your Alembic `alembic.ini` by changing the value of `sqlalchemy.url`. Then you can:
 
-    (.venv) $ alembic upgrade head
+    (.venv) $ PYTHONPATH=$PWD alembic upgrade head
 
 #### Cron job
 

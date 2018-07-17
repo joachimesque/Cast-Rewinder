@@ -4,6 +4,8 @@ class Feed(db.Model):
     __tablename__ = 'feed'
     id = db.Column(db.Integer, primary_key=True)
     url = db.Column(db.String, unique = True, index=True)
+    etag = db.Column(db.String)
+    last_modified = db.Column(db.String)
     last_published_element = db.Column(db.DateTime)
     content = db.Column(db.Text)
 

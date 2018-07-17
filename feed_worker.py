@@ -13,6 +13,7 @@ import feedparser
 from castrewinder import db
 from castrewinder.models import Feed, Episode
 
+running_from_command_line = False
 
 def to_datetime_from_structtime(time_tuple):
   """ Converts structtime elements to good old datetime """
@@ -28,13 +29,15 @@ def json_serial(obj):
   raise TypeError ("Type %s not serializable" % type(obj))
 
 
-def add_feed_to_db(feed, feed_url):
+def add_feed_to_db(feed, feed_url, response_headers = (None,None)):
   """ Adds a feed to the Feed Table
       When a new feed is added, the last updated value is 0
       So that all the entries will be added to the DB
   """
   last_published_element = datetime.datetime.fromtimestamp(0)
   new_feed = Feed(url = feed_url,
+                  etag = response_headers[0],
+                  last_modified = response_headers[1],
                   last_published_element = last_published_element,
                   content = json.dumps(feed['feed'], default=json_serial))
   db.session.add(new_feed)
@@ -155,19 +158,34 @@ def import_feed(url, ignore_date = False):
       if soundcloud_url:
         feed_url = soundcloud_url
 
-    # Check if the URL is already present in the Feed Table
-    url_exists_in_db = bool(db.session.query(Feed).filter(Feed.url == feed_url).count())
-
     headers = {
       'Accept': 'text/xml,application/rss+xml,application/atom+xml,application/json;q=0.9,*/*;q=0.8',
       'User-Agent': 'Cast Rewinder on rewind.website'
       }
 
+    # Check if the URL is already present in the Feed Table
+    url_exists_in_db = bool(db.session.query(Feed).filter(Feed.url == feed_url).count())
+
+    if url_exists_in_db:
+      feed_object = db.session.query(Feed).filter(Feed.url == feed_url).one()
+      if feed_object.etag:
+        headers['If-None-Match'] = feed_object.etag
+      if feed_object.last_modified:
+        headers['If-Modified-Since'] = feed_object.last_modified
+
     try:
-        response = get(feed_url, headers=headers)
+      response = get(feed_url, headers=headers)
     except Exception:
-        print("Error: Something happened with the connection that prevented us to get the feed")
-        return None
+      print("Error: Something happened with the connection that prevented us to get the feed")
+      return False
+
+    if response.status_code == 304:
+      # 304 Not Modified gets a pass
+      return True
+
+    if response.text == '':
+      # Empty response raises all hell
+      return False
 
     response_content_type = response.headers['content-type'].split(';')[0]
 
@@ -175,17 +193,29 @@ def import_feed(url, ignore_date = False):
     if response_content_type == 'application/json':
       # transform json feed object to feedparser object
       feed = get_parsed_json_feed(json_feed = response.text)
-    elif response_content_type in ('text/xml','application/rss+xml','application/atom+xml','application/xml'):
+    elif response_content_type in ('text/xml','application/rss+xml','application/atom+xml','application/xml','application/xhtml+xml'):
       feed = feedparser.parse(response.text)
+    else:
+      # bad headers raise all hell
+      return False
 
     if feed == [] or feed['entries'] == []:
       # Cancel operation if the feed doesn't have any entries
       # Like if it's a normal webpage
       return False
 
-    if not url_exists_in_db:
+    if url_exists_in_db:
+      # Just update the Feed with new ETag and Content Type
+      if 'ETag' in response.headers:
+        feed_object.etag = response.headers.get('ETag', None)
+      if 'Last-Modified' in response.headers:
+        feed_object.last_modified = response.headers.get('Last-Modified', None)
+      db.session.commit()
+
+    else:
       # Don't populate the Feed Table if it already contains the feed
-      add_feed_to_db(feed = feed, feed_url = feed_url)
+      response_headers = (response.headers.get('ETag', None), response.headers.get('Content-Type', None))
+      add_feed_to_db(feed = feed, feed_url = feed_url, response_headers = response_headers)
 
     # Populate the Episode Table
     add_entries_to_db(feed = feed, feed_url = feed_url, ignore_date = ignore_date)
@@ -193,8 +223,11 @@ def import_feed(url, ignore_date = False):
     return True
 
   else:
-    print("The specified URL is not valid. Please verify you have the 'HTTP' part.")
-    ask_for_url()
+    if running_from_command_line:
+      print("The specified URL is not valid. Please verify you have the 'HTTP' part.")
+      ask_for_url()
+    else:
+      return False
 
 def get_parsed_json_feed(json_feed):
 
@@ -290,7 +323,50 @@ def update_feeds():
 
   # For each feed, get the updated feed and populate the db
   for feed_object in all_feeds:
-    feed = feedparser.parse(feed_object.url)
+
+    headers = {
+      'Accept': 'text/xml,application/rss+xml,application/atom+xml,application/json;q=0.9,*/*;q=0.8',
+      'User-Agent': 'Cast Rewinder on rewind.website'
+      }
+
+    if feed_object.etag:
+      headers['If-None-Match'] = feed_object.etag
+    if feed_object.last_modified:
+      headers['If-Modified-Since'] = feed_object.last_modified
+
+    try:
+      response = get(feed_object.url, headers=headers)
+    except Exception:
+      print("Error: Something happened with the connection that prevented us to get the feed")
+      continue
+
+    if response.status_code == 304 or response.text == '':
+      # 304 Not Modified or empty responses get a pass
+      continue
+
+    response_content_type = response.headers['content-type'].split(';')[0]
+
+    feed = []
+    if response_content_type == 'application/json':
+      # transform json feed object to feedparser object
+      feed = get_parsed_json_feed(json_feed = response.text)
+    elif response_content_type in ('text/xml','application/rss+xml','application/atom+xml','application/xml','application/xhtml+xml'):
+      feed = feedparser.parse(response.text)
+    else:
+      # bad headers get a pass
+      continue
+
+    if feed == []:
+      # empty feeds get a pass
+      continue
+
+    if 'ETag' in response.headers:
+      feed_object.etag = response.headers.get('ETag', None)
+    if 'Last-Modified' in response.headers:
+      feed_object.last_modified = response.headers.get('Last-Modified', None)
+
+    db.session.commit()
+
     add_entries_to_db(feed = feed, feed_url = feed_object.url)
 
   return True
@@ -303,6 +379,8 @@ if __name__ == '__main__':
   parser.add_argument('-u','--update_feeds',help='''Updates all feeds''', action='store_true')
 
   args = parser.parse_args()
+
+  running_from_command_line = True
 
   if args.feed_url:
     import_feed(url = args.feed_url)
