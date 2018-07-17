@@ -78,33 +78,6 @@
       document.querySelector('#loading_content').classList.toggle('is-visible');
       document.querySelector('#loaded_content').classList.toggle('is-visible');
 
-      if (typeof response['content']['image']['href'] !== 'undefined' && response['content']['image']['href'].length > 0) {
-        document.querySelector('#loaded_content #feed_image').src = response['content']['image']['href'];
-      } else {
-        document.querySelector('figure.media-left').style.display = 'none';
-      }
-
-
-      document.querySelector('#loaded_content #feed_title').innerHTML = response['content']['title'];
-      document.querySelector('#loaded_content #feed_url').href = response['content']['link'];
-
-      if (typeof response['content']['copyright'] !== 'undefined') {
-        document.querySelector('#loaded_content #feed_copyright').innerHTML = '© ' + response['content']['copyright'];
-      } else if  (typeof response['content']['author']['name'] !== 'undefined') {
-        document.querySelector('#loaded_content #feed_copyright').innerHTML = '© ' + response['content']['author']['name'];
-      } else if  (typeof response['content']['author'] !== 'undefined') {
-        document.querySelector('#loaded_content #feed_copyright').innerHTML = '© ' + response['content']['author'];
-      } else {
-        document.querySelector('#loaded_content #feed_copyright').style.display = 'none';
-      }
-
-      if (typeof response['content']['description'] !== 'undefined') {
-        document.querySelector('#loaded_content #feed_content').innerHTML = response['content']['description'];
-      } else if (typeof response['content']['summary'] !== 'undefined') {
-        document.querySelector('#loaded_content #feed_content').innerHTML = response['content']['summary'];
-      } else if (typeof response['content']['subtitle'] !== 'undefined') {
-        document.querySelector('#loaded_content #feed_content').innerHTML = response['content']['subtitle'];
-      }
 
       var value = "{{ request.host_url }}" + response['feed_id'] + "{{ request_json['end_url'] }}";
 
@@ -116,6 +89,36 @@
         e.preventDefault();
         document.querySelector('#how-to-subscribe').classList.toggle('is-visible');
       });
+
+      // filling the blanks:
+
+      if (typeof response['content']['image']['href'] !== 'undefined' && response['content']['image']['href'].length > 0) {
+        document.querySelector('#loaded_content #feed_image').src = response['content']['image']['href'];
+      } else {
+        document.querySelector('figure.media-left').style.display = 'none';
+      }
+
+      document.querySelector('#loaded_content #feed_title').innerHTML = response['content']['title'];
+      document.querySelector('#loaded_content #feed_url').href = response['content']['link'];
+
+      if (typeof response['content']['description'] !== 'undefined') {
+        document.querySelector('#loaded_content #feed_content').innerHTML = response['content']['description'];
+      } else if (typeof response['content']['summary'] !== 'undefined') {
+        document.querySelector('#loaded_content #feed_content').innerHTML = response['content']['summary'];
+      } else if (typeof response['content']['subtitle'] !== 'undefined') {
+        document.querySelector('#loaded_content #feed_content').innerHTML = response['content']['subtitle'];
+      }
+
+      if (typeof response['content']['copyright'] !== 'undefined') {
+        document.querySelector('#loaded_content #feed_copyright').innerHTML = '© ' + response['content']['copyright'];
+      } else if  (typeof response['content']['author'] !== 'undefined' && typeof response['content']['author']['name'] !== 'undefined') {
+        document.querySelector('#loaded_content #feed_copyright').innerHTML = '© ' + response['content']['author']['name'];
+      } else if  (typeof response['content']['author'] !== 'undefined') {
+        document.querySelector('#loaded_content #feed_copyright').innerHTML = '© ' + response['content']['author'];
+      } else {
+        document.querySelector('#loaded_content #feed_copyright').style.display = 'none';
+      }
+
     } //endif
 
   }
