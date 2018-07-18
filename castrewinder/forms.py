@@ -47,7 +47,7 @@ class UrlForm(FlaskForm):
   start_date_timezone = SelectField(lazy_gettext('Timezone'),
                                     choices=generate_timezone_list())
 
-  option_limit = IntegerField(lazy_gettext('Start from episode #'),
+  option_limit = IntegerField(lazy_gettext('Start from episode&nbsp;#'),
                               validators = [DataRequired()],
                               widget = NumberInput(min=1),
                               default = 1)
