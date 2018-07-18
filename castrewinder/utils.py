@@ -267,7 +267,7 @@ def build_xml_feed(feed_object, feed_entries, publication_dates, options, feed_f
     episode = json.loads(entry.content)
 
     fe = fg.add_entry()
-    fe.id(episode.get('id', ''))
+    fe.id("castrewinder_%s_%s" % (request.url, episode.get('id', '')))
     fe.title(episode.get('title', ''))
     fe.podcast.itunes_subtitle(episode.get('subtitle', ''))
     
@@ -292,14 +292,16 @@ def build_xml_feed(feed_object, feed_entries, publication_dates, options, feed_f
                     type = content['type']  if 'type'  in content else '')
 
     for media in episode.get('media_content', []):
-      fe.enclosure(url   = media.get('url'),
-                  length = str(media.get('filesize')),
-                  type   = media.get('type'))
+      if media.get('type') != 'application/x-shockwave-flash':
+        fe.enclosure(url   = media.get('url'),
+                    length = str(media.get('filesize')),
+                    type   = media.get('type'))
 
-    for media in episode.get('enclosure', []):
-      fe.enclosure(url   = media.get('url'),
-                  length = str(media.get('filesize')),
-                  type   = media.get('type'))
+    for enclosure in episode.get('enclosure', []):
+      if enclosure.get('type') != 'application/x-shockwave-flash':
+        fe.enclosure(url   = enclosure.get('url'),
+                    length = str(enclosure.get('filesize')),
+                    type   = enclosure.get('type'))
 
     fe.link(href = episode.get('link', ''), rel = 'alternate')
     for link in episode.get('links', []):
@@ -366,7 +368,7 @@ def build_json_feed(feed_object, feed_entries, publication_dates, options):
 
     item = {
       "title": episode.get('title', ''),
-      "id": episode.get('id', ''),
+      "id": "castrewinder_%s_%s" % (request.url, episode.get('id', '')),
       "url": episode.get('link', ''),
       "attachments": []
     }
