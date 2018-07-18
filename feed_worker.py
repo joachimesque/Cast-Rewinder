@@ -54,9 +54,12 @@ def add_entries_to_db(feed, feed_url, ignore_date = False):
   """
   feed_object = db.session.query(Feed).filter(Feed.url == feed_url).one()
 
-  for entry in feed['entries']:
-    published = to_datetime_from_structtime(time_tuple = entry['published_parsed'])
-    
+  for entry in reversed(feed['entries']):
+    try:
+      published = to_datetime_from_structtime(time_tuple = entry['published_parsed'])
+    except TypeError:
+      published = datetime.datetime.today()
+
     if feed_object.last_published_element < published or ignore_date == True:
       new_entry = Episode(published = published,
                           content = json.dumps(entry, default=json_serial),

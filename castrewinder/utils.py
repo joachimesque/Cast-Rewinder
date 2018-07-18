@@ -271,12 +271,14 @@ def build_xml_feed(feed_object, feed_entries, publication_dates, feed_format='fe
     # fe.published(episode.get('published', ''))
     fe.published(publication_dates['dates'][index])
 
-    episode_pubished = '-'.join((str(episode['published_parsed'][0]),  # year
-                                 str(episode['published_parsed'][1]).zfill(2),  # month
-                                 str(episode['published_parsed'][2]).zfill(2))) # day
-
     summary = strip_tags(html = episode.get('summary', ''))
-    summary = "Originally published on %s\n%s" % (episode_pubished, summary)
+
+    if 'published_parsed' in episode and episode['published_parsed'] != None:
+      episode_pubished = '-'.join((str(episode['published_parsed'][0]),  # year
+                                   str(episode['published_parsed'][1]).zfill(2),  # month
+                                   str(episode['published_parsed'][2]).zfill(2))) # day
+      summary = "Originally published on %s\n%s" % (episode_pubished, summary)
+
     fe.description(summary)
     fe.summary(summary)
     fe.podcast.itunes_summary(summary)
