@@ -120,6 +120,18 @@
         </div>
       </div>
     </div>
+
+    <div class="field is-horizontal">
+      <div class="field-label">
+        <p class="label">{{ form.option_keepdates.label(class_='') }}</p>
+      </div>
+      <div class="field-body">
+        <div class="field">
+          <div class="contol checkbox">{{ form.option_keepdates(class_='checkbox') }} <label for="option_keepdates">{{ _('Check to keep old publication dates, uncheck to get new episodes published in contemporary dates') }}</label></div>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   {{ form.csrf_token }}

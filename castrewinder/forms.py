@@ -62,3 +62,4 @@ class UrlForm(FlaskForm):
                               choices=[
                                   ('asc',lazy_gettext('Oldest first')),
                                   ('desc',lazy_gettext('Newest first'))])
+  option_keepdates = BooleanField(lazy_gettext('Keep original publication dates'))

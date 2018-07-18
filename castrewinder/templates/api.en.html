@@ -35,6 +35,12 @@
                 <li><code>feed_atom</code></li>
             </ul>
         </li>
+        <li><code>option_keepdates</code> <small>accepts values:</small>
+            <ul>
+                <li><code>false</code> <small>default value</small></li>
+                <li><code>true</code></li>
+            </ul>
+        </li>
     </ul>
 
     <p>If <code>frequency</code> has the value <code>custom_days</code>, you have to provide an argument for each selected day, a failure to do so results in a stern warning and defaults the frequency to weekly.</p>
@@ -51,7 +57,7 @@
     <p>Here’s a couple of examples:</p>
     <ul>
         <li>Basic request: <a href="{{ request.host_url }}api/get?url=https://itunes.apple.com/us/podcast/99-invisible/id394775318">{{ request.host }}/api/get?url=https://itunes.apple.com/us/podcast/99-invisible/id394775318</a></li>
-        <li>Complex request: <a href="{{ request.host_url }}api/get?url=https://itunes.apple.com/us/podcast/99-invisible/id394775318&frequency=custom_days&custom_day_mon=y&custom_day_tue=y&custom_day_sun=y&start_date=2018-07-01&start_date_timezone=Europe/Paris&option_limit=1&option_order=desc&option_format=feed_atom">{{ request.host }}/api/get?url=https://itunes.apple.com/us/podcast/99-invisible/id394775318&frequency=custom_days&custom_day_mon=y&custom_day_tue=y&custom_day_sun=y&start_date=2018-07-01&start_date_timezone=Europe/Paris&option_limit=1&option_order=desc&option_format=feed_atom</a></li>
+        <li>Complex request: <a href="{{ request.host_url }}api/get?url=https://itunes.apple.com/us/podcast/99-invisible/id394775318&frequency=custom_days&custom_day_mon=y&custom_day_tue=y&custom_day_sun=y&start_date=2018-07-01&start_date_timezone=Europe/Paris&option_limit=1&option_order=desc&option_format=feed_atom&option_keepdates=true">{{ request.host }}/api/get?url=https://itunes.apple.com/us/podcast/99-invisible/id394775318&frequency=custom_days&custom_day_mon=y&custom_day_tue=y&custom_day_sun=y&start_date=2018-07-01&start_date_timezone=Europe/Paris&option_limit=1&option_order=desc&option_format=feed_atom&option_keepdates=true</a></li>
     </ul>
 
     <h3>POST</h3>
@@ -73,7 +79,8 @@
   "start_date_timezone" : "Etc/UTC",
   "option_limit": 1,
   "option_order": "asc",
-  "option_format": "feed_rss"
+  "option_format": "feed_rss",
+  "option_keepdates": false
 }
 </code></pre>
 

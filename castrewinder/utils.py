@@ -6,7 +6,7 @@ import json
 import pytz
 
 from feedgen.feed import FeedGenerator
-from dateutil import relativedelta
+from dateutil import relativedelta, parser
 
 
 # https://stackoverflow.com/questions/11061058/using-htmlparser-in-python-3-2
@@ -78,18 +78,22 @@ def get_options(request_form):
     options['start_date_timezone'] = '+0000'
 
 
-  if 'option_format' in request_form or \
-     'option_limit' in request_form or \
-     'option_order' in request_form:
 
+  if 'option_limit' in request_form:
     if int(request_form['option_limit']) > 1:
       options['start_at'] = request_form['option_limit'] 
 
+  if 'option_format' in request_form:
     if request_form['option_format'] in ('feed_atom', 'feed_json'):
       options['format'] = request_form['option_format'] 
 
+  if 'option_order' in request_form:
     if request_form['option_order'] in ('desc'):
       options['order'] = request_form['option_order'] 
+
+  if 'option_keepdates' in request_form:
+    if request_form['option_keepdates'] or request_form['option_keepdates'] == 'true':
+      options['keep_dates'] = 'yes'
 
   return options
 
@@ -199,7 +203,7 @@ def parse_options(options):
 
 
 
-def build_xml_feed(feed_object, feed_entries, publication_dates, feed_format='feed_rss'):
+def build_xml_feed(feed_object, feed_entries, publication_dates, options, feed_format='feed_rss'):
   """ From the Feed() and the Episodes(), with help from the publication dates dict
       gotten from parse_frequency(), this function makes the RSS feed.
   """
@@ -267,17 +271,17 @@ def build_xml_feed(feed_object, feed_entries, publication_dates, feed_format='fe
     fe.title(episode.get('title', ''))
     fe.podcast.itunes_subtitle(episode.get('subtitle', ''))
     
-    # original publication date:
-    # fe.published(episode.get('published', ''))
-    fe.published(publication_dates['dates'][index])
-
     summary = strip_tags(html = episode.get('summary', ''))
 
-    if 'published_parsed' in episode and episode['published_parsed'] != None:
-      episode_pubished = '-'.join((str(episode['published_parsed'][0]),  # year
-                                   str(episode['published_parsed'][1]).zfill(2),  # month
-                                   str(episode['published_parsed'][2]).zfill(2))) # day
-      summary = "Originally published on %s\n%s" % (episode_pubished, summary)
+    if 'keep_dates' in options and options['keep_dates'] == 'yes':
+      fe.published(episode.get('published', ''))
+    else:
+      fe.published(publication_dates['dates'][index])
+      if 'published_parsed' in episode and episode['published_parsed'] != None:
+        episode_published = '-'.join((str(episode['published_parsed'][0]),  # year
+                                     str(episode['published_parsed'][1]).zfill(2),  # month
+                                     str(episode['published_parsed'][2]).zfill(2))) # day
+        summary = "Originally published on %s\n%s" % (episode_published, summary)
 
     fe.description(summary)
     fe.summary(summary)
@@ -319,7 +323,7 @@ def build_xml_feed(feed_object, feed_entries, publication_dates, feed_format='fe
     return fg.rss_str(pretty=True)
 
 
-def build_json_feed(feed_object, feed_entries, publication_dates):
+def build_json_feed(feed_object, feed_entries, publication_dates, options):
   """ From the Feed() and the Episodes(), with help from the publication dates dict
       gotten from parse_frequency(), this function makes the RSS feed.
   """
@@ -360,28 +364,41 @@ def build_json_feed(feed_object, feed_entries, publication_dates):
 
     episode = json.loads(entry.content)
 
-    episode_pubished = '-'.join((str(episode['published_parsed'][0]),  # year
-                                 str(episode['published_parsed'][1]).zfill(2),  # month
-                                 str(episode['published_parsed'][2]).zfill(2))) # day
-
-    summary = strip_tags(html = episode.get('summary', ''))
-    summary = "Originally published on %s.\n%s" % (episode_pubished, summary)
-
     item = {
       "title": episode.get('title', ''),
       "id": episode.get('id', ''),
       "url": episode.get('link', ''),
-      "summary": summary,
-      "content_text": summary,
-      "date_published": publication_dates['dates'][index].isoformat(),
       "attachments": []
     }
 
-    for content in episode.get('content', []):
-      if content.get('type') == 'text/plain':
-        item['content_text'] = "Originally published on %s.\n%s" % (episode_pubished, strip_tags(content.get('value')))
-      elif content.get('type') == 'text/html':
-        item['content_html'] = "<p>Originally published on %s.</p>%s" % (episode_pubished, content.get('value'))
+    summary = strip_tags(html = episode.get('summary', ''))
+
+    if 'keep_dates' in options and options['keep_dates'] == 'yes':
+      item['date_published'] = parser.parse(episode.get('date_published', datetime.datetime.today())).isoformat()
+
+      for content in episode.get('content', []):
+        if content.get('type') == 'text/plain':
+          item['content_text'] = strip_tags(content.get('value'))
+        elif content.get('type') == 'text/html':
+          item['content_html'] = content.get('value')
+
+    else:
+      item['date_published'] = publication_dates['dates'][index].isoformat()
+      if 'published_parsed' in episode and episode['published_parsed'] != None:
+        episode_published = '-'.join((str(episode['published_parsed'][0]),  # year
+                                     str(episode['published_parsed'][1]).zfill(2),  # month
+                                     str(episode['published_parsed'][2]).zfill(2))) # day
+        summary = "Originally published on %s\n%s" % (episode_published, summary)
+
+      for content in episode.get('content', []):
+        if content.get('type') == 'text/plain':
+          item['content_text'] = "Originally published on %s.\n%s" % (episode_published, strip_tags(content.get('value')))
+        elif content.get('type') == 'text/html':
+          item['content_html'] = "<p>Originally published on %s.</p>%s" % (episode_published, content.get('value'))
+
+    item["summary"] = summary
+    item["content_text"] = summary
+
 
     for media in episode.get('media_content', []):
       item['attachments'].append({

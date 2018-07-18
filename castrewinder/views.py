@@ -126,7 +126,6 @@ def serve_feed(feed_id, frequency, start_date, options):
     abort(404)
 
 
-
   if not publication_dates:
     abort(500)
 
@@ -162,12 +161,12 @@ def serve_feed(feed_id, frequency, start_date, options):
 
 
   if feed_format == 'feed_json':
-    feed = build_json_feed(feed_object = feed_object, feed_entries = feed_entries, publication_dates = publication_dates)
+    feed = build_json_feed(feed_object = feed_object, feed_entries = feed_entries, publication_dates = publication_dates, options = options)
     r = Response(response=feed, status=200, mimetype="application/json")
     r.headers["Content-Type"] = "application/json; charset=utf-8"
     
   else:
-    feed = build_xml_feed(feed_object = feed_object, feed_entries = feed_entries, publication_dates = publication_dates, feed_format = feed_format)
+    feed = build_xml_feed(feed_object = feed_object, feed_entries = feed_entries, publication_dates = publication_dates, options = options, feed_format = feed_format)
     r = Response(response=feed, status=200, mimetype="text/xml")
     r.headers["Content-Type"] = "text/xml; charset=utf-8"
 
