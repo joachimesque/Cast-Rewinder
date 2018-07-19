@@ -308,7 +308,7 @@ def build_xml_feed(feed_object, feed_entries, publication_dates, options, feed_f
       fe.link(rel = link.get('rel', ''),
               href = link.get('href', ''),
               type = link.get('type', ''),
-              length = link.get('length', ''))
+              length = link.get('length', 0))
 
     if 'image' in episode and 'href' in episode['image']:
       image_url = episode['image']['href']
@@ -421,7 +421,7 @@ def build_json_feed(feed_object, feed_entries, publication_dates, options):
         item['attachments'].append({
               'url': link.get('href', ''),
               'mime_type': link.get('type', ''),
-              'size_in_bytes': link.get('length', '')
+              'size_in_bytes': link.get('length', 0)
           })
 
     if 'image' in episode and episode['image'].get('href'):
