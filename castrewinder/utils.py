@@ -291,24 +291,35 @@ def build_xml_feed(feed_object, feed_entries, publication_dates, options, feed_f
       fe.content(content = strip_tags(content['value']) if 'value' in content else '',
                     type = content['type']  if 'type'  in content else '')
 
-    for media in episode.get('media_content', []):
-      if media.get('type') != 'application/x-shockwave-flash':
-        fe.enclosure(url   = media.get('url'),
-                    length = str(media.get('filesize')),
-                    type   = media.get('type'))
+    if entry.enclosure_is_active:
+      # don't add an enclosure or media if the enclosure link is not active
+      for media in episode.get('media_content', []):
+        if media.get('type') != 'application/x-shockwave-flash':
+          fe.enclosure(url   = media.get('url'),
+                      length = str(media.get('filesize')),
+                      type   = media.get('type'))
 
-    for enclosure in episode.get('enclosure', []):
-      if enclosure.get('type') != 'application/x-shockwave-flash':
-        fe.enclosure(url   = enclosure.get('url'),
-                    length = str(enclosure.get('filesize')),
-                    type   = enclosure.get('type'))
+      for enclosure in episode.get('enclosure', []):
+        if enclosure.get('type') != 'application/x-shockwave-flash':
+          fe.enclosure(url   = enclosure.get('url'),
+                      length = str(enclosure.get('filesize')),
+                      type   = enclosure.get('type'))
+
 
     fe.link(href = episode.get('link', ''), rel = 'alternate')
     for link in episode.get('links', []):
-      fe.link(rel = link.get('rel', ''),
-              href = link.get('href', ''),
-              type = link.get('type', ''),
-              length = link.get('length', ''))
+      if entry.enclosure_is_active:
+        fe.link(rel = link.get('rel', ''),
+                href = link.get('href', ''),
+                type = link.get('type', ''),
+                length = link.get('length', ''))
+      else:
+        # don't add an enclosure if the enclosure link is not active
+        if link.get('rel', '') != 'enclosure':
+          fe.link(rel = link.get('rel', ''),
+                  href = link.get('href', ''),
+                  type = link.get('type', ''),
+                  length = link.get('length', ''))
 
     if 'image' in episode and 'href' in episode['image']:
       image_url = episode['image']['href']

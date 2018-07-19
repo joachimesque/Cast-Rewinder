@@ -60,10 +60,21 @@ def add_entries_to_db(feed, feed_url, ignore_date = False):
     except TypeError:
       published = datetime.datetime.today()
 
+    enclosure_url = get_enclosure_url_from_episode_content(content = entry)
+
+    # # Calling the enclosure url status is too costly as of yet
+    # enclosure_status = get_url_status(url = enclosure_url)
+    # # If there was 301s, set last URL
+    # if enclosure_status[1] != '':
+    #   enclosure_url = enclosure_status[1]
+
     if feed_object.last_published_element < published or ignore_date == True:
       new_entry = Episode(published = published,
                           content = json.dumps(entry, default=json_serial),
-                          feed_id = feed_object.id)
+                          feed_id = feed_object.id,
+                          enclosure_url = enclosure_url,
+                          # enclosure_is_active = enclosure_status[0])
+                          enclosure_is_active = True)
       db.session.add(new_entry)
 
   if not ignore_date:
