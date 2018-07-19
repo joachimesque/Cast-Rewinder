@@ -109,10 +109,14 @@ def serve_feed(feed_id, frequency, start_date, options):
     abort(404)
 
   publication_dates = parse_frequency(frequency = frequency, start_date = start_date)
-
+  
   # generation of Last Modified and ETag
-  last_modified = datetime.datetime.strftime(publication_dates['dates'][0], '%a, %d %b %Y %H:%M:%S GMT')
-  etag = '"%s"' % hashlib.sha1(str(publication_dates['dates'][0]).encode('utf-8')).hexdigest()
+  if publication_dates['limit'] == 0:
+    last_modified = datetime.datetime.strftime(datetime.datetime.now(), '%a, %d %b %Y %H:%M:%S GMT')
+    etag = '"%s"' % hashlib.sha1(str(datetime.datetime.now()).encode('utf-8')).hexdigest()
+  else:
+    last_modified = datetime.datetime.strftime(publication_dates['dates'][0], '%a, %d %b %Y %H:%M:%S GMT')
+    etag = '"%s"' % hashlib.sha1(str(publication_dates['dates'][0]).encode('utf-8')).hexdigest()
 
   # if Request headers match Last Modified and Etag, raise a 304 response
   if request.headers.get('If-Modified-Since') == last_modified \
