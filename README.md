@@ -78,9 +78,9 @@ On [rewind.website](https://rewind.website/) I used [uWSGI](http://flask.pocoo.o
 
 If you read this, let’s hope you know what you do. Anyways, migrations are taken care of by [Flask-Migrate](https://github.com/miguelgrinberg/flask-migrate/).
 
-First, init the DB:
+When the `setup.py` has been run, you have to stamp the DB:
 
-    (.venv) $ FLASK_APP=castrewinder flask db init
+    (.venv) $ FLASK_APP=castrewinder flask db stamp head
 
 Then you can upgrade whenever necessary:
 
