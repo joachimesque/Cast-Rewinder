@@ -219,12 +219,25 @@ def build_xml_feed(feed_object, feed_entries, publication_dates, options, feed_f
 
   fg.podcast.itunes_block(True)
 
-  fg.link(href = request.url, rel = 'self')
-  fg.link(href = feed.get('link', ''), rel = 'alternate')
+  link = feed.get('link')
+  if link == '':
+    # This would be the perfect place
+    # to link to a special HTML format feed. TODO.
+    link = request.url
+  links = [
+    { 'href': request.url,
+      'rel' : 'self'},
+    { 'href': link,
+      'rel' : 'alternate'}
+    ]
   for link in feed.get('links', []):
-    fg.link(rel  = link.get('rel', ''),
-            type = link.get('type', ''),
-            href = link.get('href', ''))
+    if link.get('href', '') != '':
+      links.append({
+              'rel' : link.get('rel', ''),
+              'type': link.get('type', ''),
+              'href': link.get('href', '')})
+  fg.link(links)
+
 
   if 'author_detail' in feed:
     fg.author(name  = feed['author_detail'].get('name', ''),
@@ -304,18 +317,29 @@ def build_xml_feed(feed_object, feed_entries, publication_dates, options, feed_f
                     length = str(enclosure.get('filesize')),
                     type   = enclosure.get('type'))
 
-    fe.link(href = episode.get('link', ''), rel = 'alternate')
+    link = episode.get('link', None)
+    if link == '':
+      link = feed.get('link')
+    if link == '':
+      # This would be the perfect place
+      # to link to a special HTML format feed. TODO.
+      link = "%s#%s" % (request.url, "castrewinder_%s_%s" % (request.url, episode.get('id', '')))
+
+    links = [{'href': link, 'rel': 'alternate'}]
+
     for link in episode.get('links', []):
-      if link.get('rel') == 'enclosure':
-        fe.link(rel = 'enclosure',
-                href = link.get('href', ''),
-                type = link.get('type', ''),
-                length = link.get('length', 0))
-      else:
-        fe.link(rel = 'alternate',
-                href = link.get('href', ''),
-                type = link.get('type', ''),
-                length = link.get('length', 0))
+      if link.get('href','') != '':
+        if link.get('rel') == 'enclosure':
+          links.append({'rel'   : 'enclosure',
+                        'href'  : link.get('href'),
+                        'type'  : link.get('type', ''),
+                        'length': link.get('length', 0)})
+        else:
+          links.append({'rel'   : 'alternate',
+                        'href'  : link.get('href'),
+                        'type'  : link.get('type', ''),
+                        'length': link.get('length', 0)})
+    fe.link(links)
 
     if 'image' in episode and 'href' in episode['image']:
       image_url = episode['image']['href']
