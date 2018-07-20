@@ -407,7 +407,8 @@ def build_json_feed(feed_object, feed_entries, publication_dates, options):
     summary = strip_tags(html = episode.get('summary', ''))
 
     if 'keep_dates' in options and options['keep_dates'] == 'yes':
-      item['date_published'] = parser.parse(episode.get('date_published', datetime.datetime.today())).isoformat()
+
+      item['date_published'] = parser.parse(episode.get('published')).isoformat()
 
       for content in episode.get('content', []):
         if content.get('type') == 'text/plain':
