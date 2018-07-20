@@ -306,10 +306,16 @@ def build_xml_feed(feed_object, feed_entries, publication_dates, options, feed_f
 
     fe.link(href = episode.get('link', ''), rel = 'alternate')
     for link in episode.get('links', []):
-      fe.link(rel = link.get('rel', ''),
-              href = link.get('href', ''),
-              type = link.get('type', ''),
-              length = link.get('length', 0))
+      if link.get('rel') == 'enclosure':
+        fe.link(rel = 'enclosure',
+                href = link.get('href', ''),
+                type = link.get('type', ''),
+                length = link.get('length', 0))
+      else:
+        fe.link(rel = 'alternate',
+                href = link.get('href', ''),
+                type = link.get('type', ''),
+                length = link.get('length', 0))
 
     if 'image' in episode and 'href' in episode['image']:
       image_url = episode['image']['href']
