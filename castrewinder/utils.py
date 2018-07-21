@@ -352,7 +352,9 @@ def build_xml_feed(feed_object, feed_entries, publication_dates, options, feed_f
 
   if feed_format == 'feed_atom':
     return fg.atom_str(pretty=True)
-  elif feed_format == 'feed_rss':
+  else:
+  # elif feed_format == 'feed_rss':
+  # Default to RSS if malformed format string
     return fg.rss_str(pretty=True)
 
 

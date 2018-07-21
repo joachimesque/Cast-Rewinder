@@ -162,16 +162,33 @@ def serve_feed(feed_id, frequency, start_date, options):
                        limit(publication_dates['limit']).\
                        all()
 
-
+  if feed_format == 'html':
+    return render_template('feed.html',
+                            feed_url = feed_object.url,
+                            feed = json.loads(feed_object.content),
+                            feed_entries = [entry.content for entry in feed_entries],
+                            publication_dates = publication_dates,
+                            options = options)
 
   if feed_format == 'feed_json':
-    feed = build_json_feed(feed_object = feed_object, feed_entries = feed_entries, publication_dates = publication_dates, options = options)
-    r = Response(response=feed, status=200, mimetype="application/json")
+    feed = build_json_feed(feed_object = feed_object,
+                           feed_entries = feed_entries,
+                           publication_dates = publication_dates,
+                           options = options)
+    r = Response(response=feed,
+                 status=200,
+                 mimetype="application/json")
     r.headers["Content-Type"] = "application/json; charset=utf-8"
     
   else:
-    feed = build_xml_feed(feed_object = feed_object, feed_entries = feed_entries, publication_dates = publication_dates, options = options, feed_format = feed_format)
-    r = Response(response=feed, status=200, mimetype="text/xml")
+    feed = build_xml_feed(feed_object = feed_object,
+                          feed_entries = feed_entries,
+                          publication_dates = publication_dates,
+                          options = options,
+                          feed_format = feed_format)
+    r = Response(response=feed,
+                 status=200,
+                 mimetype="text/xml")
     r.headers["Content-Type"] = "text/xml; charset=utf-8"
 
   # Add Last-Modified and ETag headers
