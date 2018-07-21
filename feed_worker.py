@@ -44,6 +44,7 @@ def add_feed_to_db(feed, feed_url, response_headers = (None,None)):
   db.session.commit()
   return True
 
+
 def add_entries_to_db(feed, feed_url, ignore_date = False):
   """ Adds entries to the Episode Table
       For each entry in the feed, it will:
@@ -369,6 +370,8 @@ def update_feeds():
       feed_object.etag = response.headers.get('ETag', None)
     if 'Last-Modified' in response.headers:
       feed_object.last_modified = response.headers.get('Last-Modified', None)
+
+    feed_object.content = json.dumps(feed['feed'], default=json_serial)
 
     db.session.commit()
 
