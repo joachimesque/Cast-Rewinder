@@ -317,7 +317,7 @@ def build_xml_feed(feed_object, feed_entries, publication_dates, options, feed_f
                     length = str(enclosure.get('filesize')),
                     type   = enclosure.get('type'))
 
-    link = episode.get('link', None)
+    link = episode.get('link', '')
     if link == '':
       link = feed.get('link')
     if link == '':
