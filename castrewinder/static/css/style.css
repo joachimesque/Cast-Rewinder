@@ -115,3 +115,9 @@ input[type="number"] {
       flex-grow: 2;
   }
 }
+
+/* FEED */
+
+.js-player {
+  flex-grow: 3;
+}

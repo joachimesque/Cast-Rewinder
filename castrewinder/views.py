@@ -166,7 +166,7 @@ def serve_feed(feed_id, frequency, start_date, options):
     return render_template('feed.html',
                             feed_url = feed_object.url,
                             feed = json.loads(feed_object.content),
-                            feed_entries = [entry.content for entry in feed_entries],
+                            feed_entries = [json.loads(entry.content) for entry in reversed(feed_entries)],
                             publication_dates = publication_dates,
                             options = options)
 

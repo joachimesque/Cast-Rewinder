@@ -6,22 +6,31 @@
 {% block content %}
 <div class="content">
 
-  <strong class="is-size-3 ">{{ feed.title }}</strong>
+  <h1 class="is-size-3 ">{{ feed.title }}</h1>
 
   <article class="media is-block-mobile">
-  {% if 'image' in feed and 'href' in feed['image'] %}
+    {% if 'image' in feed and 'href' in feed['image'] %}
     <figure class="media-left">
       <p class="image is-128x128">
         <img src="{{ feed['image']['href'] }}">
       </p>
     </figure>
-  {% endif %}
+    {% endif %}
 
     <div class="media-content">
       <div class="content">
         <p>
-          <small><a href="{{ feed_url }}">Site officiel</a></small>
-          <small></small>
+          <small><a href="{{ feed.link }}">{{ _('Podcast website') }}</a></small> •
+          <small><a href="{{ feed_url }}">{{ _('Feed URL') }}</a></small> •
+          <small>
+          {% if 'copyright' in feed %}
+            ©  {{ feed['copyright'] }}
+          {% elif 'author' in feed and 'name' in feed['author'] %}
+            ©  {{ feed['author']['name'] }}
+          {% elif 'author' in feed %}
+            ©  {{ feed['author'] }}
+          {% endif %}
+          </small>
           <br>
           <span id="feed_content">
             {% if 'summary' in feed and feed['summary'] != ''  %}
@@ -39,7 +48,24 @@
     </div>
   </article>
 
+  {% for episode in feed_entries %}
+  <hr>
+  <article class="card" id="castrewinder_{{ "%s_%s" % (request.url, episode.get('id', '')) }}">
+    <div class="card-content">
+      <h2 class="is-size-5 title">{{ episode['title'] }}</h2>
+      {#% if 'subtitle' in episode %}
+      <p class="is-size-7 subtitle">{{ episode['subtitle'] }}</p>
+      {% endif %#}
+      <p class="">{{ episode.summary|safe }}</p>
+      
 
+    </div>
+    <div class="card-footer">
+      <div class="card-footer-item has-text-centered"><p class="is-size-7">{{ _('Download episode') }}</p></div>
+      <div class="card-footer-item js-player">&lt;player&gt;</div>
+    </div>
+  </article>
 
+  {% endfor %}
 </div>
 {% endblock %}
