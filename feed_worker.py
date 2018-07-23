@@ -58,7 +58,7 @@ def add_entries_to_db(feed, feed_url, ignore_date = False):
   for entry in reversed(feed['entries']):
     try:
       published = to_datetime_from_structtime(time_tuple = entry['published_parsed'])
-    except TypeError:
+    except:
       published = datetime.datetime.today()
 
     if feed_object.last_published_element < published or ignore_date == True:
