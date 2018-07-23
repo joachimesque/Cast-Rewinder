@@ -255,7 +255,6 @@ def build_xml_feed(feed_object, feed_entries, publication_dates, options, feed_f
   else:
     explicit = 'no'
   fg.podcast.itunes_explicit(explicit)
-  fg.podcast.itunes_new_feed_url(feed.get('itunes_new-feed-url', ''))
   fg.podcast.itunes_summary(feed.get('summary', ''))
   
   fg.description(strip_tags(feed['summary']) if 'summary' in feed and feed['summary'] != ''
