@@ -5,5 +5,5 @@
               The data (as in podcast feeds) that is collected, mirrored and transmitted by this website belong to its original owners. No RSS feed nor any feed content are claimed by the creators and maintainers of this website.<br>
               This website doesn’t collect personal data on you or your loved ones. You should be wary of those who do.</small>
             </p>
-            <p class="is-size-7">Rendered in {{ g.request_time() }} from commit:<a href="https://github.com/joachimesque/Cast-Rewinder/commit/{{ g.git_id }}">{{ g.git_id|truncate(7,True,'',0) }}</a></p>
+            <p class="is-size-7">Currently following {{ g.feed_count }} podcasts. Page rendered in {{ g.request_time() }} from commit:<a href="https://github.com/joachimesque/Cast-Rewinder/commit/{{ g.git_id }}">{{ g.git_id|truncate(7,True,'',0) }}</a></p>
           </div>
