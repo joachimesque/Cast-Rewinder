@@ -212,7 +212,12 @@ def import_feed(url, ignore_date = False):
       return False
 
     if url_exists_in_db:
-      # Just update the Feed with new ETag and Content Type
+      # Check if feed info has been updated, update it if necessary
+      feed_content_as_json = json.dumps(feed['feed'], default=json_serial)
+      if feed_content_as_json != feed_object.content:
+        feed_object.content = feed_content_as_json
+
+      # Update the Feed with new ETag and Content Type
       if 'ETag' in response.headers:
         feed_object.etag = response.headers.get('ETag', None)
       if 'Last-Modified' in response.headers:
