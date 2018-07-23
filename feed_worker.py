@@ -110,10 +110,12 @@ def get_feed_from_itunes_api(itunes_url):
       print("Error: Something happened with the connection that prevented us to get %s’s info" % itunes_id)
       return None
 
+  response_text = json.loads(response.text)
+
   # if there's a bad ID, iTunes returns us {'resultCount': 0, 'results': []}
-  if json.loads(response.text)['resultCount'] > 0:
+  if 'resultCount' in response_text and response_text['resultCount'] > 0:
     # returns the feedUrl element of the first result.
-    return json.loads(response.text)['results'][0]['feedUrl']
+    return response_text['results'][0]['feedUrl']
   else:
     print("Error: the specified iTunes URL does not match iTune’s contents. Please check if you did it well.")
     return None
