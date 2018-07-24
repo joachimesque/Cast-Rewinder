@@ -55,9 +55,6 @@ def before_request():
   # Get number of feeds in db
   g.feed_count = db.session.query(models.Feed.id).count()
 
-  import sys
-  print(g.feed_count, file=sys.stderr)
-
   # Unpickle git ID from pickle.
   with open('pickle.pk', 'rb') as fi:
     g.git_id = pickle.load(fi)
