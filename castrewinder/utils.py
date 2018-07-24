@@ -143,7 +143,7 @@ def parse_frequency(frequency, start_date):
   except ValueError:
     return False
 
-  now = datetime.datetime.now().replace(tzinfo=start_datetime.tzinfo)
+  now = datetime.datetime.now(start_datetime.tzinfo)
 
   delta = now - start_datetime
   monthdelta = relativedelta.relativedelta(now, start_datetime)
