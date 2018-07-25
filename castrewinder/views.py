@@ -115,8 +115,8 @@ def serve_feed(feed_id, frequency, start_date, options):
     last_modified = datetime.datetime.strftime(datetime.datetime.now(), '%a, %d %b %Y %H:%M:%S GMT')
     etag = '"%s"' % hashlib.sha1(str(datetime.datetime.now()).encode('utf-8')).hexdigest()
   else:
-    last_modified = datetime.datetime.strftime(publication_dates['dates'][0], '%a, %d %b %Y %H:%M:%S GMT')
-    etag = '"%s"' % hashlib.sha1(str(publication_dates['dates'][0]).encode('utf-8')).hexdigest()
+    last_modified = datetime.datetime.strftime(publication_dates['dates'][-1], '%a, %d %b %Y %H:%M:%S GMT')
+    etag = '"%s"' % hashlib.sha1(str(publication_dates['dates'][-1]).encode('utf-8')).hexdigest()
 
   # if Request headers match Last Modified and Etag, raise a 304 response
   if request.headers.get('If-Modified-Since') == last_modified \
