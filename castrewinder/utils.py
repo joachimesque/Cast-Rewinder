@@ -306,15 +306,15 @@ def build_xml_feed(feed_object, feed_entries, publication_dates, options, feed_f
 
     for media in episode.get('media_content', []):
       if media.get('type') != 'application/x-shockwave-flash':
-        fe.enclosure(url   = media.get('url'),
-                    length = str(media.get('filesize')),
-                    type   = media.get('type'))
+        fe.enclosure(url   = media.get('url', ''),
+                    length = str(media.get('filesize', '')),
+                    type   = media.get('type', ''))
 
     for enclosure in episode.get('enclosure', []):
       if enclosure.get('type') != 'application/x-shockwave-flash':
-        fe.enclosure(url   = enclosure.get('url'),
-                    length = str(enclosure.get('filesize')),
-                    type   = enclosure.get('type'))
+        fe.enclosure(url   = enclosure.get('url', ''),
+                    length = str(enclosure.get('filesize', '')),
+                    type   = enclosure.get('type', ''))
 
     link = episode.get('link', '')
     if link == '':
