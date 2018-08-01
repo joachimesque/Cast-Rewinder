@@ -44,6 +44,7 @@ def add_feed_to_db(feed, feed_url, response_headers = (None,None)):
   db.session.commit()
   return True
 
+
 def add_entries_to_db(feed, feed_url, ignore_date = False):
   """ Adds entries to the Episode Table
       For each entry in the feed, it will:
@@ -57,7 +58,7 @@ def add_entries_to_db(feed, feed_url, ignore_date = False):
   for entry in reversed(feed['entries']):
     try:
       published = to_datetime_from_structtime(time_tuple = entry['published_parsed'])
-    except TypeError:
+    except:
       published = datetime.datetime.today()
 
     enclosure_url = get_enclosure_url_from_episode_content(content = entry)
@@ -120,10 +121,12 @@ def get_feed_from_itunes_api(itunes_url):
       print("Error: Something happened with the connection that prevented us to get %s’s info" % itunes_id)
       return None
 
+  response_text = json.loads(response.text)
+
   # if there's a bad ID, iTunes returns us {'resultCount': 0, 'results': []}
-  if json.loads(response.text)['resultCount'] > 0:
+  if 'resultCount' in response_text and response_text['resultCount'] > 0:
     # returns the feedUrl element of the first result.
-    return json.loads(response.text)['results'][0]['feedUrl']
+    return response_text['results'][0]['feedUrl']
   else:
     print("Error: the specified iTunes URL does not match iTune’s contents. Please check if you did it well.")
     return None
@@ -220,7 +223,12 @@ def import_feed(url, ignore_date = False):
       return False
 
     if url_exists_in_db:
-      # Just update the Feed with new ETag and Content Type
+      # Check if feed info has been updated, update it if necessary
+      feed_content_as_json = json.dumps(feed['feed'], default=json_serial)
+      if feed_content_as_json != feed_object.content:
+        feed_object.content = feed_content_as_json
+
+      # Update the Feed with new ETag and Content Type
       if 'ETag' in response.headers:
         feed_object.etag = response.headers.get('ETag', None)
       if 'Last-Modified' in response.headers:
@@ -380,6 +388,8 @@ def update_feeds():
       feed_object.etag = response.headers.get('ETag', None)
     if 'Last-Modified' in response.headers:
       feed_object.last_modified = response.headers.get('Last-Modified', None)
+
+    feed_object.content = json.dumps(feed['feed'], default=json_serial)
 
     db.session.commit()
 

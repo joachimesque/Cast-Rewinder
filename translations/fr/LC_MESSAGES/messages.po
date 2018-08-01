@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2018-07-18 14:04+0200\n"
+"POT-Creation-Date: 2018-07-17 17:35+0200\n"
 "PO-Revision-Date: 2018-07-14 18:59+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -79,8 +79,8 @@ msgid "Timezone"
 msgstr "Fuseau horaire"
 
 #: castrewinder/forms.py:50
-msgid "Start from episode&nbsp;#"
-msgstr "Démarrer à l’épisode&nbsp;n<sup>o</sup>"
+msgid "Start from episode #"
+msgstr "Démarrer à l’épisode n<sup>o</sup>"
 
 #: castrewinder/forms.py:54
 msgid "Feed Format"
@@ -109,10 +109,6 @@ msgstr "À partir du plus ancien"
 #: castrewinder/forms.py:64
 msgid "Newest first"
 msgstr "À partir du plus récent"
-
-#: castrewinder/forms.py:65
-msgid "Keep original publication dates"
-msgstr "Garder les dates de publication originales"
 
 #: castrewinder/views.py:45
 msgid "You did not select week days, please do now or select another frequency."
@@ -145,15 +141,7 @@ msgstr "Abonne-toi à un podcast depuis le début !"
 msgid "Toggle options"
 msgstr "Montrer/cacher les options"
 
-#: castrewinder/templates/index_form.html:130
-msgid ""
-"Check to keep old publication dates, uncheck to get new episodes "
-"published in contemporary dates"
-msgstr ""
-"Coche pour garder les dates originales dans le flux, "
-"décoche pour avoir des dates actuelles"
-
-#: castrewinder/templates/index_form.html:147
+#: castrewinder/templates/index_form.html:135
 msgid "Get that feed!"
 msgstr "Recevoir le flux !"
 
@@ -165,15 +153,12 @@ msgstr ""
 "tourne avec Cast Rewinder, qui te permet de t’abonner à un podcast depuis"
 " le début"
 
-#: castrewinder/templates/layout.html:21
 msgid "Home"
 msgstr "Accueil"
 
-#: castrewinder/templates/layout.html:21
 msgid "About"
 msgstr "À propos"
 
-#: castrewinder/templates/layout.html:21
 msgid "API"
 msgstr "l’API"
 
