@@ -237,7 +237,7 @@ def import_feed(url, ignore_date = False):
 
     else:
       # Don't populate the Feed Table if it already contains the feed
-      response_headers = (response.headers.get('ETag', None), response.headers.get('Content-Type', None))
+      response_headers = (response.headers.get('ETag', None), response.headers.get('Last-Modified', None))
       add_feed_to_db(feed = feed, feed_url = feed_url, response_headers = response_headers)
 
     # Populate the Episode Table
