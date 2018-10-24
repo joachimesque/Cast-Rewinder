@@ -413,7 +413,8 @@ def verify_links():
 
     enclosure_status = get_url_status(url = episode.enclosure_url)
 
-    # If there was 301s, set last URL
+    # If there was 301s, the second part of the tuple is defined,
+    # set it as the enclosure URL
     if enclosure_status[1] != '':
       episode.enclosure_url = enclosure_status[1]
 
@@ -425,12 +426,14 @@ def verify_links():
   return True
 
 def get_url_status(url):
-  # Gets the head of a request, and returns False if anything other than 2xx-3xx
+  # Gets the head of a request, and returns a tuple with 2 items:
+  # - False if anything other than 2xx-3xx
+  # - new URL if 301, '' if none
 
   try:
     request_head = head(url, allow_redirects=True)
   except Exception:
-    return False
+    return (False, '')
 
   # check history for 301
   end_url = ''
