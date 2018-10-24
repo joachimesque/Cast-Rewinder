@@ -193,6 +193,10 @@ def import_feed(url, ignore_date = False):
       # Empty response raises all hell
       return False
 
+    # check if a BOM is at the start of the file, like http://www.wizards.com/dnd/rsspodcast.xml
+    if response.text[0] == u'\ufeff' or response.text[0] == u'\xef':  # bytes \xef\xbb\xbf in utf-8 encoding
+        response.encoding = 'utf-8-sig'
+
     response_content_type = response.headers.get('content-type', '').split(';')[0]
 
     # create the feed object
