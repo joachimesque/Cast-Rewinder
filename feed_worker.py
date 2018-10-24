@@ -195,7 +195,9 @@ def import_feed(url, ignore_date = False):
 
     response_content_type = response.headers.get('content-type', '').split(';')[0]
 
+    # create the feed object
     feed = []
+    # depending on the response headers we call a different parser for the feed
     if response_content_type == 'application/json':
       # transform json feed object to feedparser object
       feed = get_parsed_json_feed(json_feed = response.text)
