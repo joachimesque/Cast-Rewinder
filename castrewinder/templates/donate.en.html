@@ -1,0 +1,24 @@
+{% extends 'layout.html' %}
+
+{% block title %}Donate{% endblock %}
+
+{% block content %}
+<div class="content">
+    <h2 class="is-size-4 title">How to donate?</h2>
+
+    <p class="is-size-5">If Cast Rewinder has helped you such a way that you want to donate to support its development and hosting costs, I really appreciate it.</p>
+    <p class=""><a href="https://github.com/joachimesque/Cast-Rewinder">Cast rewinder</a> and <a href="{{ request.host_url }}">{{ request.host }}</a> don’t cost me much (just the domain name and hosting fees), but I believe that paying Open Source & Free Software developers for their work is the cornerstone of <abbr title="Free & Open Source Software">FOSS</abbr>. Cast Rewinder was built with many tools, like <a href="https://www.python.org/psf/donations/">Python</a> (the main programming language), <a href="https://www.postgresql.org/about/donate/">PostgreSQL</a> (the database), <a href="https://psfmember.org/civicrm/contribute/transact?reset=1&id=20">Pallets</a> (Flask or Jinja help me make the website) or <a href="https://bulma.io/more/">Bulma</a> (the website’s look and feel). Donating to any of these Open Source projects will help make Cast Rewinder better.</p>
+
+    <p class="">Moreover, as I don’t have many expenses relating to this project, I thought you might consider making a donation to a charity like <a href="https://www.givedirectly.org/">GiveDirectly</a> or Evidence Action’s <a href="https://www.evidenceaction.org/beta-no-lean-season/">No Lean Season campaign</a>, which provide direct help to low income households in developing countries by giving them money. Both charities are very well rated on <a href="http://givewell.org/">Givewell.org</a>, which rates charities and NGOs for their efficiency.<br>
+    I also support <a href="http://water.org/">Water.org</a> and <a href="http://trees.org/">Trees for the Future</a> which are well rated on Charity Navigator.</p>
+
+    <p class="">If you also want to donate to Cast Rewinder/{{ request.host }}, here’s <a href="https://www.paypal.me/joachimrobert">my own PayPal page</a>.</p>
+
+    <p class=""><strong>Can’t donate?</strong> <a href="https://saythanks.io/to/joachimesque">Say thanks!</a></p>
+</div>
+{% endblock %}
+
+
+ 
+
+
