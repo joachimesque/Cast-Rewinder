@@ -178,6 +178,8 @@ def reset_feed(feed):
     db.session.commit()
 
     import_feed(url = feed_url, ignore_conditional_loading = True, ignore_date = True)
+
+    print('The reset seems to have gone successfully.')
   
   else:
     print('Aborting operation.')
