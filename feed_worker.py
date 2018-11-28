@@ -8,6 +8,8 @@ from requests import get
 from dateutil import parser
 from urllib.parse import urlparse
 
+from textwrap import TextWrapper
+
 import feedparser
 
 from castrewinder import db
@@ -61,7 +63,7 @@ def add_entries_to_db(feed, feed_url, ignore_date = False):
     except:
       published = datetime.datetime.today()
 
-    if feed_object.last_published_element < published or ignore_date == True:
+    if feed_object.last_published_element < published or ignore_date:
       new_entry = Episode(published = published,
                           content = json.dumps(entry, default=json_serial),
                           feed_id = feed_object.id)
@@ -79,9 +81,6 @@ def ask_for_url():
   print("Please specify the URL of a feed to import:")
   url = input(">>> ")
   import_feed(url)
-
-
-
     
 def check_url(url):
   u = urlparse(url = url)
@@ -141,8 +140,102 @@ def get_feed_from_soundcloud_url(soundcloud_url):
 
   return soundcloud_feed_url
 
+def get_feed_url(feed_id):
+  feed = db.session.query(Feed).get(feed_id)
+  return feed.url if feed else None
 
-def import_feed(url, ignore_date = False):
+def get_feed_id(feed_url):
+  try:
+    feed = db.session.query(Feed).filter(Feed.url == feed_url).one()
+  except Exception:
+    return None
+
+  return feed.id
+
+def reset_feed(feed):
+  """ Feed Reset, called from the command line.
+      feed can be a feed URL or a feed ID from the database.
+
+  """
+  try:
+    feed = int(feed)
+    print("Feed ID given: %s" % feed)
+    feed_id = feed
+    feed_url = get_feed_url(feed_id = feed_id)
+
+  except ValueError:
+    print("Feed URL given: %s" % feed)
+    feed_url = feed
+    feed_id = get_feed_id(feed_url = feed_url)
+
+  if not feed_id or not feed_url:
+    exit('The feed your provided (%s) is not in the database.' % feed)
+
+  print('Feed %s (URL: %s) is going to be reset. Do you wish to do it?' % (feed_id, feed_url))
+  user_response = input('y/N >>> ')
+
+  if user_response == 'y' or user_response == 'yes':
+    d = db.session.query(Episode).filter(Episode.feed_id == feed_id)
+    d.delete()
+    db.session.commit()
+
+    import_feed(url = feed_url, ignore_conditional_loading = True, ignore_date = True)
+
+    print('The reset seems to have gone successfully.')
+  
+  else:
+    print('Aborting operation.')
+
+
+def which_feed(url):
+  feed_id = get_feed_id(feed_url = url)
+
+  if not feed_id:
+    exit('The feed your provided (%s) is not in the database.' % feed)
+  else:
+    print('Feed ID: %s' % feed)
+
+
+def feed_info(feed):
+
+  try:
+    feed_id = int(feed)
+    print("Feed ID given: %s" % feed)
+
+  except ValueError:
+    print("Feed URL given: %s" % feed)
+    feed_id = get_feed_id(feed_url = feed)
+
+  if not feed_id:
+    print('The feed URL your provided (%s) is not in the database.' % feed)
+  else:
+    feed_object = db.session.query(Feed).get(feed_id)
+
+    if not feed_object:
+      print('The feed ID your provided (%s) is not in the database.' % feed)
+
+    else:
+      feed_content = json.loads(feed_object.content)
+      feed_episodes = db.session.query(Episode).filter(Episode.feed_id == feed_id).count()
+
+      wrapper = TextWrapper(width=66)
+      feed_summary = "\n              ".join(wrapper.wrap(feed_content['summary']))
+
+
+      print("\nFeed ID:      %s" \
+            "\nFeed URL:     %s" \
+            "\nFeed Name:    %s" \
+            "\nLast Grabbed: %s" \
+            "\nSummary:      %s" \
+            "\nEpisodes #:   %s" \
+             % (feed_id,
+                feed_object.url,
+                feed_content['title'],
+                feed_object.last_published_element,
+                feed_summary,
+                feed_episodes))
+
+def import_feed(url, ignore_date = False, ignore_conditional_loading = False):
   """ Feed importer, called from the web app.
       It will verify that the URL is ok,
       check the right URL if it’s an iTunes URL
@@ -173,10 +266,11 @@ def import_feed(url, ignore_date = False):
     url_exists_in_db = bool(db.session.query(Feed).filter(Feed.url == feed_url).count())
 
     if url_exists_in_db:
+      # We only add etag/last_modified headers if we don't `ignore_conditional_loading`
       feed_object = db.session.query(Feed).filter(Feed.url == feed_url).one()
-      if feed_object.etag:
+      if feed_object.etag and not ignore_conditional_loading:
         headers['If-None-Match'] = feed_object.etag
-      if feed_object.last_modified:
+      if feed_object.last_modified and not ignore_conditional_loading:
         headers['If-Modified-Since'] = feed_object.last_modified
 
     try:
@@ -396,15 +490,27 @@ def update_feeds():
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(description='You can import feeds into Cast Rewinder.',
                                     prog='Cast Rewinder')
-  parser.add_argument('-f','--feed_url',help='''Specify an URL to import''')
+  parser.add_argument('-i','--import_feed',help='''Specify an URL to import''')
+  parser.add_argument('-r','--reset_feed',help='''Reset a feed''')
+  parser.add_argument('-w','--which_feed',help='''Get a feed’s ID from URL''')
+  parser.add_argument('--feed_info',help='''Get a feed’s info from ID''')
   parser.add_argument('-u','--update_feeds',help='''Updates all feeds''', action='store_true')
 
   args = parser.parse_args()
 
   running_from_command_line = True
 
-  if args.feed_url:
-    import_feed(url = args.feed_url)
+  if args.import_feed:
+    import_feed(url = args.import_feed)
+
+  if args.reset_feed:
+    reset_feed(feed = args.reset_feed)
+
+  if args.which_feed:
+    which_feed(url = args.which_feed)
+
+  if args.feed_info:
+    feed_info(feed = args.feed_info)
 
   if args.update_feeds:
     update_feeds()
