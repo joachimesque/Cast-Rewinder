@@ -8,6 +8,8 @@ from requests import get
 from dateutil import parser
 from urllib.parse import urlparse
 
+from textwrap import TextWrapper
+
 import feedparser
 
 from castrewinder import db
@@ -184,6 +186,54 @@ def reset_feed(feed):
   else:
     print('Aborting operation.')
 
+
+def which_feed(url):
+  feed_id = get_feed_id(feed_url = url)
+
+  if not feed_id:
+    exit('The feed your provided (%s) is not in the database.' % feed)
+  else:
+    print('Feed ID: %s' % feed)
+
+
+def feed_info(feed):
+
+  try:
+    feed_id = int(feed)
+    print("Feed ID given: %s" % feed)
+
+  except ValueError:
+    print("Feed URL given: %s" % feed)
+    feed_id = get_feed_id(feed_url = feed)
+
+  if not feed_id:
+    print('The feed URL your provided (%s) is not in the database.' % feed)
+  else:
+    feed_object = db.session.query(Feed).get(feed_id)
+
+    if not feed_object:
+      print('The feed ID your provided (%s) is not in the database.' % feed)
+
+    else:
+      feed_content = json.loads(feed_object.content)
+      feed_episodes = db.session.query(Episode).filter(Episode.feed_id == feed_id).count()
+
+      wrapper = TextWrapper(width=66)
+      feed_summary = "\n              ".join(wrapper.wrap(feed_content['summary']))
+
+
+      print("\nFeed ID:      %s" \
+            "\nFeed URL:     %s" \
+            "\nFeed Name:    %s" \
+            "\nLast Grabbed: %s" \
+            "\nSummary:      %s" \
+            "\nEpisodes #:   %s" \
+             % (feed_id,
+                feed_object.url,
+                feed_content['title'],
+                feed_object.last_published_element,
+                feed_summary,
+                feed_episodes))
 
 def import_feed(url, ignore_date = False, ignore_conditional_loading = False):
   """ Feed importer, called from the web app.
@@ -460,7 +510,7 @@ if __name__ == '__main__':
     which_feed(url = args.which_feed)
 
   if args.feed_info:
-    feed_info(feed_id = args.feed_info)
+    feed_info(feed = args.feed_info)
 
   if args.update_feeds:
     update_feeds()
