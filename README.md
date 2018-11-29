@@ -7,6 +7,8 @@
 
 Subscribe to podcasts from the beginning!
 
+[![Say Thanks!](https://img.shields.io/badge/Say%20Thanks-!-1EAEDB.svg)](https://saythanks.io/to/joachimesque)
+
 ## What’s the deal?
 
 **Cast Rewinder allows you to subscribe to a podcast from the beginning.**

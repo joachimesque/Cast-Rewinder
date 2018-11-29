@@ -143,7 +143,7 @@ def parse_frequency(frequency, start_date):
   except ValueError:
     return False
 
-  now = datetime.datetime.now().replace(tzinfo=start_datetime.tzinfo)
+  now = datetime.datetime.now(start_datetime.tzinfo)
 
   delta = now - start_datetime
   monthdelta = relativedelta.relativedelta(now, start_datetime)
@@ -255,7 +255,6 @@ def build_xml_feed(feed_object, feed_entries, publication_dates, options, feed_f
   else:
     explicit = 'no'
   fg.podcast.itunes_explicit(explicit)
-  fg.podcast.itunes_new_feed_url(feed.get('itunes_new-feed-url', ''))
   fg.podcast.itunes_summary(feed.get('summary', ''))
   
   fg.description(strip_tags(feed['summary']) if 'summary' in feed and feed['summary'] != ''
@@ -307,15 +306,15 @@ def build_xml_feed(feed_object, feed_entries, publication_dates, options, feed_f
 
     for media in episode.get('media_content', []):
       if media.get('type') != 'application/x-shockwave-flash':
-        fe.enclosure(url   = media.get('url'),
-                    length = str(media.get('filesize')),
-                    type   = media.get('type'))
+        fe.enclosure(url   = media.get('url', ''),
+                    length = str(media.get('filesize', '')),
+                    type   = media.get('type', ''))
 
     for enclosure in episode.get('enclosure', []):
       if enclosure.get('type') != 'application/x-shockwave-flash':
-        fe.enclosure(url   = enclosure.get('url'),
-                    length = str(enclosure.get('filesize')),
-                    type   = enclosure.get('type'))
+        fe.enclosure(url   = enclosure.get('url', ''),
+                    length = str(enclosure.get('filesize', '')),
+                    type   = enclosure.get('type', ''))
 
     link = episode.get('link', '')
     if link == '':
@@ -348,7 +347,13 @@ def build_xml_feed(feed_object, feed_entries, publication_dates, options, feed_f
       if image_url[-4:] in ('.jpg', '.png'):
         fe.podcast.itunes_image(image_url)
 
-    fe.podcast.itunes_duration(episode.get('itunes_duration', ''))
+    try:
+      fe.podcast.itunes_duration(episode.get('itunes_duration', ''))
+    except ValueError:
+      duration = episode.get('itunes_duration', '')
+      if duration is not '':
+        duration = "%s:%s:%s" % (duration[0:2], duration[3:5], duration[6:8])
+        fe.podcast.itunes_duration(duration)
 
   if feed_format == 'feed_atom':
     return fg.atom_str(pretty=True)

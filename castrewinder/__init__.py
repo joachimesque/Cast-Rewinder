@@ -52,6 +52,9 @@ def before_request():
 
   g.locale = get_locale()
 
+  # Get number of feeds in db
+  g.feed_count = db.session.query(models.Feed.id).count()
+
   # Unpickle git ID from pickle.
   with open('pickle.pk', 'rb') as fi:
     g.git_id = pickle.load(fi)

@@ -81,7 +81,7 @@
 
       var value = "{{ request.host_url }}" + response['feed_id'] + "{{ request_json['end_url'] }}";
 
-      document.querySelector('#loaded_content #element_to_copy').value = value;
+      document.querySelector('#loaded_content #element_to_copy').value = value.replace(/\+/g, '%2B');
 
       var clipboard = new ClipboardJS('#copy_btn');
 
