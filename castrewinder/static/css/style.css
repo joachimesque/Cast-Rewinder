@@ -117,7 +117,14 @@ input[type="number"] {
 }
 
 /* FEED */
-
+@media screen and (min-width: 769px), print {
+  section.feed_episodes .episode_summary img {
+    float: left;
+    max-width: 6em;
+    margin-right: 1em;
+  }
+}
 .js-player {
+  padding: 0;
   flex-grow: 3;
 }

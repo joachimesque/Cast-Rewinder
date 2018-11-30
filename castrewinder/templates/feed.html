@@ -1,5 +1,8 @@
 {% extends 'layout.html' %}
 
+{% block additional_css %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/plyr.css') }}">
+{% endblock %}
 
 {% block title %}{{ feed.title }}{% endblock %}
 
@@ -8,7 +11,7 @@
 
   <h1 class="is-size-3 ">{{ feed.title }}</h1>
 
-  <article class="media is-block-mobile">
+  <article class="media is-block-mobile feed_description">
     {% if 'image' in feed and 'href' in feed['image'] %}
     <figure class="media-left">
       <p class="image is-128x128">
@@ -48,24 +51,63 @@
     </div>
   </article>
 
-  {% for episode in feed_entries %}
-  <hr>
-  <article class="card" id="castrewinder_{{ "%s_%s" % (request.url, episode.get('id', '')) }}">
-    <div class="card-content">
-      <h2 class="is-size-5 title">{{ episode['title'] }}</h2>
-      {#% if 'subtitle' in episode %}
-      <p class="is-size-7 subtitle">{{ episode['subtitle'] }}</p>
-      {% endif %#}
-      <p class="">{{ episode.summary|safe }}</p>
-      
+  <section class="feed_episodes">
 
-    </div>
-    <div class="card-footer">
-      <div class="card-footer-item has-text-centered"><p class="is-size-7">{{ _('Download episode') }}</p></div>
-      <div class="card-footer-item js-player">&lt;player&gt;</div>
-    </div>
-  </article>
+    {% for episode in feed_entries %}
+      {%- set ns = {'enclosure_url':'', 'enclosure_type':'', 'enclosure_size':''} -%}
 
-  {% endfor %}
+      {%- if 'media_content' in episode and 'url' in episode['media_content'][0] -%}
+        {%- if ns.update({ 'enclosure_url':episode['media_content'][0]['url'], 'enclosure_type':episode['media_content'][0]['type'], 'enclosure_size':episode['media_content'][0]['filesize'] }) -%}{%- endif -%}
+
+      {%- elif 'enclosure' in episode and 'url' in episode['enclosure'][0] -%}
+        {%- if ns.update({ 'enclosure_url':episode['enclosure'][0]['url'], 'enclosure_type':episode['enclosure'][0]['type'], 'enclosure_size':episode['enclosure'][0]['filesize'] }) -%}{%- endif -%}
+
+      {%- elif 'links' in episode -%}
+        {%- for link in episode['links'] -%}
+          {%- if 'rel' in link and link['rel'] == 'enclosure' -%}
+            {%- if ns.update({ 'enclosure_url':link['href'], 'enclosure_type':link['type'], 'enclosure_size':link['length'] }) -%}{%- endif -%}
+          {%- endif -%}
+        {%- endfor -%}
+
+      {%- endif -%}
+
+    <hr>
+    <article class="card episode" id="castrewinder_{{ "%s_%s" % (request.url, episode.get('id', '')) }}">
+      <div class="card-content">
+        <h2 class="is-size-5 title">{{ episode['title'] }}</h2>
+        {#% if 'subtitle' in episode %}
+        <p class="is-size-7 subtitle">{{ episode['subtitle'] }}</p>
+        {% endif %#}
+        <div class="episode_summary is-clearfix">
+          {#%- if 'image' in episode and episode['image']['href'] -%}
+            <img src="{{ episode['image']['href'] }}" alt="" />
+          {%- endif -%#}
+          {{ episode.summary|safe }}
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-footer-item has-text-centered"><a href="{{ ns.enclosure_url }}"  class="is-size-7">💽 {{ _('Download episode') }}</a></div>
+        <div class="card-footer-item js-player">
+          <audio controls src="{{ ns.enclosure_url }}"
+            type="{{ ns.enclosure_type }}"
+            preload="metadata"
+            data-plyr-config="{ 'title': '{{ episode['title'] }}' }">
+            {{ _('Your browser doesn’t support HTML Audio.') }}
+          </audio>
+        </div>
+        <div class="card-footer-item has-text-centered"><a href="{{ episode['link'] }}"  class="is-size-7">🔗 {{ _('Episode permalink') }}</a></div>
+      </div>
+    </article>
+
+    {% endfor %}
+
+  </section>
 </div>
+{% endblock %}
+
+{% block js_code %}
+<script src="{{ url_for('static', filename='js/plyr.min.js') }}" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" charset="utf-8">
+  const players = Plyr.setup('audio', {'iconUrl':'{{ url_for('static', filename='img/plyr.svg') }}'});
+</script>
 {% endblock %}
