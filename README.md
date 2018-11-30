@@ -104,4 +104,5 @@ This work uses code from:
 
 - [Bulma](https://bulma.io), which is copyright 2018 Jeremy Thomas and whose code is released under [the MIT license](https://github.com/jgthms/bulma/blob/master/LICENSE).
 - [clipboard.js](https://clipboardjs.com), which is copyright Zeno Rocha, and whose code is released under [the MIT License](http://zenorocha.mit-license.org/)
-- [jsTimezoneDetect](https://bitbucket.org/pellepim/jstimezonedetect) is freely distributable under the terms of the [MIT license](https://github.com/moment/moment/blob/develop/LICENSE).
+- [jsTimezoneDetect](https://bitbucket.org/pellepim/jstimezonedetect) is freely distributable under the terms of the [MIT license](https://bitbucket.org/pellepim/jstimezonedetect/raw/77effaefe1d26be9f2ddffab82a1d2bc112fb0b4/LICENCE.txt).
+- [Plyr](https://plyr.io/#audio) which is copyright Sam Potts, and is freely distributable under the terms of the [MIT license](https://raw.githubusercontent.com/sampotts/plyr/master/license.md).
