@@ -1,5 +1,5 @@
 from . import app
-from flask import render_template, request, abort, flash, Response, g
+from flask import render_template, request, abort, flash, Response, g, redirect, url_for
 import werkzeug
 from flask_babel import Babel, gettext
 import json
@@ -33,8 +33,18 @@ def error(e):
     # note that we set the 500 status explicitly
     return render_template('500.'+ g.locale +'.html'), 500
 
-@app.route('/', methods=["GET", "POST"])
+@app.route('/', methods=["GET"])
 def index():
+  form = UrlForm()
+
+  return render_template('index.html', form = form)
+
+@app.route('/result', methods=["POST", "GET"])
+def result():
+
+  if request.method == 'GET':
+    return redirect(url_for('index'), code=302)
+
   form = UrlForm()
   if form.validate_on_submit():
 
@@ -55,15 +65,28 @@ def index():
       flash(gettext("🤔 DUDE. NOT FUNNY."))
       return render_template('index.html', form = form)
     else:
+
       end_url = generate_url(feed_id = 0,
                               frequency = frequency,
                               options = options)
+      if not options:
+        html_url = end_url + '/format:html'
+      else:
+        if 'format' in options:
+          options['format'] = 'html'
+          html_url = '/'.join(end_url.split('/')[0:3]) + '/' + ','.join(['%s:%s' % (key, o) for key, o in options.items()])
+        else:
+          html_url = end_url + ',format:html'
+
       request_object = {'url': request.form['url'], 'end_url': end_url[1:]}
-      return render_template('index.html', form = form, request_json = request_object)
+      return render_template('result.html', form = form, request_json = request_object, html_url = html_url[1:])
 
   return render_template('index.html', form = form)
 
-
+# The question was asked wether we would allow these routes:
+# @app.route('/result/<feed_id>/<frequency>/<start_date>', defaults = {'options': ''})
+# @app.route('/result/<feed_id>/<frequency>/<start_date>/<options>')
+# For reasons of privacy it might not be a good idea.
 
 @app.route('/ajax/geturl', methods=["PUT"])
 def ajax_geturl():
@@ -97,6 +120,68 @@ def ajax_geturl():
 
   return r
 
+@app.route('/ajax/getpreview', methods=["POST"])
+def ajax_getpreview():
+
+  request_data = json.loads(request.get_data())
+
+  # check if feed_id is an int, if not abort with 404
+  try:
+    feed_id = int(request_data["feed_id"])
+  except ValueError:
+    abort(404)
+
+  request_list = request_data["request_url"].split("/")
+
+  frequency = request_list[1]
+  start_date = request_list[2]
+  options = request_list[3] if len(request_list) > 3 else ''
+
+  publication_dates = parse_frequency(frequency = frequency, start_date = start_date)
+  
+  # get the list of all feeds IDs
+  feeds_ids = [f[0] for f in db.session.query(Feed.id).all()]
+  # check if feed_id is valid, if not abort with 404
+  if feed_id not in feeds_ids:
+    abort(404)
+
+  if not publication_dates:
+    abort(500)
+
+  options = parse_options(options = options)
+
+  feed_format = options['format'] if 'format' in options else 'feed_rss'
+
+  order = Episode.published.asc() 
+  if 'order' in options:
+    if options['order'] == 'desc':
+      order = Episode.published.desc()
+  
+  if 'start_at' in options:
+
+    start_at = int(options['start_at']) - 1
+
+    feed_entries = db.session.query(Episode).\
+                       filter(Episode.feed_id == feed_id).\
+                       order_by(order).\
+                       offset(start_at).\
+                       limit(publication_dates['limit']).\
+                       all()
+
+  else:
+    feed_entries = db.session.query(Episode).\
+                       filter(Episode.feed_id == feed_id).\
+                       order_by(order).\
+                       limit(publication_dates['limit']).\
+                       all()
+
+
+  response = json.dumps([json.loads(entry.content) for entry in reversed(feed_entries)])
+
+  r = Response(response=response, status=200, mimetype="application/json")
+  r.headers["Content-Type"] = "application/json; charset=utf-8"
+
+  return r
 
 
 @app.route('/<feed_id>/<frequency>/<start_date>', defaults = {'options': ''})

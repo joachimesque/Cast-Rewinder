@@ -51,57 +51,8 @@
     </div>
   </article>
 
-  <section class="feed_episodes">
+  {% include 'partials/feed_episode.html' %}
 
-    {% for episode in feed_entries %}
-      {%- set ns = {'enclosure_url':'', 'enclosure_type':'', 'enclosure_size':''} -%}
-
-      {%- if 'media_content' in episode and 'url' in episode['media_content'][0] -%}
-        {%- if ns.update({ 'enclosure_url':episode['media_content'][0]['url'], 'enclosure_type':episode['media_content'][0]['type'], 'enclosure_size':episode['media_content'][0]['filesize'] }) -%}{%- endif -%}
-
-      {%- elif 'enclosure' in episode and 'url' in episode['enclosure'][0] -%}
-        {%- if ns.update({ 'enclosure_url':episode['enclosure'][0]['url'], 'enclosure_type':episode['enclosure'][0]['type'], 'enclosure_size':episode['enclosure'][0]['filesize'] }) -%}{%- endif -%}
-
-      {%- elif 'links' in episode -%}
-        {%- for link in episode['links'] -%}
-          {%- if 'rel' in link and link['rel'] == 'enclosure' -%}
-            {%- if ns.update({ 'enclosure_url':link['href'], 'enclosure_type':link['type'], 'enclosure_size':link['length'] }) -%}{%- endif -%}
-          {%- endif -%}
-        {%- endfor -%}
-
-      {%- endif -%}
-
-    <hr>
-    <article class="card episode" id="castrewinder_{{ "%s_%s" % (request.url, episode.get('id', '')) }}">
-      <div class="card-content">
-        <h2 class="is-size-5 title">{{ episode['title'] }}</h2>
-        {#% if 'subtitle' in episode %}
-        <p class="is-size-7 subtitle">{{ episode['subtitle'] }}</p>
-        {% endif %#}
-        <div class="episode_summary is-clearfix">
-          {#%- if 'image' in episode and episode['image']['href'] -%}
-            <img src="{{ episode['image']['href'] }}" alt="" />
-          {%- endif -%#}
-          {{ episode.summary|safe }}
-        </div>
-      </div>
-      <div class="card-footer">
-        <div class="card-footer-item has-text-centered"><a href="{{ ns.enclosure_url }}"  class="is-size-7">💽 {{ _('Download episode') }}</a></div>
-        <div class="card-footer-item js-player">
-          <audio controls src="{{ ns.enclosure_url }}"
-            type="{{ ns.enclosure_type }}"
-            preload="metadata"
-            data-plyr-config="{ 'title': '{{ episode['title'] }}' }">
-            {{ _('Your browser doesn’t support HTML Audio.') }}
-          </audio>
-        </div>
-        <div class="card-footer-item has-text-centered"><a href="{{ episode['link'] }}"  class="is-size-7">🔗 {{ _('Episode permalink') }}</a></div>
-      </div>
-    </article>
-
-    {% endfor %}
-
-  </section>
 </div>
 {% endblock %}
 

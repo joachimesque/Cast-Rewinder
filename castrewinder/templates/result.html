@@ -1,0 +1,244 @@
+{% extends 'layout.html' %}
+
+{% block title %}{{ _('Subscribe to a podcast from the beginning') }}{% endblock %}
+
+{% block additional_css %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/plyr.css') }}">
+{% endblock %}
+
+
+{% block content %}
+
+  {% include 'partials/result_content.' + g.locale + '.html' %}
+  {% include 'partials/form.html' %}
+
+{% endblock %}
+
+{% block js_code %}
+<script src="{{ url_for('static', filename='js/jstz.min.js') }}" type="text/javascript" charset="utf-8"></script>
+<script src="{{ url_for('static', filename='js/clipboard.min.js') }}" type="text/javascript" charset="utf-8"></script>
+<script src="{{ url_for('static', filename='js/plyr.min.js') }}" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" charset="utf-8">
+(function(){
+  "use strict";
+
+  var select = document.querySelector('#frequency select');
+  var custom_days_section = document.querySelector('#custom_days_form_section');
+
+  if (select.options[select.selectedIndex].value == "custom_days") {
+    custom_days_section.classList.add('is-visible')
+  }
+
+  select.addEventListener("input", function(e) {
+    if (select.options[select.selectedIndex].value == "custom_days") {
+      custom_days_section.classList.add('is-visible')
+    } else {
+      custom_days_section.classList.remove('is-visible')
+    }
+  });
+
+  document.querySelector('a[href="#show-options"]').addEventListener("click", function(e) {
+    e.preventDefault();
+    document.querySelector('#show-options').classList.toggle('is-visible');
+  });
+
+  var detectedZone = jstz.determine().name();
+
+  var timezoneSelect = document.querySelectorAll('select[name="start_date_timezone"] option')
+  if (!document.querySelector('select[name="start_date_timezone"] option[selected]')) {
+    timezoneSelect.forEach(function(el) {
+      var optionName = el.value;
+      if (detectedZone === optionName) {
+        el.selected = 'selected';
+      }
+    });
+  }
+
+  function isJson(str) {
+    try {
+      JSON.parse(str);
+    } catch (e) {
+      return false;
+    }
+    return true;
+  }
+  
+
+  // event handler
+  function resultReqListener () {
+    var response = JSON.parse(this.response);
+    if (typeof response['error'] !== 'undefined') {
+      document.querySelector('#loading_content').classList.toggle('is-visible');
+
+      var header = document.querySelector('header.header');
+      var error_content = '<div class="container"><div class="columns is-centered"><div class="column is-three-fifths"><ul class=flashes><li class="notification is-danger"><strong>' + response['error'] + '</strong></li></ul></div></div></div>';
+
+      header.insertAdjacentHTML('beforeend',error_content);
+      
+      console.log(response['error']);
+    }
+    else if (typeof response['feed_id'] !== 'undefined') {
+      document.querySelector('#loading_content').classList.toggle('is-visible');
+      document.querySelector('#loaded_content').classList.toggle('is-visible');
+
+
+      var value = "{{ request.host_url }}" + response['feed_id'] + "{{ request_json['end_url'] }}";
+
+      document.querySelector('#loaded_content #element_to_copy').value = value.replace(/\+/g, '%2B');
+
+      var clipboard = new ClipboardJS('#copy_btn');
+
+      document.querySelector('a[href="#how-to-subscribe"]').addEventListener("click", function(e) {
+        e.preventDefault();
+        document.querySelector('#how-to-subscribe').classList.toggle('is-visible');
+      });
+
+      // filling the blanks:
+
+      if (typeof response['content']['image']['href'] !== 'undefined' && response['content']['image']['href'].length > 0) {
+        document.querySelector('#loaded_content #feed_image').src = response['content']['image']['href'];
+      } else {
+        document.querySelector('figure.media-left').style.display = 'none';
+      }
+
+      document.querySelector('#loaded_content #feed_title').innerHTML = response['content']['title'];
+      document.querySelector('#loaded_content #feed_url').href = response['content']['link'];
+
+      if (typeof response['content']['description'] !== 'undefined') {
+        document.querySelector('#loaded_content #feed_content').innerHTML = response['content']['description'];
+      } else if (typeof response['content']['summary'] !== 'undefined') {
+        document.querySelector('#loaded_content #feed_content').innerHTML = response['content']['summary'];
+      } else if (typeof response['content']['subtitle'] !== 'undefined') {
+        document.querySelector('#loaded_content #feed_content').innerHTML = response['content']['subtitle'];
+      }
+
+      if (typeof response['content']['copyright'] !== 'undefined') {
+        document.querySelector('#loaded_content #feed_copyright').innerHTML = '© ' + response['content']['copyright'];
+      } else if  (typeof response['content']['author'] !== 'undefined' && typeof response['content']['author']['name'] !== 'undefined') {
+        document.querySelector('#loaded_content #feed_copyright').innerHTML = '© ' + response['content']['author']['name'];
+      } else if  (typeof response['content']['author'] !== 'undefined') {
+        document.querySelector('#loaded_content #feed_copyright').innerHTML = '© ' + response['content']['author'];
+      } else {
+        document.querySelector('#loaded_content #feed_copyright').style.display = 'none';
+      }
+
+      document.querySelector('#link_to_html_feed').href = "{{ request.host_url }}" + response['feed_id'] + "{{ html_url }}";
+
+      // Build the XHR for the request
+
+      // get new XHR object
+      var previewXhr = new XMLHttpRequest();
+      
+      previewXhr.addEventListener( 'load', previewReqListener );
+      
+      previewXhr.open('POST', './ajax/getpreview');
+      var requestJsonData = JSON.stringify({
+        "feed_id": response['feed_id'],
+        "request_url": {{ request_json.end_url|tojson|safe }}
+      });
+      
+      document.querySelector('#preview_btn').addEventListener("click", function(e) {
+        e.preventDefault();
+        document.querySelector('#preview_btn').classList.toggle('is-visible');
+        document.querySelector('#loading_preview_content').classList.toggle('is-visible');
+
+        // send it off
+        previewXhr.send(requestJsonData);
+
+      });
+
+    } //endif
+
+  }
+
+
+  function previewReqListener() {
+    var response = JSON.parse(this.response);
+    if (typeof response['error'] !== 'undefined') {
+      document.querySelector('#loading_preview_content').classList.toggle('is-visible');
+
+      var header = document.querySelector('header.header');
+      var error_content = '<div class="container"><div class="columns is-centered"><div class="column is-three-fifths"><ul class=flashes><li class="notification is-danger"><strong>' + response['error'] + '</strong></li></ul></div></div></div>';
+
+      header.insertAdjacentHTML('beforeend',error_content);
+      
+      console.log(response['error']);
+    }
+    else {
+      console.log(response);
+
+      response.forEach(function(el) {
+
+        if (typeof el['media_content'] !== 'undefined' && typeof el['media_content'][0]['url'] !== 'undefined') {
+          var enclosure_url = el['media_content'][0]['url'];
+          var enclosure_type = el['media_content'][0]['type'];
+        }
+
+        else if (typeof el['enclosure'] !== 'undefined' && typeof el['enclosure'][0]['url'] !== 'undefined') {
+          var enclosure_url = el['enclosure'][0]['url'];
+          var enclosure_type = el['enclosure'][0]['type'];
+        }
+
+        else if (typeof el['links'] !== 'undefined') {
+          el['links'].forEach(function(link) {
+            if (typeof link['rel'] !== 'undefined' && link['rel'] == 'enclosure') {
+              console.log(link['href']);
+              var enclosure_url = link['href'];
+              var enclosure_type = link['type'];
+            }
+          });
+        }
+
+
+        var string =  '<section class="feed_episodes">';
+        string +=    '<hr>';
+        string +=    '<article class="card episode" id="castrewinder_{{ request.url }}_' + el.id + '">';
+        string +=      '<div class="card-content">';
+        string +=        '<h2 class="is-size-5 title">' + el.title + '</h2>';
+        string +=        '<div class="episode_summary is-clearfix">';
+        string +=          el.summary;
+        string +=        '</div>';
+        string +=      '</div>';
+        string +=      '<div class="card-footer">';
+        string +=        '<div class="card-footer-item has-text-centered"><a href="' + enclosure_url + '"  class="is-size-7">💽 {{ _("Download episode") }}</a></div>';
+        string +=        '<div class="card-footer-item js-player">';
+        string +=          '<audio controls src="' + enclosure_url + '"';
+        string +=            'type="' + enclosure_type + '"';
+        string +=            'preload="metadata">';
+        string +=            '{{ _("Your browser doesn’t support HTML Audio.") }}';
+        string +=          '</audio>';
+        string +=        '</div>';
+        string +=        '<div class="card-footer-item has-text-centered"><a href="' + el.link + '"  class="is-size-7">🔗 {{ _("Episode permalink") }}</a></div>';
+        string +=      '</div>';
+        string +=    '</article>';
+        string +=  '</section>';
+        
+        document.querySelector('#loaded_preview_content').insertAdjacentHTML('beforeend', string);
+
+      });
+
+      const players = Plyr.setup('audio', {'iconUrl':'{{ url_for('static', filename='img/plyr.svg') }}'});
+
+      document.querySelector('#loading_preview_content').classList.toggle('is-visible');
+      document.querySelector('#loaded_preview_content').classList.toggle('is-visible');
+
+    } // endif 
+
+  }
+
+  
+  // get new XHR object
+  var xhr = new XMLHttpRequest();
+  
+  xhr.addEventListener( 'load', resultReqListener );
+  
+  xhr.open('PUT', './ajax/geturl');
+  var jsonData = JSON.stringify({{ request_json|tojson|safe }});
+  
+  // send it off
+  xhr.send(jsonData);
+
+
+})();
+</script>
+{% endblock %}

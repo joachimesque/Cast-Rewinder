@@ -99,13 +99,12 @@ def get_options(request_form):
 
 
 
-def generate_url(feed_id, frequency, options):
+def generate_url(feed_id, frequency, options, force_html = False):
   """ Generates the feed URL
       with the feed ID and the frequency
       The start date is always today
   """
   start_date = options.pop('start_date')
-
   start_date += options.pop('start_date_timezone')
   
   options_string = ','.join(['%s:%s' % (key, o) for key, o in options.items()])
