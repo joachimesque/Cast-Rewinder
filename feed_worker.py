@@ -299,7 +299,15 @@ def import_feed(url, ignore_date = False, ignore_conditional_loading = False):
     if response_content_type == 'application/json':
       # transform json feed object to feedparser object
       feed = get_parsed_json_feed(json_feed = response.text)
-    elif response_content_type in ('text/xml','application/rss+xml','application/atom+xml','application/xml','application/xhtml+xml',''):
+    elif response_content_type in ('text/xml',
+                                  'application/rss+xml',
+                                  'application/atom+xml',
+                                  'application/xml+rss',
+                                  'application/xml+atom',
+                                  'application/xml',
+                                  'application/xhtml+xml',
+                                  'application/xml+xhtml',
+                                  ''):
       # We allow NO Content-Type headers. Yeah, I know.
       feed = feedparser.parse(response.text)
     else:
