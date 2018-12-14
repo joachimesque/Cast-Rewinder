@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2018-11-21 13:04+0100\n"
+"POT-Creation-Date: 2018-12-14 18:16+0100\n"
 "PO-Revision-Date: 2018-07-14 18:59+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fr\n"
@@ -172,6 +172,10 @@ msgstr "Accueil"
 #: castrewinder/templates/layout.html:21
 msgid "About"
 msgstr "À propos"
+
+#: castrewinder/templates/layout.html:21
+msgid "Help"
+msgstr "Aide"
 
 #: castrewinder/templates/layout.html:21
 msgid "API"
