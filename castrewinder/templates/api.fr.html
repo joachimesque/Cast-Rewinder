@@ -22,7 +22,7 @@
         </li>
         <li><code>start_date</code> Date de début <small>accepte des valeurs de dates, utilise aujourd’hui par défaut, format `AAAA-MM-JJ`</small></li>
         <li><code>start_date_timezone</code> Fuseau horaire de la date de début <small>accepte des valeurs de fuseaux horaires sous la forme d’un <em>TZ name</em>, comme définit sur <a href="https://en.wikipedia.org/wiki/List_of_tz_database_time_zones">la liste officielle des fuseaux horaires</a>. Ex. : <code>America/Los_Angeles</code> ou <code>Europe/Isle_of_Man</code> (les espaces dans les noms sont remplacées par des “_”) valeur par défaut “Etc/UTC”, soit UTC+00:00</small></li>
-        <li><code>option_limit</code> Option d’épisode de départ <small>accepte des nombres entiers positif, utilise 1 par défaut</small></li>
+        <li><code>option_start_at</code> Option d’épisode de départ <small>accepte des nombres entiers positif, utilise 1 par défaut</small></li>
         <li><code>option_order</code> Option d’ordre de diffusion <small>accepte les valeurs :</small>
             <ul>
                 <li><code>asc</code> ordre ascendant <small>valeur par défaut</small></li>
@@ -57,7 +57,7 @@
     <p>Voici deux exemples :</p>
     <ul>
         <li>Requête basique : <a href="{{ request.host_url }}api/get?url=https://itunes.apple.com/us/podcast/99-invisible/id394775318">{{ request.host }}/api/get?url=https://itunes.apple.com/us/podcast/99-invisible/id394775318</a></li>
-        <li>Requête complexe : <a href="{{ request.host_url }}api/get?url=https://itunes.apple.com/us/podcast/99-invisible/id394775318&frequency=custom_days&custom_day_mon=y&custom_day_tue=y&custom_day_sun=y&start_date=2018-07-01&start_date_timezone=Europe/Paris&option_limit=1&option_order=desc&option_format=feed_atom&option_keepdates=true">{{ request.host }}/api/get?url=https://itunes.apple.com/us/podcast/99-invisible/id394775318&frequency=custom_days&custom_day_mon=y&custom_day_tue=y&custom_day_sun=y&start_date=2018-07-01&start_date_timezone=Europe/Paris&option_limit=1&option_order=desc&option_format=feed_atom&option_keepdates=true</a></li>
+        <li>Requête complexe : <a href="{{ request.host_url }}api/get?url=https://itunes.apple.com/us/podcast/99-invisible/id394775318&frequency=custom_days&custom_day_mon=y&custom_day_tue=y&custom_day_sun=y&start_date=2018-07-01&start_date_timezone=Europe/Paris&option_start_at=1&option_order=desc&option_format=feed_atom&option_keepdates=true">{{ request.host }}/api/get?url=https://itunes.apple.com/us/podcast/99-invisible/id394775318&frequency=custom_days&custom_day_mon=y&custom_day_tue=y&custom_day_sun=y&start_date=2018-07-01&start_date_timezone=Europe/Paris&option_start_at=1&option_order=desc&option_format=feed_atom&option_keepdates=true</a></li>
     </ul>
 
     <h3>POST</h3>
@@ -77,7 +77,7 @@
   "custom_day_sun": false,
   "start_date" : &lt;aujourd’hui&gt;,
   "start_date_timezone" : "Etc/UTC",
-  "option_limit": 1,
+  "option_start_at": 1,
   "option_order": "asc",
   "option_format": "feed_rss",
   "option_keepdates": false
