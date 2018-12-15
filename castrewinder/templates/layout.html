@@ -19,7 +19,7 @@
           <h1 class="title is-size-2">{% block header %}{{ config['WEBSITE_NAME'] }}{% endblock %}</h1>
           <div class="level subtitle">
             <p class="level-left is-size-4 menu">
-              {% for page in [('index',_('Home')),('about',_('About')),('about_api',_('API')),('donate',_('Donate'))] %}
+              {% for page in [('index',_('Home')),('about',_('About')),('help',_('Help')),('about_api',_('API')),('donate',_('Donate'))] %}
               <a href="{{ url_for(page[0]) }}" {%- if request.path == url_for(page[0]) %} class="active"{% endif %}>{{ page[1] }}</a>
               {% endfor %}
             </p>

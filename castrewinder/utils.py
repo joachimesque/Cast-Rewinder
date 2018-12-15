@@ -79,9 +79,9 @@ def get_options(request_form):
 
 
 
-  if 'option_limit' in request_form:
-    if int(request_form['option_limit']) > 1:
-      options['start_at'] = request_form['option_limit'] 
+  if 'option_start_at' in request_form:
+    if int(request_form['option_start_at']) > 1:
+      options['start_at'] = request_form['option_start_at'] 
 
   if 'option_format' in request_form:
     if request_form['option_format'] in ('feed_atom', 'feed_json'):

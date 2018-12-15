@@ -96,6 +96,12 @@ Here is the line for the Cron job that’ll update the feeds every day at 3 in t
 
 You could use a different update frequency setting. As this app is geared mostly towards old / defunct podcasts with big back catalogs, I don’t know if there’s a need for hourly updates. Anyways, if you need other options, check [crontab.guru](https://crontab.guru/#0/15_*_*_*_*)
 
+## TODO
+
+- Importing multiple feeds via OPML files (and exporting the new URLS as an OPML file)
+- Editing existing feed URLS to change options, etc.
+- HTML preview
+
 ## Copyrights and License
 
 Unless otherwise specified, this code is copyright 2018 Joachim Robert and released under the GNU Affero General Public License v3.0. Learn more about this license : https://choosealicense.com/licenses/agpl-3.0/
