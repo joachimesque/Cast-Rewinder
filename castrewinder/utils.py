@@ -79,9 +79,9 @@ def get_options(request_form):
 
 
 
-  if 'option_limit' in request_form:
-    if int(request_form['option_limit']) > 1:
-      options['start_at'] = request_form['option_limit'] 
+  if 'option_start_at' in request_form:
+    if int(request_form['option_start_at']) > 1:
+      options['start_at'] = request_form['option_start_at'] 
 
   if 'option_format' in request_form:
     if request_form['option_format'] in ('feed_atom', 'feed_json'):
@@ -350,7 +350,13 @@ def build_xml_feed(feed_object, feed_entries, publication_dates, options, feed_f
       if image_url[-4:] in ('.jpg', '.png'):
         fe.podcast.itunes_image(image_url)
 
-    fe.podcast.itunes_duration(episode.get('itunes_duration', ''))
+    try:
+      fe.podcast.itunes_duration(episode.get('itunes_duration', ''))
+    except ValueError:
+      duration = episode.get('itunes_duration', '')
+      if duration is not '':
+        duration = "%s:%s:%s" % (duration[0:2], duration[3:5], duration[6:8])
+        fe.podcast.itunes_duration(duration)
 
   if feed_format == 'feed_atom':
     return fg.atom_str(pretty=True)

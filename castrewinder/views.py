@@ -184,6 +184,13 @@ def serve_feed(feed_id, frequency, start_date, options):
 def about():
   return render_template('about.'+ g.locale +'.html')
 
+@app.route('/help/')
+def help():
+  return render_template('help.'+ g.locale +'.html')
+
+@app.route('/donate/')
+def donate():
+  return render_template('donate.'+ g.locale +'.html')
 
 @app.route('/api/')
 def about_api():

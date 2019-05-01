@@ -1,0 +1,42 @@
+{% extends 'layout.html' %}
+
+{% block title %}Aide{% endblock %}
+
+{% block content %}
+<div class="content">
+    <h2 class="is-size-4 title">Cast Rewinder vous fournit l’URL d’un flux de podcast, que vous pouvez modifier selon vos besoins.</h2>
+
+    <p class="is-size-5">Mettons que tu commences à suivre un podcast quotidiennement depuis le début avec Cast Rewinder. Puis, après quelques semaines, tu veux passer en diffusion hebdo. Comment faire pour changer ça&nbsp;? Tu peux générer à nouveau l’URL d'un flux, mais tu peux plus simplement modifier l’URL que tu avais déjà pour la diffusion quotidienne. Voilà comment ça marche.</p>
+
+    <h3 class="is-size-5 title">L’URL basique</h3>
+
+    <p class="">Basiquement, l’URL d’un flux Cast Rewinder suit ce schéma:<br>
+      <code>{{ request.host_url }}3/weekly/20181214+0000</code></p>
+    <ol>
+      <li><code>{{ request.host_url }}</code> est le domaine, pas besoin de le changer</li>
+      <li><code>/3/</code> est l’identifiant du podcast dans la base de données. Pas besoin de changer ça non plus</li>
+      <li><code>/weekly/</code> est le nom de code pour la fréquence. Il peut être changé. Les valeurs possibles sont en anglais, c’est <code>daily</code> (diffusion quotidienne), <code>weekly</code> (hebdo), <code>monthly</code> (mensuelle), ou toute combinaison de jours de la semaine, sous la forme de troncation de trois lettres du nom anglais.<br>Exemple : <code>mon-thu-sun</code> publiera de nouveaux épisodes les lundi, jeudi et dimanche</li>
+      <li><code>/20181214+0000/</code> désigne la date de début et les informations de fuseau horaire que Cast Rewinder utilise pour générer le flux. Ça peut être changé. Il faut suivre le format <code>AAAAMMJJ</code> pour la date (A pour l’année, M pour le mois, J pour le jour), et <code>+</code> ou <code>-</code> suivi par la différence de temps avec le temps UTC, sous la forme <code>HHMM</code> pour l’information de fuseau horaire (H pour les heures, M pour les minutes), UTC+5 sera noté <code>+0500</code></li>
+    </ol>
+
+    <h3 class="is-size-5 title">Ajouter des options</h3>
+    <p>Plus d’options peuvent être ajoutées à l’URL. Elles sont ajoutées à la suite de la date, précédées par une barre oblique (ou <i lang="en">slash</i> : <code>/</code>), elles sont séparées entre elles par une virgule (<code>,</code>) et les options sont séparées de leurs valeurs par deux points (<code>:</code>).<br>
+      Exemple : <code>{{ request.host_url }}3/weekly/20181214+0000/start_at:5,order:desc</code></p>
+
+    <p>Il y a quatre options, qui peuvent être arrangées dans n’importe quel ordre&nbsp;:</p>
+    <ul>
+        <li><code>start_at</code> définit l’épisode de début du flux. Si tu veux que ton flux commence au cinquième épisode (inclus) et non au premier, l’option sera : <code>start_at:5</code></li>
+        <li><code>order</code> définit l’ordre de lecture. Par défaut, sa valeur est <code>asc</code> (pour ordre ascendant), mais ça peut être réglé en <code>desc</code> (pour descendant) si tu veux lire tes épisodes du plus récent au plus ancien</li>
+        <li><code>format</code> définit le format du flux. <code>feed_rss</code>, <code>feed_atom</code> et <code>feed_json</code> sont les formats disponibles, par défaut l’option a la valeur <code>feed_rss</code> ce qui transmet un flux au format RSS</li>
+        <li><code>keep_dates</code> définit si les dates de publication originales sont gardées dans le flux, au lieu d’utiliser des dates contemporaines. Tu peux spécifier <code>yes</code> (pour garder les dates originales) ou <code>no</code>, le réglage par défaut est <code>no</code> et le flux est généré avec des dates contemporaines</li>
+    </ul>
+    <h3 class="is-size-5 title">Cas d’exemple</h3>
+    <p>Au début de la page, tu voulais changer la fréquence de diffusion de tous les jours à toutes les semaines. Mettons que ton URL est comme ça :<br>
+      <code>{{ request.host_url }}3/daily/20181201+0500</code><br>
+      On va d’abord changer le réglage <code>daily</code> en <code>weekly</code>, puis on va changer la date à celle d’aujourd’hui (par exemple <code>20181215+0500</code>), puis on ajouter l’option pour commencer la diffusion au dernier épisode publié dans ton ancien flux. La partie la plus dure de cette manipulation, c’est de trouver le numéro de cet épisode, surtout si les titres d’épisodes du podcast ne sont pas numérotés.<br>
+      À la fin, le résultat doit ressembler à ça&nbsp;:<br>
+      <code>{{ request.host_url }}3/weekly/20181215+0500/start_at:14</code><br>
+    </p>
+    <p>J’espère que cette rubrique t’aura été utile ; si tu hésites toujours à modifier ton URL Cast Rewinder, tu peux en <a href="{{ url_for('index') }}">re-générer une à l’aide du formulaire</a>, ou m’envoyer un email à <a href="mailto:hello@rewind.website">hello@rewind.website</a>.</p>
+</div>
+{% endblock %}

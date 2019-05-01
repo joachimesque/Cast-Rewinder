@@ -1,0 +1,43 @@
+{% extends 'layout.html' %}
+
+{% block title %}Help{% endblock %}
+
+{% block content %}
+<div class="content">
+    <h2 class="is-size-4 title">Cast Rewinder gives you a podcast feed URL, and you can modify it to suit your needs.</h2>
+
+    <p class="is-size-5">Let’s say you want daily updates from a podcast through Cast Rewinder. Then after a few weeks, you want to switch to a weekly occurence. How would you go about it? You can generate a new feed URL, but you can also edit the feed URL you had for your daily updates. Here’s how it work.</p>
+
+    <h3 class="is-size-5 title">The basic URL</h3>
+
+    <p class="">A basic Cast Rewinder feed URL follows this form:<br>
+      <code>{{ request.host_url }}3/weekly/20181214+0000</code></p>
+    <ol>
+      <li><code>{{ request.host_url }}</code> is the domain, you won’t need to change that</li>
+      <li><code>/3/</code> is the identifier for the podcast in the database. You won’t need to change that either</li>
+      <li><code>/weekly/</code> is the code word for the frequency. This can be changed. Possible values are <code>daily</code>, <code>weekly</code>, <code>monthly</code>, or any combination of weekdays in the form of three-letter abbreviations.<br>E.g.: <code>mon-thu-sun</code> will publish new episodes on Mondays, Thursdays and Sundays</li>
+      <li><code>/20181214+0000/</code> is the start date and timezone info that Cast Rewinder uses to generate your feed. This can be changed. I follows the format <code>YYYYMMDD</code> for the date (with Y as the year, M as the month and D as the day), and <code>+</code> or <code>-</code> followed by the time offset compared to UTC, in the form <code>HHMM</code> for the timezone info (with H for the hours and M for the minutes), UTC+5 will be <code>+0500</code></li>
+    </ol>
+
+    <h3 class="is-size-5 title">Adding options</h3>
+    <p>More options can be added to the URL. They go at the end of the URL after the date and a slash (<code>/</code>), they are separated by a comma (<code>,</code>) and define their values with a colon (<code>:</code>).<br>
+      E.g.: <code>{{ request.host_url }}3/weekly/20181214+0000/start_at:5,order:desc</code></p>
+
+    <p>There are four options, and they can be arranged in any order:</p>
+    <ul>
+        <li><code>start_at</code> will define where to start the feed, from its start. If you want to start from the 5th episode (included) and not the first, the option will be: <code>start_at:5</code></li>
+        <li><code>order</code> sets your preference for the playing order. By default its value is <code>asc</code> (for ascending), you can set it to <code>desc</code> (for descending) to get your episodes from the most recent to the oldest</li>
+        <li><code>format</code> sets your preference for the feed format. <code>feed_rss</code>, <code>feed_atom</code> and <code>feed_json</code> are the available formats, if no option is provided it will be set on <code>feed_rss</code> to deliver you a RSS feed</li>
+        <li><code>keep_dates</code> will defines wether the original publication dates for the episodes are kept in the feed, as opposed to contemporary dates. You can specify <code>yes</code> or <code>no</code>, if that option isn’t enabled the default setting is <code>no</code></li>
+    </ul>
+    <h3 class="is-size-5 title">Wrapping this all together</h3>
+    <p>Remember our starting situation? You wanted to change your podcast from daily to weekly updates. Your URL was this:<br>
+      <code>{{ request.host_url }}3/daily/20181201+0500</code><br>
+      We’ll need to start by changing <code>daily</code> to <code>weekly</code>, then to change the date to today (e.g.: <code>20181215+0500</code>), and then adding the option to start the feed at the last  episode published by your old feed. The hardest part here is to identify the number of the episode, if it’s not provided in your podcast’s episode titles.<br>
+      The end result might looks like this:<br>
+      <code>{{ request.host_url }}3/weekly/20181215+0500/start_at:14</code><br>
+    </p>
+    <p>I hope this has been enlightening ; if you still have doubts as to how to proceed when changing your Cast Rewinder feed URL you can <a href="{{ url_for('index') }}">re-generate one with the form</a>, or send me an email at <a href="mailto:hello@rewind.website">hello@rewind.website</a>.</p>
+
+</div>
+{% endblock %}

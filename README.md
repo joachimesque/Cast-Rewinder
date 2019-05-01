@@ -7,6 +7,8 @@
 
 Subscribe to podcasts from the beginning!
 
+[![Say Thanks!](https://img.shields.io/badge/Say%20Thanks-!-1EAEDB.svg)](https://saythanks.io/to/joachimesque)
+
 ## What’s the deal?
 
 **Cast Rewinder allows you to subscribe to a podcast from the beginning.**
@@ -93,6 +95,12 @@ Here is the line for the Cron job that’ll update the feeds every day at 3 in t
     0 3 * * * cd ~/Cast-Rewinder/ ; . ~/Cast-Rewinder/.venv/bin/activate ; ~/Cast-Rewinder/.venv/bin/python ~/Cast-Rewinder/feed_worker.py -u
 
 You could use a different update frequency setting. As this app is geared mostly towards old / defunct podcasts with big back catalogs, I don’t know if there’s a need for hourly updates. Anyways, if you need other options, check [crontab.guru](https://crontab.guru/#0/15_*_*_*_*)
+
+## TODO
+
+- Importing multiple feeds via OPML files (and exporting the new URLS as an OPML file)
+- Editing existing feed URLS to change options, etc.
+- HTML preview
 
 ## Copyrights and License
 
