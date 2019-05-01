@@ -165,26 +165,26 @@
       console.log(response['error']);
     }
     else {
-      console.log(response);
-
       response.forEach(function(el) {
 
+        var enclosure_url,
+            enclosure_type;
+
         if (typeof el['media_content'] !== 'undefined' && typeof el['media_content'][0]['url'] !== 'undefined') {
-          var enclosure_url = el['media_content'][0]['url'];
-          var enclosure_type = el['media_content'][0]['type'];
+          enclosure_url = el['media_content'][0]['url'];
+          enclosure_type = el['media_content'][0]['type'];
         }
 
         else if (typeof el['enclosure'] !== 'undefined' && typeof el['enclosure'][0]['url'] !== 'undefined') {
-          var enclosure_url = el['enclosure'][0]['url'];
-          var enclosure_type = el['enclosure'][0]['type'];
+          enclosure_url = el['enclosure'][0]['url'];
+          enclosure_type = el['enclosure'][0]['type'];
         }
 
         else if (typeof el['links'] !== 'undefined') {
           el['links'].forEach(function(link) {
             if (typeof link['rel'] !== 'undefined' && link['rel'] == 'enclosure') {
-              console.log(link['href']);
-              var enclosure_url = link['href'];
-              var enclosure_type = link['type'];
+              enclosure_url = link['href'];
+              enclosure_type = link['type'];
             }
           });
         }
