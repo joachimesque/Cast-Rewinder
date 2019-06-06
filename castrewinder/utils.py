@@ -352,23 +352,25 @@ def build_xml_feed(feed_object, feed_entries, publication_dates, options, feed_f
       fe.content(content = strip_tags(content['value']) if 'value' in content else '',
                     type = content['type']  if 'type'  in content else '')
 
-    for media in episode.get('media_content', []):
-      if media.get('type') != 'application/x-shockwave-flash':
-        fe.enclosure(url   = media.get('url', ''),
-                    length = str(media.get('filesize', '')),
-                    type   = media.get('type', ''))
+    if entry.enclosure_is_active:
+      # don't add an enclosure or media if the enclosure link is not active
+      for media in episode.get('media_content', []):
+        if media.get('type') != 'application/x-shockwave-flash':
+          fe.enclosure(url   = media.get('url', ''),
+                      length = str(media.get('filesize', '')),
+                      type   = media.get('type', ''))
 
-    for enclosure in episode.get('enclosure', []):
-      if enclosure.get('type') != 'application/x-shockwave-flash':
-        fe.enclosure(url   = enclosure.get('url', ''),
-                    length = str(enclosure.get('filesize', '')),
-                    type   = enclosure.get('type', ''))
+      for enclosure in episode.get('enclosure', []):
+        if enclosure.get('type') != 'application/x-shockwave-flash':
+          fe.enclosure(url   = enclosure.get('url', ''),
+                      length = str(enclosure.get('filesize', '')),
+                      type   = enclosure.get('type', ''))
 
     link = episode.get('link', '')
     if link == '':
       link = feed.get('link')
-    if link == '':
       # This would be the perfect place
+    if link == '':
       # to link to a special HTML format feed. TODO.
       link = "%s#%s" % (request.url, "castrewinder_%s_%s" % (request.url, episode.get('id', '')))
 
@@ -377,10 +379,11 @@ def build_xml_feed(feed_object, feed_entries, publication_dates, options, feed_f
     for link in episode.get('links', []):
       if link.get('href','') != '':
         if link.get('rel') == 'enclosure':
-          links.append({'rel'   : 'enclosure',
-                        'href'  : link.get('href'),
-                        'type'  : link.get('type', ''),
-                        'length': link.get('length', 0)})
+          if entry.enclosure_is_active:
+            links.append({'rel'   : 'enclosure',
+                          'href'  : link.get('href'),
+                          'type'  : link.get('type', ''),
+                          'length': link.get('length', 0)})
         else:
           links.append({'rel'   : 'alternate',
                         'href'  : link.get('href'),
