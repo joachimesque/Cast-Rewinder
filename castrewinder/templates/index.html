@@ -4,8 +4,8 @@
 
 {% block content %}
 
-  {% include 'index_content.' + g.locale + '.html' %}
-  {% include 'index_form.html' %}
+  {% include 'partials/index_content.' + g.locale + '.html' %}
+  {% include 'partials/form.html' %}
 
 {% endblock %}
 
@@ -57,85 +57,6 @@
     }
     return true;
   }
-  
-
-{% if request_json is defined %}
-
-  // event handler
-  function reqListener () {
-    var response = JSON.parse(this.response);
-    if (typeof response['error'] !== 'undefined') {
-      document.querySelector('#loading_content').classList.toggle('is-visible');
-
-      var header = document.querySelector('header.header');
-      var error_content = '<div class="container"><div class="columns is-centered"><div class="column is-three-fifths"><ul class=flashes><li class="notification is-danger"><strong>' + response['error'] + '</strong></li></ul></div></div></div>';
-
-      header.insertAdjacentHTML('beforeend',error_content);
-      
-      console.log(response['error']);
-    }
-    else if (typeof response['feed_id'] !== 'undefined') {
-      document.querySelector('#loading_content').classList.toggle('is-visible');
-      document.querySelector('#loaded_content').classList.toggle('is-visible');
-
-
-      var value = "{{ request.host_url }}" + response['feed_id'] + "{{ request_json['end_url'] }}";
-
-      document.querySelector('#loaded_content #element_to_copy').value = value.replace(/\+/g, '%2B');
-
-      var clipboard = new ClipboardJS('#copy_btn');
-
-      document.querySelector('a[href="#how-to-subscribe"]').addEventListener("click", function(e) {
-        e.preventDefault();
-        document.querySelector('#how-to-subscribe').classList.toggle('is-visible');
-      });
-
-      // filling the blanks:
-
-      if (typeof response['content']['image']['href'] !== 'undefined' && response['content']['image']['href'].length > 0) {
-        document.querySelector('#loaded_content #feed_image').src = response['content']['image']['href'];
-      } else {
-        document.querySelector('figure.media-left').style.display = 'none';
-      }
-
-      document.querySelector('#loaded_content #feed_title').innerHTML = response['content']['title'];
-      document.querySelector('#loaded_content #feed_url').href = response['content']['link'];
-
-      if (typeof response['content']['description'] !== 'undefined') {
-        document.querySelector('#loaded_content #feed_content').innerHTML = response['content']['description'];
-      } else if (typeof response['content']['summary'] !== 'undefined') {
-        document.querySelector('#loaded_content #feed_content').innerHTML = response['content']['summary'];
-      } else if (typeof response['content']['subtitle'] !== 'undefined') {
-        document.querySelector('#loaded_content #feed_content').innerHTML = response['content']['subtitle'];
-      }
-
-      if (typeof response['content']['copyright'] !== 'undefined') {
-        document.querySelector('#loaded_content #feed_copyright').innerHTML = '© ' + response['content']['copyright'];
-      } else if  (typeof response['content']['author'] !== 'undefined' && typeof response['content']['author']['name'] !== 'undefined') {
-        document.querySelector('#loaded_content #feed_copyright').innerHTML = '© ' + response['content']['author']['name'];
-      } else if  (typeof response['content']['author'] !== 'undefined') {
-        document.querySelector('#loaded_content #feed_copyright').innerHTML = '© ' + response['content']['author'];
-      } else {
-        document.querySelector('#loaded_content #feed_copyright').style.display = 'none';
-      }
-
-    } //endif
-
-  }
-  
-  // get new XHR object
-  var xhr = new XMLHttpRequest();
-  
-  xhr.addEventListener( 'load', reqListener );
-  
-  xhr.open('PUT', './ajax/geturl');
-  var jsonData = JSON.stringify({{ request_json|tojson|safe }});
-  
-  // send it off
-  xhr.send(jsonData);
-
-{% endif %}
-
 
 
 })();

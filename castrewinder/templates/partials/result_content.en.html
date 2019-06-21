@@ -1,4 +1,3 @@
-{% if request_json is defined %}
   <div id="loading_content" class="toggle-content is-visible">
     <h2 class="is-size-4 title">Your feed is being prepared…</h2>
     <div class="has-text-centered"><span class="spinner"></span></div>
@@ -62,13 +61,20 @@
       <hr>
     </article>
 
+    <h2 class="is-size-4 title">Preview the feed</h2>
+    <button id="preview_btn" class="button is-primary is-rounded toggle-content is-visible">Show feed preview</button>
+
+    <div id="loading_preview_content" class="toggle-content">
+      <p class="is-size-5 title">The preview is being fetched…</p>
+      <div class="has-text-centered"><span class="spinner"></span></div>
+      <hr>
+    </div>
+    <div id="loaded_preview_content" class="toggle-content">
+    </div>
+
+    <a id="link_to_html_feed" class="button is-rounded">See feed in the browser</a>
+    <hr>
+
   </div>
 
-
   <h2 class="is-size-4 title">Get another podcast feed!</h2>
-{% else %}
-  <h2 class="is-size-4 title">Subscribe to a podcast from the beginning</h2>
-  <p class="is-size-6 subtitle">You will just need to provide us the address of an iTunes podcast or of a podcast feed, some SoundCloud addresses also work</p>
-  <p class="">This service is in beta. Please proceed accordingly <small>(if the data is not exactly how you expect it to be, it might be because of a bug, tell me all about bugs on <a href="https://github.com/joachimesque/Cast-Rewinder">Github: Cast Rewinder</a> by opening an issue, or send me an email at <a href="mailto:hello@rewind.website">hello@rewind.website</a>)</small>.</p>
-  <hr>
-{% endif %}

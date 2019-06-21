@@ -1,4 +1,3 @@
-{% if request_json is defined %}
   <div id="loading_content" class="toggle-content is-visible">
     <h2 class="is-size-4 title">Le flux est en préparation…</h2>
     <div class="has-text-centered"><span class="spinner"></span></div>
@@ -62,15 +61,22 @@
       <hr>
     </article>
 
+    <h2 class="is-size-4 title">Prévisualiser le flux</h2>
+    <button id="preview_btn" class="button is-primary is-rounded toggle-content is-visible">Voir le flux</button>
+
+    <div id="loading_preview_content" class="toggle-content">
+      <p class="is-size-5 title">Le flux est en train de charger…</p>
+      <div class="has-text-centered"><span class="spinner"></span></div>
+      <hr>
+    </div>
+    <div id="loaded_preview_content" class="toggle-content">
+    </div>
+    <hr>
+    <a id="link_to_html_feed" class="button is-rounded">Voir le flux dans le navigateur</a>
+    <hr>
+
+
   </div>
 
 
   <h2 class="is-size-4 title">Récupère un autre flux !</h2>
-{% else %}
-  <h2 class="is-size-4 title">Abonne-toi à un podcast depuis le début</h2>
-  <p class="is-size-6 subtitle">Il y a juste besoin de nous fournir l’adresse d’un podcast, ou de sa page iTunes. Certaines adresses SoundCloud marchent aussi.</p>
-  <p class="">Ce service est en version beta. Tout ne marche pas encore très bien <small>(Si les données ne sont pas exactement comme prévu, c’est peut-être dû à un bug. Si tu en croises, n’hésite pas à me prévenir sur <a href="https://github.com/joachimesque/Cast-Rewinder">Github: Cast Rewinder</a> en ouvrant une <em>issue</em>, ou bien envoie un email à <a href="mailto:hello@rewind.website">hello@rewind.website</a>)</small>.</p>
-  <hr>
-{% endif %}
-
-
