@@ -105,3 +105,8 @@ venv.bak/
 
 # Pickle
 pickle.pk
+
+#macOS
+._*
+._*.*
+.DS_Store
