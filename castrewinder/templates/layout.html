@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/bulma.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  {% block additional_css %}{% endblock %}
 
   <title>{% block title %}{% endblock %} - {{ config['WEBSITE_NAME'] }}</title>
 

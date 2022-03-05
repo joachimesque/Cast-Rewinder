@@ -142,13 +142,12 @@ def get_options(request_form):
 
 
 
-def generate_url(feed_id, frequency, options):
+def generate_url(feed_id, frequency, options, force_html = False):
   """ Generates the feed URL
       with the feed ID and the frequency
       The start date is always today
   """
   start_date = options.pop('start_date')
-
   start_date += options.pop('start_date_timezone')
   
   options_string = ','.join(['%s:%s' % (key, o) for key, o in options.items()])
@@ -405,7 +404,9 @@ def build_xml_feed(feed_object, feed_entries, publication_dates, options, feed_f
 
   if feed_format == 'feed_atom':
     return fg.atom_str(pretty=True)
-  elif feed_format == 'feed_rss':
+  else:
+  # elif feed_format == 'feed_rss':
+  # Default to RSS if malformed format string
     return fg.rss_str(pretty=True)
 
 
