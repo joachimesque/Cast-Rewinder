@@ -4,7 +4,7 @@ import datetime
 import calendar
 import time
 import json
-from requests import get
+from requests import get, head
 from dateutil import parser
 from urllib.parse import urlparse
 
@@ -63,10 +63,21 @@ def add_entries_to_db(feed, feed_url, ignore_date = False):
     except:
       published = datetime.datetime.today()
 
-    if feed_object.last_published_element < published or ignore_date:
+    enclosure_url = get_enclosure_url_from_episode_content(content = entry)
+
+    # # Calling the enclosure url status is too costly as of yet
+    # enclosure_status = get_url_status(url = enclosure_url)
+    # # If there was 301s, set last URL
+    # if enclosure_status[1] != '':
+    #   enclosure_url = enclosure_status[1]
+
+    if feed_object.last_published_element < published or ignore_date == True:
       new_entry = Episode(published = published,
                           content = json.dumps(entry, default=json_serial),
-                          feed_id = feed_object.id)
+                          feed_id = feed_object.id,
+                          enclosure_url = enclosure_url,
+                          # enclosure_is_active = enclosure_status[0])
+                          enclosure_is_active = True)
       db.session.add(new_entry)
 
   if not ignore_date:
@@ -494,6 +505,73 @@ def update_feeds():
 
   return True
 
+def verify_links():
+  """ This goes through every podcast file link
+      and checks if it’s still available"""
+
+  all_episodes = db.session.query(Episode).filter(Episode.enclosure_is_active == True).all()
+
+  for episode in all_episodes:
+
+    # If there's no enclosure_url specified
+    if not episode.enclosure_url:
+      # Gets the enclosure URL and sets in in DB
+      enclosure_url = get_enclosure_url_from_episode_content(content = json.loads(episode.content))
+      episode.enclosure_url = enclosure_url
+
+    enclosure_status = get_url_status(url = episode.enclosure_url)
+
+    # If there was 301s, the second part of the tuple is defined,
+    # set it as the enclosure URL
+    if enclosure_status[1] != '':
+      episode.enclosure_url = enclosure_status[1]
+
+    # Set status active/inactive in DB
+    episode.enclosure_is_active = enclosure_status[0]
+
+  db.session.commit()
+
+  return True
+
+def get_url_status(url):
+  # Gets the head of a request, and returns a tuple with 2 items:
+  # - False if anything other than 2xx-3xx
+  # - new URL if 301, '' if none
+
+  try:
+    request_head = head(url, allow_redirects=True)
+  except Exception:
+    return (False, '')
+
+  # check history for 301
+  end_url = ''
+  history_codes = [resp.status_code for resp in reversed(request_head.history)]
+  if 301 in history_codes and 302 not in history_codes:
+    # the last occurence of 301 is the first index (bc history is reversed)
+    last_301 = history_codes.index(301)
+    end_url = request_head.url
+
+  return (True, end_url) if request_head.status_code == 200 else (False, None)
+
+
+def get_enclosure_url_from_episode_content(content):
+  # Traverses an episode content element for enclosures
+  # RSS (or JSON Feed)
+  for enclosure in reversed(content.get('enclosure', [])):
+    # Only get the LAST enclosure of the post (as per RSS recommendations)
+    if enclosure.get('type') != 'application/x-shockwave-flash':
+      return enclosure.get('url')
+
+  # Atom
+  for link in content.get('links', []):
+    # Only get the first link[rel="enclosure"] of the post
+    if link.get('rel') == 'enclosure' \
+      and link.get('type') != 'application/x-shockwave-flash':
+      return link.get('href')
+
+  # if no <enclosure> and no link[rel="enclosure"], return False
+  return None
+
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(description='You can import feeds into Cast Rewinder.',
@@ -503,6 +581,7 @@ if __name__ == '__main__':
   parser.add_argument('-w','--which_feed',help='''Get a feed’s ID from URL''')
   parser.add_argument('--feed_info',help='''Get a feed’s info from ID''')
   parser.add_argument('-u','--update_feeds',help='''Updates all feeds''', action='store_true')
+  parser.add_argument('-l','--verify_links',help='''Check all podcast links''', action='store_true')
 
   args = parser.parse_args()
 
@@ -522,6 +601,9 @@ if __name__ == '__main__':
 
   if args.update_feeds:
     update_feeds()
+
+  if args.verify_links:
+    verify_links()
 
   if not any(vars(args).values()):
     ask_for_url()
